@@ -84,7 +84,7 @@ export default function ParentGate({ children }: ParentGateProps) {
         {/* Label */}
         <span className="relative z-10">
           {progress > 0 && progress < 100
-            ? `Hold… ${Math.round((HOLD_DURATION_MS - (progress / 100) * HOLD_DURATION_MS) / 1000)}s`
+            ? `Hold… ${Math.round((HOLD_DURATION_MS * (1 - progress / 100)) / 1000)}s`
             : "Hold to Enter"}
         </span>
       </button>
@@ -96,6 +96,7 @@ export default function ParentGate({ children }: ParentGateProps) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label="Unlock progress"
+        aria-live="polite"
         className="sr-only"
       />
     </div>
