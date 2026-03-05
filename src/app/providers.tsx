@@ -5,6 +5,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { useState, useEffect } from "react";
 import { createIdbPersister } from "@/lib/queryPersistence";
 import { replayQueue } from "@/lib/syncQueue";
+import { initAnalytics } from "@/lib/analytics";
 
 // ---------------------------------------------------------------------------
 // SyncManager — replays the offline mutation queue when the browser comes
@@ -14,6 +15,8 @@ function SyncManager() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    initAnalytics();
+
     // Replay any leftover mutations from previous sessions
     replayQueue().catch((err) =>
       console.error("[SyncManager] replay on mount failed:", err),
