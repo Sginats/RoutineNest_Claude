@@ -2,8 +2,11 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 
-const HOLD_DURATION_MS = 3000;
+const HOLD_MS = 3000;
 const TICK_INTERVAL_MS = 50;
+/** How long (ms) the gate stays unlocked before requiring a re-hold. */
+const SESSION_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+const STORAGE_KEY = "routinenest_parent_unlocked_until";
 
 interface ParentGateProps {
   children: React.ReactNode;
@@ -13,9 +16,14 @@ interface ParentGateProps {
  * Hold-to-enter gate that guards parent-only content.
  * The user must press and hold a large button for 3 seconds to unlock.
  * Releasing early resets progress. Works fully offline (no server calls).
+ * The gate stays unlocked for 10 minutes, after which a re-hold is required.
  */
 export default function ParentGate({ children }: ParentGateProps) {
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const until = Number(localStorage.getItem(STORAGE_KEY) ?? 0);
+    return Date.now() < until;
+  });
   const [progress, setProgress] = useState(0); // 0–100
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startRef = useRef<number>(0);
@@ -32,6 +40,30 @@ export default function ParentGate({ children }: ParentGateProps) {
     return () => clearTimer();
   }, [clearTimer]);
 
+  // Expire session when the stored timeout elapses
+  useEffect(() => {
+    if (!unlocked) return;
+    const until = Number(localStorage.getItem(STORAGE_KEY) ?? 0);
+    const remaining = until - Date.now();
+    if (remaining <= 0) {
+      setUnlocked(false);
+      return;
+    }
+    const id = setTimeout(() => setUnlocked(false), remaining);
+    return () => clearTimeout(id);
+  }, [unlocked]);
+
+  // Sync lock state across tabs: if another tab clears or expires the key, lock here too
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key !== STORAGE_KEY) return;
+      const until = Number(e.newValue ?? 0);
+      if (Date.now() >= until) setUnlocked(false);
+    }
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   const handlePointerDown = useCallback(() => {
     if (unlocked) return;
 
@@ -40,11 +72,15 @@ export default function ParentGate({ children }: ParentGateProps) {
 
     timerRef.current = setInterval(() => {
       const elapsed = Date.now() - startRef.current;
-      const pct = Math.min((elapsed / HOLD_DURATION_MS) * 100, 100);
+      const pct = Math.min((elapsed / HOLD_MS) * 100, 100);
       setProgress(pct);
 
       if (pct >= 100) {
         clearTimer();
+        localStorage.setItem(
+          STORAGE_KEY,
+          String(Date.now() + SESSION_TIMEOUT_MS),
+        );
         setUnlocked(true);
       }
     }, TICK_INTERVAL_MS);
@@ -84,7 +120,7 @@ export default function ParentGate({ children }: ParentGateProps) {
         {/* Label */}
         <span className="relative z-10">
           {progress > 0 && progress < 100
-            ? `Hold… ${Math.round((HOLD_DURATION_MS * (1 - progress / 100)) / 1000)}s`
+            ? `Hold… ${Math.round((HOLD_MS * (1 - progress / 100)) / 1000)}s`
             : "Hold to Enter"}
         </span>
       </button>
