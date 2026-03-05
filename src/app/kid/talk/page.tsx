@@ -10,6 +10,9 @@ import type { Card as CardType } from "@/lib/types";
 import { speak } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 import { trackScreen, trackAACCardTapped } from "@/lib/analytics";
+import { KidShell } from "@/components/kid/KidShell";
+import { BigTileButton } from "@/components/kid/BigTileButton";
+import { EmptyState } from "@/components/kid/EmptyState";
 
 export default function TalkPage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -61,17 +64,12 @@ export default function TalkPage() {
   // No profile selected
   if (!profileId) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-7xl" role="img" aria-label="House">
-          🏠
-        </span>
-        <h1 className="text-2xl font-extrabold">
-          Ask a parent to set up RoutineNest
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          A grown-up needs to create your profile first.
-        </p>
-      </div>
+      <EmptyState
+        emoji="🏠"
+        emojiLabel="House"
+        title="Ask a parent to set up RoutineNest"
+        description="A grown-up needs to create your profile first."
+      />
     );
   }
 
@@ -87,15 +85,12 @@ export default function TalkPage() {
   // No AAC cards yet
   if (!cards?.length) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-7xl" role="img" aria-label="Speech bubble">
-          💬
-        </span>
-        <h1 className="text-2xl font-extrabold">No talk cards yet!</h1>
-        <p className="text-muted-foreground text-lg">
-          Ask a parent to add some talk cards.
-        </p>
-      </div>
+      <EmptyState
+        emoji="💬"
+        emojiLabel="Speech bubble"
+        title="No talk cards yet!"
+        description="Ask a parent to add some talk cards."
+      />
     );
   }
 
@@ -107,57 +102,20 @@ export default function TalkPage() {
         : "grid-cols-3";
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-extrabold text-primary">
-        💬 Talk Board
-      </h1>
-
+    <KidShell title="Talk Board" emoji="💬">
       <div className={cn("grid gap-4", gridCols)}>
-        {cards.map((card) => {
-          const isPressed = pressedId === card.id;
-          return (
-            <button
-              key={card.id}
-              type="button"
-              onClick={() => handleTap(card)}
-              className={cn(
-                "min-h-[130px] min-w-[44px] rounded-2xl border-2 p-4",
-                "flex flex-col items-center justify-center gap-3 text-center",
-                "cursor-pointer select-none shadow-sm",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                calmMode
-                  ? ""
-                  : "transition-transform active:scale-95 hover:shadow-md",
-                isPressed
-                  ? "border-primary bg-primary/15 scale-95 shadow-inner"
-                  : "border-border bg-card hover:border-primary/60",
-              )}
-              aria-label={card.label}
-            >
-              {card.image_url ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={card.image_url}
-                  alt=""
-                  className="h-16 w-16 rounded-xl object-cover"
-                  aria-hidden="true"
-                />
-              ) : (
-                <span
-                  className="text-4xl"
-                  role="img"
-                  aria-hidden="true"
-                >
-                  💬
-                </span>
-              )}
-
-              <span className="text-base font-bold leading-tight">
-                {card.label}
-              </span>
-            </button>
-          );
-        })}
+        {cards.map((card) => (
+          <BigTileButton
+            key={card.id}
+            label={card.label}
+            imageUrl={card.image_url}
+            fallbackEmoji="💬"
+            calm={calmMode}
+            pressed={pressedId === card.id}
+            ariaLabel={card.label}
+            onClick={() => handleTap(card)}
+          />
+        ))}
       </div>
 
       {/* ARASAAC attribution */}
@@ -173,6 +131,6 @@ export default function TalkPage() {
         </a>{" "}
         — CC BY-NC-SA 4.0. Non-commercial use only.
       </p>
-    </div>
+    </KidShell>
   );
 }
