@@ -146,152 +146,320 @@ create index if not exists idx_settings_updated_at on public.settings(updated_at
 -- profiles -------------------------------------------------------
 alter table public.profiles enable row level security;
 
-create policy "Users can view own profile"
-  on public.profiles for select
-  using (id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'profiles' and policyname = 'Users can view own profile'
+  ) then
+    create policy "Users can view own profile"
+      on public.profiles for select
+      using (id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can insert own profile"
-  on public.profiles for insert
-  with check (id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'profiles' and policyname = 'Users can insert own profile'
+  ) then
+    create policy "Users can insert own profile"
+      on public.profiles for insert
+      with check (id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can update own profile"
-  on public.profiles for update
-  using (id = auth.uid())
-  with check (id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'profiles' and policyname = 'Users can update own profile'
+  ) then
+    create policy "Users can update own profile"
+      on public.profiles for update
+      using (id = auth.uid())
+      with check (id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can delete own profile"
-  on public.profiles for delete
-  using (id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'profiles' and policyname = 'Users can delete own profile'
+  ) then
+    create policy "Users can delete own profile"
+      on public.profiles for delete
+      using (id = auth.uid());
+  end if;
+end $$;
 
 -- cards ----------------------------------------------------------
 alter table public.cards enable row level security;
 
-create policy "Users can view own cards"
-  on public.cards for select
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'cards' and policyname = 'Users can view own cards'
+  ) then
+    create policy "Users can view own cards"
+      on public.cards for select
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can insert own cards"
-  on public.cards for insert
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'cards' and policyname = 'Users can insert own cards'
+  ) then
+    create policy "Users can insert own cards"
+      on public.cards for insert
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can update own cards"
-  on public.cards for update
-  using (profile_id = auth.uid())
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'cards' and policyname = 'Users can update own cards'
+  ) then
+    create policy "Users can update own cards"
+      on public.cards for update
+      using (profile_id = auth.uid())
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can delete own cards"
-  on public.cards for delete
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'cards' and policyname = 'Users can delete own cards'
+  ) then
+    create policy "Users can delete own cards"
+      on public.cards for delete
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
 -- schedules ------------------------------------------------------
 alter table public.schedules enable row level security;
 
-create policy "Users can view own schedules"
-  on public.schedules for select
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedules' and policyname = 'Users can view own schedules'
+  ) then
+    create policy "Users can view own schedules"
+      on public.schedules for select
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can insert own schedules"
-  on public.schedules for insert
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedules' and policyname = 'Users can insert own schedules'
+  ) then
+    create policy "Users can insert own schedules"
+      on public.schedules for insert
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can update own schedules"
-  on public.schedules for update
-  using (profile_id = auth.uid())
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedules' and policyname = 'Users can update own schedules'
+  ) then
+    create policy "Users can update own schedules"
+      on public.schedules for update
+      using (profile_id = auth.uid())
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can delete own schedules"
-  on public.schedules for delete
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedules' and policyname = 'Users can delete own schedules'
+  ) then
+    create policy "Users can delete own schedules"
+      on public.schedules for delete
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
 -- schedule_items -------------------------------------------------
 alter table public.schedule_items enable row level security;
 
-create policy "Users can view own schedule items"
-  on public.schedule_items for select
-  using (
-    exists (
-      select 1 from public.schedules
-      where schedules.id = schedule_items.schedule_id
-        and schedules.profile_id = auth.uid()
-    )
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedule_items' and policyname = 'Users can view own schedule items'
+  ) then
+    create policy "Users can view own schedule items"
+      on public.schedule_items for select
+      using (
+        exists (
+          select 1 from public.schedules
+          where schedules.id = schedule_items.schedule_id
+            and schedules.profile_id = auth.uid()
+        )
+      );
+  end if;
+end $$;
 
-create policy "Users can insert own schedule items"
-  on public.schedule_items for insert
-  with check (
-    exists (
-      select 1 from public.schedules
-      where schedules.id = schedule_items.schedule_id
-        and schedules.profile_id = auth.uid()
-    )
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedule_items' and policyname = 'Users can insert own schedule items'
+  ) then
+    create policy "Users can insert own schedule items"
+      on public.schedule_items for insert
+      with check (
+        exists (
+          select 1 from public.schedules
+          where schedules.id = schedule_items.schedule_id
+            and schedules.profile_id = auth.uid()
+        )
+      );
+  end if;
+end $$;
 
-create policy "Users can update own schedule items"
-  on public.schedule_items for update
-  using (
-    exists (
-      select 1 from public.schedules
-      where schedules.id = schedule_items.schedule_id
-        and schedules.profile_id = auth.uid()
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.schedules
-      where schedules.id = schedule_items.schedule_id
-        and schedules.profile_id = auth.uid()
-    )
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedule_items' and policyname = 'Users can update own schedule items'
+  ) then
+    create policy "Users can update own schedule items"
+      on public.schedule_items for update
+      using (
+        exists (
+          select 1 from public.schedules
+          where schedules.id = schedule_items.schedule_id
+            and schedules.profile_id = auth.uid()
+        )
+      )
+      with check (
+        exists (
+          select 1 from public.schedules
+          where schedules.id = schedule_items.schedule_id
+            and schedules.profile_id = auth.uid()
+        )
+      );
+  end if;
+end $$;
 
-create policy "Users can delete own schedule items"
-  on public.schedule_items for delete
-  using (
-    exists (
-      select 1 from public.schedules
-      where schedules.id = schedule_items.schedule_id
-        and schedules.profile_id = auth.uid()
-    )
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'schedule_items' and policyname = 'Users can delete own schedule items'
+  ) then
+    create policy "Users can delete own schedule items"
+      on public.schedule_items for delete
+      using (
+        exists (
+          select 1 from public.schedules
+          where schedules.id = schedule_items.schedule_id
+            and schedules.profile_id = auth.uid()
+        )
+      );
+  end if;
+end $$;
 
 -- rewards --------------------------------------------------------
 alter table public.rewards enable row level security;
 
-create policy "Users can view own rewards"
-  on public.rewards for select
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'rewards' and policyname = 'Users can view own rewards'
+  ) then
+    create policy "Users can view own rewards"
+      on public.rewards for select
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can insert own rewards"
-  on public.rewards for insert
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'rewards' and policyname = 'Users can insert own rewards'
+  ) then
+    create policy "Users can insert own rewards"
+      on public.rewards for insert
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can update own rewards"
-  on public.rewards for update
-  using (profile_id = auth.uid())
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'rewards' and policyname = 'Users can update own rewards'
+  ) then
+    create policy "Users can update own rewards"
+      on public.rewards for update
+      using (profile_id = auth.uid())
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can delete own rewards"
-  on public.rewards for delete
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'rewards' and policyname = 'Users can delete own rewards'
+  ) then
+    create policy "Users can delete own rewards"
+      on public.rewards for delete
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
 -- settings -------------------------------------------------------
 alter table public.settings enable row level security;
 
-create policy "Users can view own settings"
-  on public.settings for select
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'settings' and policyname = 'Users can view own settings'
+  ) then
+    create policy "Users can view own settings"
+      on public.settings for select
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can insert own settings"
-  on public.settings for insert
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'settings' and policyname = 'Users can insert own settings'
+  ) then
+    create policy "Users can insert own settings"
+      on public.settings for insert
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can update own settings"
-  on public.settings for update
-  using (profile_id = auth.uid())
-  with check (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'settings' and policyname = 'Users can update own settings'
+  ) then
+    create policy "Users can update own settings"
+      on public.settings for update
+      using (profile_id = auth.uid())
+      with check (profile_id = auth.uid());
+  end if;
+end $$;
 
-create policy "Users can delete own settings"
-  on public.settings for delete
-  using (profile_id = auth.uid());
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public' and tablename = 'settings' and policyname = 'Users can delete own settings'
+  ) then
+    create policy "Users can delete own settings"
+      on public.settings for delete
+      using (profile_id = auth.uid());
+  end if;
+end $$;
 
 -- =============================================================
 -- 5. Storage bucket: card-icons
@@ -303,31 +471,59 @@ insert into storage.buckets (id, name, public)
 values ('card-icons', 'card-icons', true)
 on conflict (id) do nothing;
 
--- Public SELECT — anyone can read icons (they appear in kid screens)
-create policy "Public read card-icons"
-  on storage.objects for select
-  using (bucket_id = 'card-icons');
+-- Public SELECT — image URLs are served without signed auth tokens
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects' and policyname = 'Public read card-icons'
+  ) then
+    create policy "Public read card-icons"
+      on storage.objects for select
+      using (bucket_id = 'card-icons');
+  end if;
+end $$;
 
 -- Authenticated INSERT — any logged-in user may upload
-create policy "Authenticated insert card-icons"
-  on storage.objects for insert
-  to authenticated
-  with check (bucket_id = 'card-icons');
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects' and policyname = 'Authenticated insert card-icons'
+  ) then
+    create policy "Authenticated insert card-icons"
+      on storage.objects for insert
+      to authenticated
+      with check (bucket_id = 'card-icons');
+  end if;
+end $$;
 
 -- Owner UPDATE — user may overwrite their own files
-create policy "Owner update card-icons"
-  on storage.objects for update
-  to authenticated
-  using (
-    bucket_id = 'card-icons'
-    and (storage.foldername(name))[1] = auth.uid()::text
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects' and policyname = 'Owner update card-icons'
+  ) then
+    create policy "Owner update card-icons"
+      on storage.objects for update
+      to authenticated
+      using (
+        bucket_id = 'card-icons'
+        and (storage.foldername(name))[1] = auth.uid()::text
+      );
+  end if;
+end $$;
 
 -- Owner DELETE — user may delete their own files
-create policy "Owner delete card-icons"
-  on storage.objects for delete
-  to authenticated
-  using (
-    bucket_id = 'card-icons'
-    and (storage.foldername(name))[1] = auth.uid()::text
-  );
+do $$ begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects' and policyname = 'Owner delete card-icons'
+  ) then
+    create policy "Owner delete card-icons"
+      on storage.objects for delete
+      to authenticated
+      using (
+        bucket_id = 'card-icons'
+        and (storage.foldername(name))[1] = auth.uid()::text
+      );
+  end if;
+end $$;

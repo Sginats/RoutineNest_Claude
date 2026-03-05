@@ -70,7 +70,7 @@ The `supabase/schema.sql` migration creates this bucket automatically. If you ap
 
 Bucket settings:
 - **Name:** `card-icons`
-- **Public:** yes (icon images are displayed without authentication on kid screens)
+- **Public:** yes (image URLs are served without signed authentication tokens; the app screens themselves require an authenticated session)
 - **File path format:** `{userId}/{timestamp}-{random}.{ext}`
 
 ---
