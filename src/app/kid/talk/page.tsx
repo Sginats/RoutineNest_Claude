@@ -159,6 +159,20 @@ export default function TalkPage() {
           );
         })}
       </div>
+
+      {/* ARASAAC attribution */}
+      <p className="text-xs text-muted-foreground text-center pt-4">
+        Pictograms by{" "}
+        <a
+          href="https://arasaac.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          ARASAAC
+        </a>{" "}
+        — CC BY-NC-SA 4.0. Non-commercial use only.
+      </p>
     </div>
   );
 }
