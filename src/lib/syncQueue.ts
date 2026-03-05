@@ -102,6 +102,7 @@ export async function replayQueue(): Promise<number> {
     for (const m of queue) {
       // Drop mutations that exceeded the retry limit
       if (m.retries >= MAX_RETRIES) {
+        console.warn("[syncQueue] Dropping mutation after max retries", m);
         await remove(m.id);
         continue;
       }
