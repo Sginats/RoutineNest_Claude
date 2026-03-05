@@ -10,6 +10,7 @@ import {
   getScheduleItems,
   getCards,
   updateScheduleItemDone,
+  addRewardIfNew,
 } from "@/lib/db";
 import type { ScheduleItem, Card as CardType } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -51,8 +52,21 @@ export default function SchedulePage() {
   // Optimistic mutation for toggling done state
   const queryClient = useQueryClient();
   const { mutate: toggleDone } = useMutation({
-    mutationFn: ({ itemId, done }: { itemId: string; done: boolean }) =>
-      updateScheduleItemDone(itemId, done),
+    mutationFn: async ({
+      itemId,
+      done,
+      awardStar,
+    }: {
+      itemId: string;
+      done: boolean;
+      awardStar?: boolean;
+    }) => {
+      const result = await updateScheduleItemDone(itemId, done);
+      if (awardStar && profileId) {
+        await addRewardIfNew(profileId, 1, `schedule_item:${itemId}`);
+      }
+      return result;
+    },
     onMutate: async ({ itemId, done }) => {
       await queryClient.cancelQueries({
         queryKey: ["scheduleItems", scheduleId],
@@ -81,6 +95,9 @@ export default function SchedulePage() {
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["scheduleItems", scheduleId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["rewards", profileId],
       });
     },
   });
@@ -160,7 +177,11 @@ export default function SchedulePage() {
               key={item.id}
               type="button"
               onClick={() =>
-                toggleDone({ itemId: item.id, done: !item.is_complete })
+                toggleDone({
+                  itemId: item.id,
+                  done: !item.is_complete,
+                  awardStar: !item.is_complete,
+                })
               }
               className={cn(
                 "min-h-[120px] min-w-[44px] rounded-2xl border-2 p-4",
