@@ -82,6 +82,7 @@ export async function getCards(
     .select("*")
     .eq("profile_id", profileId)
     .is("deleted_at", null)
+    .order("position", { ascending: true })
     .order("created_at", { ascending: true });
 
   if (category) {
@@ -103,6 +104,14 @@ export async function upsertCard(card: CardInsert): Promise<Card> {
   return data as Card;
 }
 
+export async function softDeleteCard(cardId: string): Promise<void> {
+  const { error } = await client()
+    .from("cards")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", cardId);
+  if (error) throw error;
+}
+
 // ---------------------------------------------------------------------------
 // Schedules
 // ---------------------------------------------------------------------------
@@ -115,6 +124,19 @@ export async function getSchedules(profileId: string): Promise<Schedule[]> {
     .order("created_at", { ascending: true });
   if (error) throw error;
   return data as Schedule[];
+}
+
+export async function createSchedule(
+  profileId: string,
+  title: string,
+): Promise<Schedule> {
+  const { data, error } = await client()
+    .from("schedules")
+    .insert({ profile_id: profileId, title })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as Schedule;
 }
 
 // ---------------------------------------------------------------------------
@@ -142,6 +164,14 @@ export async function upsertScheduleItem(
     .single();
   if (error) throw error;
   return data as ScheduleItem;
+}
+
+export async function deleteScheduleItem(itemId: string): Promise<void> {
+  const { error } = await client()
+    .from("schedule_items")
+    .delete()
+    .eq("id", itemId);
+  if (error) throw error;
 }
 
 export async function updateScheduleItemDone(

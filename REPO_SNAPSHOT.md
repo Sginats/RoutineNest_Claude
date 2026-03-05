@@ -4,7 +4,7 @@ Last updated: 2026-03-05
 
 ## Current State
 
-This repo has completed STEP 12 — Kid Schedule MVP with read + tap-done functionality.
+This repo has completed STEP 15 — Parent MVP editors (Cards manager + Schedule builder).
 
 ## Directory Structure
 
@@ -76,7 +76,8 @@ This repo has completed STEP 12 — Kid Schedule MVP with read + tap-done functi
 - [x] STEP 9 — Settings page (calm mode, grid size, sound)
 - [x] STEP 10 — Parent dashboard (profiles, selection)
 - [x] STEP 12 — Kid Schedule MVP (read + tap done)
+- [x] STEP 15 — Parent MVP editors (Cards manager + Schedule builder)
 
 ## Next Steps
 
-- [ ] STEP 13 — (TBD)
+- [ ] STEP 16 — (TBD)
