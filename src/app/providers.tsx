@@ -15,7 +15,9 @@ function SyncManager() {
 
   useEffect(() => {
     // Replay any leftover mutations from previous sessions
-    replayQueue();
+    replayQueue().catch((err) =>
+      console.error("[SyncManager] replay on mount failed:", err),
+    );
 
     function handleOnline() {
       replayQueue().then((n) => {

@@ -152,7 +152,10 @@ async function replayOne(m: QueuedMutation): Promise<void> {
       .eq(m.matchColumn, m.matchValue)
       .maybeSingle();
 
-    if (row?.updated_at && row.updated_at > m.timestamp) {
+    if (
+      row?.updated_at &&
+      new Date(row.updated_at) > new Date(m.timestamp)
+    ) {
       // Server data is newer — discard this offline mutation
       return;
     }

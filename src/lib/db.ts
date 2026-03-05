@@ -388,9 +388,9 @@ export async function updateScheduleItemDone(
         matchColumn: "id",
         matchValue: itemId,
       },
+      // Optimistic placeholder — the real UI state is set by onMutate in the
+      // calling mutation hook, so these empty fields are never rendered.
       fallback: {
-        id: itemId,
-        schedule_id: "",
         card_id: "",
         position: 0,
         is_complete: done,
