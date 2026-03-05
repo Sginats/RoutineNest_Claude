@@ -17,7 +17,7 @@ import type {
 // Internal helper — guarantees a live client or throws
 // ---------------------------------------------------------------------------
 function client() {
-  if (!supabase) throw new Error("Supabase client is not initialised");
+  if (!supabase) throw new Error("Supabase client is not initialized");
   return supabase;
 }
 
