@@ -1,6 +1,6 @@
 # RoutineNest
 
-A PWA / Capacitor-based routine helper app for children with special needs. Built with Next.js 15, Supabase, and Tailwind CSS.
+A PWA / Capacitor-based routine helper app for children who benefit from visual schedules and AAC communication support. Built with Next.js 15, Supabase, and Tailwind CSS.
 
 ## Prerequisites
 
@@ -72,6 +72,19 @@ Bucket settings:
 - **Name:** `card-icons`
 - **Public:** yes (image URLs are served without signed authentication tokens; the app screens themselves require an authenticated session)
 - **File path format:** `{userId}/{timestamp}-{random}.{ext}`
+
+The `{userId}` prefix is intentional: Supabase RLS storage policies can match
+`auth.uid()::text` against the first path segment so that only the owning user
+can upload or delete their own icons.
+
+---
+
+## Authentication
+
+Kid Mode pages (`/kid/*`) require the parent to be logged in on the device.
+
+This ensures all routine data is protected by Supabase Row-Level Security (RLS).
+The `ParentGate` component prevents children from accessing parent settings.
 
 ---
 
