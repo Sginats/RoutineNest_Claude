@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
 import { NavBar } from "@/components/NavBar";
+import { OfflineBanner } from "@/components/OfflineBanner";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const viewport: Viewport = {
   themeColor: "#228b86",
@@ -36,8 +38,9 @@ export default function RootLayout({
       <body className="antialiased">
         <Providers>
           <NavBar />
+          <OfflineBanner />
           <main className="mx-auto max-w-screen-xl px-4 py-6">
-            {children}
+            <ErrorBoundary>{children}</ErrorBoundary>
           </main>
         </Providers>
       </body>

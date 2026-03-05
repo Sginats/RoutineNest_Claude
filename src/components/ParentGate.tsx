@@ -46,8 +46,8 @@ export default function ParentGate({ children }: ParentGateProps) {
     const until = Number(localStorage.getItem(STORAGE_KEY) ?? 0);
     const remaining = until - Date.now();
     if (remaining <= 0) {
-      setUnlocked(false);
-      return;
+      const t = setTimeout(() => setUnlocked(false), 0);
+      return () => clearTimeout(t);
     }
     const id = setTimeout(() => setUnlocked(false), remaining);
     return () => clearTimeout(id);
