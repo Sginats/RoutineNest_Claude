@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRequireAuth } from "@/hooks/useAuth";
 import ParentGate from "@/components/ParentGate";
+import IconPicker from "@/components/IconPicker";
 import {
   getProfiles,
   createProfile,
@@ -41,7 +42,13 @@ import type {
 // ============================================================================
 // Cards Editor
 // ============================================================================
-function CardsEditor({ profileId }: { profileId: string }) {
+function CardsEditor({
+  profileId,
+  userId,
+}: {
+  profileId: string;
+  userId: string;
+}) {
   const queryClient = useQueryClient();
 
   const { data: cards = [], isLoading } = useQuery<CardType[]>({
@@ -300,13 +307,11 @@ function CardsEditor({ profileId }: { profileId: string }) {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="card-image">Image URL (optional)</Label>
-            <Input
-              id="card-image"
-              placeholder="https://example.com/image.png"
+            <Label>Icon (optional)</Label>
+            <IconPicker
               value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              maxLength={500}
+              onChange={(url) => setImageUrl(url)}
+              userId={userId}
             />
           </div>
 
@@ -815,7 +820,7 @@ export default function ParentPage() {
         {activeProfile && (
           <>
             {/* Cards Editor */}
-            <CardsEditor profileId={activeProfile.id} />
+            <CardsEditor profileId={activeProfile.id} userId={user?.id ?? ""} />
 
             {/* Schedule Builder */}
             <ScheduleBuilder profileId={activeProfile.id} />
