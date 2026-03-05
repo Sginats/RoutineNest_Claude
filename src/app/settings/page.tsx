@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,8 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useRequireAuth } from "@/hooks/useAuth";
 
 export default function SettingsPage() {
+  const { user, loading } = useRequireAuth();
+
+  if (loading || !user) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <p className="text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-3xl font-bold">Settings</h1>

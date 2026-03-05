@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,35 +9,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { supabase } from "@/lib/supabaseClient";
+import { useRequireAuth } from "@/hooks/useAuth";
 
 export default function ParentPage() {
-  const [sessionResult, setSessionResult] = useState<string | null>(null);
+  const { user, loading, logout } = useRequireAuth();
+  const router = useRouter();
 
-  async function handleCheckSession() {
-    if (!supabase) {
-      setSessionResult(
-        "Supabase is not configured. Copy .env.local.example to .env.local and add your project credentials."
-      );
-      return;
-    }
-    try {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        setSessionResult(`Error: ${error.message}`);
-      } else {
-        setSessionResult(JSON.stringify(data, null, 2));
-      }
-    } catch (err) {
-      setSessionResult(
-        `Unexpected error: ${err instanceof Error ? err.message : String(err)}`
-      );
-    }
+  if (loading || !user) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <p className="text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
+
+  async function handleLogout() {
+    await logout();
+    router.replace("/login");
   }
 
   return (
     <div className="flex flex-col gap-8">
-      <h1 className="text-3xl font-bold">Parent Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Parent Dashboard</h1>
+        <Button variant="outline" onClick={handleLogout}>
+          Log Out
+        </Button>
+      </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Card>
@@ -96,26 +94,6 @@ export default function ParentPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Supabase session check */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Supabase Connection</CardTitle>
-          <CardDescription>
-            Check your current Supabase auth session
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <Button size="lg" variant="outline" onClick={handleCheckSession}>
-            Check Supabase Session
-          </Button>
-          {sessionResult !== null && (
-            <pre className="max-h-64 overflow-auto rounded-md bg-muted p-4 text-sm">
-              {sessionResult}
-            </pre>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }
