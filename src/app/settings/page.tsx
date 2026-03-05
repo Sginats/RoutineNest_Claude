@@ -46,7 +46,7 @@ export default function SettingsPage() {
   if (authLoading || !user) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading…</p>
+        <p className="text-lg text-muted-foreground">Loading…</p>
       </div>
     );
   }
@@ -54,12 +54,12 @@ export default function SettingsPage() {
   if (!profileId) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold">Settings</h1>
+        <h1 className="text-3xl font-extrabold text-primary">⚙️ Settings</h1>
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
               No profile selected. Please go to the{" "}
-              <a href="/parent" className="text-primary underline">
+              <a href="/parent" className="text-primary font-semibold underline">
                 Parent Dashboard
               </a>{" "}
               and select a child profile first.
@@ -73,7 +73,7 @@ export default function SettingsPage() {
   if (settingsLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading settings…</p>
+        <p className="text-lg text-muted-foreground">Loading settings…</p>
       </div>
     );
   }
@@ -86,23 +86,27 @@ export default function SettingsPage() {
   return (
     <ParentGate>
       <div className="flex flex-col gap-8">
-        <h1 className="text-3xl font-bold">Settings</h1>
+        <h1 className="text-3xl font-extrabold text-primary">⚙️ Settings</h1>
 
-        {/* Display settings */}
+        {/* Experience Mode */}
         <Card>
           <CardHeader>
-            <CardTitle>Display</CardTitle>
+            <CardTitle>Experience Mode</CardTitle>
             <CardDescription>
-              Customize how the app looks and feels
+              Choose between a playful or calm visual experience
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-6">
-            {/* Calm Mode */}
+            {/* Playful vs Calm toggle */}
             <div className="flex items-center justify-between">
               <Label htmlFor="calm-mode" className="flex flex-col gap-1">
-                <span className="text-base font-medium">Calm Mode</span>
+                <span className="text-base font-semibold">
+                  {calmMode ? "🌙 Calm Mode" : "🎨 Playful Mode"}
+                </span>
                 <span className="text-sm text-muted-foreground font-normal">
-                  Reduce animations and visual stimulation
+                  {calmMode
+                    ? "Soft colors, minimal animations — less visual stimulation"
+                    : "Warm colors, gentle animations — engaging and fun"}
                 </span>
               </Label>
               <Switch
@@ -111,14 +115,14 @@ export default function SettingsPage() {
                 onCheckedChange={(checked) =>
                   updateSettings({ calm_mode: checked })
                 }
-                aria-label="Toggle calm mode"
+                aria-label="Toggle between playful and calm mode"
               />
             </div>
 
             {/* Grid Size */}
             <div className="flex flex-col gap-2">
               <Label className="flex flex-col gap-1">
-                <span className="text-base font-medium">Grid Size</span>
+                <span className="text-base font-semibold">Grid Size</span>
                 <span className="text-sm text-muted-foreground font-normal">
                   Number of columns in card grids
                 </span>
@@ -129,7 +133,7 @@ export default function SettingsPage() {
                     key={size}
                     variant={gridSize === size ? "default" : "outline"}
                     size="lg"
-                    className="flex-1"
+                    className="flex-1 rounded-xl text-base font-bold"
                     onClick={() => updateSettings({ grid_size: size })}
                     aria-pressed={gridSize === size}
                     aria-label={`${size} columns`}
@@ -153,7 +157,9 @@ export default function SettingsPage() {
           <CardContent>
             <div className="flex items-center justify-between">
               <Label htmlFor="sound-enabled" className="flex flex-col gap-1">
-                <span className="text-base font-medium">Sound Enabled</span>
+                <span className="text-base font-semibold">
+                  {soundEnabled ? "🔊 Sound On" : "🔇 Sound Off"}
+                </span>
                 <span className="text-sm text-muted-foreground font-normal">
                   Play sounds and enable text-to-speech
                 </span>
@@ -184,8 +190,8 @@ export default function SettingsPage() {
                 htmlFor="analytics-enabled"
                 className="flex flex-col gap-1"
               >
-                <span className="text-base font-medium">
-                  Analytics Enabled
+                <span className="text-base font-semibold">
+                  Analytics
                 </span>
                 <span className="text-sm text-muted-foreground font-normal">
                   Send anonymous usage data to help improve the app. No

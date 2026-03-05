@@ -123,7 +123,7 @@ export default function SchedulePage() {
   if (authLoading || !user) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading…</p>
+        <p className="text-lg text-muted-foreground">Loading…</p>
       </div>
     );
   }
@@ -132,10 +132,10 @@ export default function SchedulePage() {
   if (!profileId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-6xl" role="img" aria-label="House">
+        <span className="text-7xl" role="img" aria-label="House">
           🏠
         </span>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-extrabold">
           Ask a parent to set up RoutineNest
         </h1>
         <p className="text-muted-foreground text-lg">
@@ -149,7 +149,7 @@ export default function SchedulePage() {
   if (schedulesLoading || itemsLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading schedule…</p>
+        <p className="text-lg text-muted-foreground">Loading schedule…</p>
       </div>
     );
   }
@@ -158,10 +158,10 @@ export default function SchedulePage() {
   if (!schedules?.length || !items?.length) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-6xl" role="img" aria-label="Calendar">
-          📅
+        <span className="text-7xl" role="img" aria-label="Calendar">
+          📋
         </span>
-        <h1 className="text-2xl font-bold">No tasks yet!</h1>
+        <h1 className="text-2xl font-extrabold">No tasks yet!</h1>
         <p className="text-muted-foreground text-lg">
           Ask a parent to add some tasks to your schedule.
         </p>
@@ -176,9 +176,34 @@ export default function SchedulePage() {
         ? "grid-cols-4"
         : "grid-cols-3";
 
+  const doneCount = items.filter((i) => i.is_complete).length;
+  const totalCount = items.length;
+
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold">{schedules[0].title}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-extrabold text-primary">
+          📋 {schedules[0].title}
+        </h1>
+        <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+          {doneCount}/{totalCount} done
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div
+        className="h-3 w-full overflow-hidden rounded-full bg-muted"
+        role="progressbar"
+        aria-valuenow={doneCount}
+        aria-valuemin={0}
+        aria-valuemax={totalCount}
+        aria-label={`${doneCount} of ${totalCount} tasks complete`}
+      >
+        <div
+          className="h-full rounded-full bg-success transition-all duration-300"
+          style={{ width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%` }}
+        />
+      </div>
 
       <div className={cn("grid gap-4", gridCols)}>
         {items.map((item) => {
@@ -195,14 +220,16 @@ export default function SchedulePage() {
                 })
               }
               className={cn(
-                "min-h-[120px] min-w-[44px] rounded-2xl border-2 p-4",
+                "min-h-[130px] min-w-[44px] rounded-2xl border-2 p-4",
                 "flex flex-col items-center justify-center gap-3 text-center",
-                "cursor-pointer select-none",
+                "cursor-pointer select-none shadow-sm",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                calmMode ? "" : "transition-transform active:scale-95",
+                calmMode
+                  ? ""
+                  : "transition-transform active:scale-95 hover:shadow-md",
                 item.is_complete
-                  ? "border-green-500 bg-green-50 dark:bg-green-950"
-                  : "border-border bg-card hover:border-primary",
+                  ? "border-success bg-success/10"
+                  : "border-border bg-card hover:border-primary/60",
               )}
               aria-pressed={item.is_complete}
               aria-label={`${card?.label ?? "Task"}, ${item.is_complete ? "done" : "not done"}`}
@@ -212,7 +239,7 @@ export default function SchedulePage() {
                 <img
                   src={card.image_url}
                   alt=""
-                  className="h-16 w-16 rounded-lg object-cover"
+                  className="h-16 w-16 rounded-xl object-cover"
                   aria-hidden="true"
                 />
               ) : (
@@ -225,13 +252,13 @@ export default function SchedulePage() {
                 </span>
               )}
 
-              <span className="text-base font-semibold leading-tight">
+              <span className="text-base font-bold leading-tight">
                 {card?.label ?? "Task"}
               </span>
 
               {item.is_complete && (
-                <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                  Done!
+                <span className="text-sm font-bold text-success">
+                  Done! ⭐
                 </span>
               )}
             </button>

@@ -34,7 +34,7 @@ export default function LoginPage() {
   if (authLoading || user) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading…</p>
+        <p className="text-lg text-muted-foreground">Loading…</p>
       </div>
     );
   }
@@ -65,10 +65,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[50vh] items-center justify-center">
+    <div className="flex min-h-[50vh] flex-col items-center justify-center gap-6">
+      <span className="text-5xl" role="img" aria-label="Lock">
+        🔒
+      </span>
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Parent Login</CardTitle>
+          <CardTitle className="text-xl font-extrabold">Parent Login</CardTitle>
           <CardDescription>
             Sign in with your email and password
           </CardDescription>
@@ -102,12 +105,12 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-destructive" role="alert">
+              <p className="text-sm text-destructive font-medium" role="alert">
                 {error}
               </p>
             )}
 
-            <Button type="submit" size="lg" disabled={loading}>
+            <Button type="submit" size="lg" className="rounded-xl text-base font-bold" disabled={loading}>
               {loading ? "Signing in…" : "Sign In"}
             </Button>
           </form>
