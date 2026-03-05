@@ -7,7 +7,7 @@ import { getActiveProfileId } from "@/lib/profileStore";
 import { useSettings } from "@/lib/settingsHooks";
 import { getCards } from "@/lib/db";
 import type { Card as CardType } from "@/lib/types";
-import { speak } from "@/lib/speak";
+import { speak } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 
 export default function TalkPage() {
@@ -27,10 +27,12 @@ export default function TalkPage() {
   // Derive settings (defaults when no row exists)
   const calmMode = settings?.calm_mode ?? false;
   const gridSize = settings?.grid_size ?? 3;
+  const soundEnabled = settings?.sound_enabled ?? true;
 
   function handleTap(card: CardType) {
     setPressedId(card.id);
-    speak(card.label);
+    const text = card.tts_text?.trim() || card.label;
+    speak(text, soundEnabled);
     // Clear pressed state after a short delay
     setTimeout(() => setPressedId(null), 200);
   }
