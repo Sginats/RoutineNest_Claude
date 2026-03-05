@@ -173,7 +173,7 @@ export default function SchedulePage() {
                   : "border-border bg-card hover:border-primary",
               )}
               aria-pressed={item.is_complete}
-              aria-label={`${card?.label ?? "Task"} — ${item.is_complete ? "done" : "not done"}`}
+              aria-label={`${card?.label ?? "Task"}, ${item.is_complete ? "done" : "not done"}`}
             >
               {card?.image_url ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
