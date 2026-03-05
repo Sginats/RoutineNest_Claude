@@ -113,6 +113,7 @@ export default function LoginPage() {
               className="flex-1 rounded-xl font-bold"
               role="tab"
               aria-selected={mode === "sign-in"}
+              aria-controls="auth-form"
               onClick={() => { setMode("sign-in"); setError(null); setSuccess(null); }}
             >
               Sign In
@@ -124,13 +125,14 @@ export default function LoginPage() {
               className="flex-1 rounded-xl font-bold"
               role="tab"
               aria-selected={mode === "sign-up"}
+              aria-controls="auth-form"
               onClick={() => { setMode("sign-up"); setError(null); setSuccess(null); }}
             >
               Create Account
             </Button>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form id="auth-form" onSubmit={handleSubmit} className="flex flex-col gap-4" role="tabpanel">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
