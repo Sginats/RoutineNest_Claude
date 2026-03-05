@@ -7,6 +7,8 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
+  /* Static export for Capacitor native shells */
+  output: "export",
   /* Allow Turbopack dev alongside webpack-based PWA build */
   turbopack: {},
 };
