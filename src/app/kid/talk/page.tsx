@@ -44,7 +44,7 @@ export default function TalkPage() {
     // Track category only — never label or tts_text
     trackAACCardTapped(card.category);
     // Clear pressed state after a short delay
-    setTimeout(() => setPressedId(null), 200);
+    setTimeout(() => setPressedId(null), 300);
   }
 
   // --- Render states ---
@@ -53,7 +53,7 @@ export default function TalkPage() {
   if (authLoading || !user) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading…</p>
+        <p className="text-lg text-muted-foreground">Loading…</p>
       </div>
     );
   }
@@ -62,10 +62,10 @@ export default function TalkPage() {
   if (!profileId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-6xl" role="img" aria-label="House">
+        <span className="text-7xl" role="img" aria-label="House">
           🏠
         </span>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-extrabold">
           Ask a parent to set up RoutineNest
         </h1>
         <p className="text-muted-foreground text-lg">
@@ -79,7 +79,7 @@ export default function TalkPage() {
   if (cardsLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-muted-foreground">Loading talk board…</p>
+        <p className="text-lg text-muted-foreground">Loading talk board…</p>
       </div>
     );
   }
@@ -88,10 +88,10 @@ export default function TalkPage() {
   if (!cards?.length) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-6xl" role="img" aria-label="Speech bubble">
+        <span className="text-7xl" role="img" aria-label="Speech bubble">
           💬
         </span>
-        <h1 className="text-2xl font-bold">No talk cards yet!</h1>
+        <h1 className="text-2xl font-extrabold">No talk cards yet!</h1>
         <p className="text-muted-foreground text-lg">
           Ask a parent to add some talk cards.
         </p>
@@ -108,7 +108,9 @@ export default function TalkPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold">Talk Board</h1>
+      <h1 className="text-3xl font-extrabold text-primary">
+        💬 Talk Board
+      </h1>
 
       <div className={cn("grid gap-4", gridCols)}>
         {cards.map((card) => {
@@ -119,14 +121,16 @@ export default function TalkPage() {
               type="button"
               onClick={() => handleTap(card)}
               className={cn(
-                "min-h-[120px] min-w-[44px] rounded-2xl border-2 p-4",
+                "min-h-[130px] min-w-[44px] rounded-2xl border-3 p-4",
                 "flex flex-col items-center justify-center gap-3 text-center",
-                "cursor-pointer select-none",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                calmMode ? "" : "transition-transform active:scale-95",
+                "cursor-pointer select-none shadow-sm",
+                "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-offset-2",
+                calmMode
+                  ? ""
+                  : "transition-transform active:scale-95 hover:shadow-md",
                 isPressed
-                  ? "border-primary bg-primary/10"
-                  : "border-border bg-card hover:border-primary",
+                  ? "border-primary bg-primary/15 scale-95 shadow-inner"
+                  : "border-border bg-card hover:border-primary/60",
               )}
               aria-label={card.label}
             >
@@ -135,7 +139,7 @@ export default function TalkPage() {
                 <img
                   src={card.image_url}
                   alt=""
-                  className="h-16 w-16 rounded-lg object-cover"
+                  className="h-16 w-16 rounded-xl object-cover"
                   aria-hidden="true"
                 />
               ) : (
@@ -148,7 +152,7 @@ export default function TalkPage() {
                 </span>
               )}
 
-              <span className="text-base font-semibold leading-tight">
+              <span className="text-base font-bold leading-tight">
                 {card.label}
               </span>
             </button>

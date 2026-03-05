@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
+import { NavBar } from "@/components/NavBar";
 
 export const viewport: Viewport = {
   themeColor: "#228b86",
@@ -24,15 +25,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Nunito — rounded, kid-friendly, highly readable */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="antialiased">
         <Providers>
-          <header className="sticky top-0 z-50 border-b bg-background">
-            <div className="mx-auto flex h-14 max-w-screen-xl items-center px-4">
-              <span className="text-lg font-bold tracking-tight">
-                RoutineNest
-              </span>
-            </div>
-          </header>
+          <NavBar />
           <main className="mx-auto max-w-screen-xl px-4 py-6">
             {children}
           </main>
