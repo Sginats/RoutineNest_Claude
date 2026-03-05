@@ -1,14 +1,11 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import "@/lib/env";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/env";
 
 /**
  * Browser-safe Supabase client.
- * Returns `null` when env vars are missing so the app can still render.
+ * env.ts throws early if values are missing.
  */
-export const supabase: SupabaseClient | null =
-  supabaseUrl && supabaseAnonKey
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+export const supabase: SupabaseClient = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);

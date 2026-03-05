@@ -1,20 +1,22 @@
 /**
- * Validates required environment variables at module load time.
- * Import this module once (e.g. from supabaseClient.ts) so the check
- * runs as early as possible and produces a clear error instead of a
- * silent misconfiguration.
+ * Public env values used in the client bundle.
+ * Must use direct property access so Next can inline them.
  */
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-const REQUIRED_ENV_VARS = [
-  "NEXT_PUBLIC_SUPABASE_URL",
-  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-] as const;
+export const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-for (const key of REQUIRED_ENV_VARS) {
-  if (!process.env[key]) {
-    throw new Error(
-      `Missing required environment variable: ${key}. ` +
-        `Copy .env.local.example to .env.local and fill in your Supabase project values.`,
-    );
-  }
+if (!SUPABASE_URL) {
+  throw new Error(
+    "Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL. " +
+      "Copy .env.local.example to .env.local and fill in your Supabase project values."
+  );
+}
+
+if (!SUPABASE_ANON_KEY) {
+  throw new Error(
+    "Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY. " +
+      "Copy .env.local.example to .env.local and fill in your Supabase project values."
+  );
 }
