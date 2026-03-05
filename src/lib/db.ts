@@ -1,7 +1,15 @@
 // RoutineNest — Typed Supabase helpers
 // Uses the browser-safe client from supabaseClient.ts
+// Write helpers are offline-aware: if the network is down, mutations are
+// enqueued to the persistent sync queue and an optimistic result is returned.
 
 import { supabase } from "./supabaseClient";
+import {
+  enqueue,
+  isOnline,
+  isNetworkError,
+  type QueuedMutation,
+} from "./syncQueue";
 import type {
   Profile,
   Card,
@@ -20,6 +28,48 @@ import type {
 function client() {
   if (!supabase) throw new Error("Supabase client is not initialized");
   return supabase;
+}
+
+// ---------------------------------------------------------------------------
+// Offline helper — try remote call, fall back to queue + optimistic value
+// ---------------------------------------------------------------------------
+function generateUUID(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
+/**
+ * Try the remote Supabase call. If the browser is offline (or we hit a
+ * network error), enqueue the mutation and return the provided fallback
+ * value so the UI can update optimistically.
+ */
+async function withOfflineQueue<T>(
+  remoteFn: () => Promise<T>,
+  offlineDef: () => {
+    mutation: Omit<QueuedMutation, "id" | "retries">;
+    fallback: T;
+  },
+): Promise<T> {
+  if (!isOnline()) {
+    const { mutation, fallback } = offlineDef();
+    await enqueue(mutation);
+    return fallback;
+  }
+  try {
+    return await remoteFn();
+  } catch (err) {
+    if (isNetworkError(err) || !isOnline()) {
+      const { mutation, fallback } = offlineDef();
+      await enqueue(mutation);
+      return fallback;
+    }
+    throw err;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -61,13 +111,43 @@ export async function upsertSettings(
   profileId: string,
   patch: SettingsPatch,
 ): Promise<Settings> {
-  const { data, error } = await client()
-    .from("settings")
-    .upsert({ profile_id: profileId, ...patch }, { onConflict: "profile_id" })
-    .select()
-    .single();
-  if (error) throw error;
-  return data as Settings;
+  const now = new Date().toISOString();
+  const payload = { profile_id: profileId, ...patch };
+
+  return withOfflineQueue(
+    async () => {
+      const { data, error } = await client()
+        .from("settings")
+        .upsert(payload, { onConflict: "profile_id" })
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Settings;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "settings",
+        operation: "upsert" as const,
+        payload: payload as unknown as Record<string, unknown>,
+        onConflict: "profile_id",
+        matchColumn: "profile_id",
+        matchValue: profileId,
+      },
+      fallback: {
+        id: "",
+        profile_id: profileId,
+        calm_mode: false,
+        big_button_mode: false,
+        parent_lock_enabled: true,
+        grid_size: 3,
+        sound_enabled: true,
+        created_at: now,
+        updated_at: now,
+        ...patch,
+      } as Settings,
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -95,21 +175,61 @@ export async function getCards(
 }
 
 export async function upsertCard(card: CardInsert): Promise<Card> {
-  const { data, error } = await client()
-    .from("cards")
-    .upsert(card)
-    .select()
-    .single();
-  if (error) throw error;
-  return data as Card;
+  const now = new Date().toISOString();
+  const id = card.id ?? generateUUID();
+  const payload = { ...card, id };
+
+  return withOfflineQueue(
+    async () => {
+      const { data, error } = await client()
+        .from("cards")
+        .upsert(payload)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Card;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "cards",
+        operation: "upsert" as const,
+        payload: payload as unknown as Record<string, unknown>,
+        matchColumn: "id",
+        matchValue: id,
+      },
+      fallback: {
+        ...payload,
+        created_at: now,
+        updated_at: now,
+      } as Card,
+    }),
+  );
 }
 
 export async function softDeleteCard(cardId: string): Promise<void> {
-  const { error } = await client()
-    .from("cards")
-    .update({ deleted_at: new Date().toISOString() })
-    .eq("id", cardId);
-  if (error) throw error;
+  const now = new Date().toISOString();
+
+  return withOfflineQueue(
+    async () => {
+      const { error } = await client()
+        .from("cards")
+        .update({ deleted_at: now })
+        .eq("id", cardId);
+      if (error) throw error;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "cards",
+        operation: "update" as const,
+        payload: { deleted_at: now },
+        matchColumn: "id",
+        matchValue: cardId,
+      },
+      fallback: undefined,
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -130,13 +250,41 @@ export async function createSchedule(
   profileId: string,
   title: string,
 ): Promise<Schedule> {
-  const { data, error } = await client()
-    .from("schedules")
-    .insert({ profile_id: profileId, title })
-    .select()
-    .single();
-  if (error) throw error;
-  return data as Schedule;
+  const now = new Date().toISOString();
+  const id = generateUUID();
+
+  return withOfflineQueue(
+    async () => {
+      const { data, error } = await client()
+        .from("schedules")
+        .insert({ profile_id: profileId, title })
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Schedule;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "schedules",
+        operation: "upsert" as const,
+        payload: { id, profile_id: profileId, title } as unknown as Record<
+          string,
+          unknown
+        >,
+        matchColumn: "id",
+        matchValue: id,
+      },
+      fallback: {
+        id,
+        profile_id: profileId,
+        title,
+        created_at: now,
+        updated_at: now,
+        deleted_at: null,
+      } as Schedule,
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -157,35 +305,100 @@ export async function getScheduleItems(
 export async function upsertScheduleItem(
   item: ScheduleItemInsert,
 ): Promise<ScheduleItem> {
-  const { data, error } = await client()
-    .from("schedule_items")
-    .upsert(item)
-    .select()
-    .single();
-  if (error) throw error;
-  return data as ScheduleItem;
+  const now = new Date().toISOString();
+  const id = item.id ?? generateUUID();
+  const payload = { ...item, id };
+
+  return withOfflineQueue(
+    async () => {
+      const { data, error } = await client()
+        .from("schedule_items")
+        .upsert(payload)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as ScheduleItem;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "schedule_items",
+        operation: "upsert" as const,
+        payload: payload as unknown as Record<string, unknown>,
+        matchColumn: "id",
+        matchValue: id,
+      },
+      fallback: {
+        ...payload,
+        created_at: now,
+        updated_at: now,
+      } as ScheduleItem,
+    }),
+  );
 }
 
 export async function deleteScheduleItem(itemId: string): Promise<void> {
-  const { error } = await client()
-    .from("schedule_items")
-    .delete()
-    .eq("id", itemId);
-  if (error) throw error;
+  const now = new Date().toISOString();
+
+  return withOfflineQueue(
+    async () => {
+      const { error } = await client()
+        .from("schedule_items")
+        .delete()
+        .eq("id", itemId);
+      if (error) throw error;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "schedule_items",
+        operation: "delete" as const,
+        payload: {},
+        matchColumn: "id",
+        matchValue: itemId,
+      },
+      fallback: undefined,
+    }),
+  );
 }
 
 export async function updateScheduleItemDone(
   itemId: string,
   done: boolean,
 ): Promise<ScheduleItem> {
-  const { data, error } = await client()
-    .from("schedule_items")
-    .update({ is_complete: done })
-    .eq("id", itemId)
-    .select()
-    .single();
-  if (error) throw error;
-  return data as ScheduleItem;
+  const now = new Date().toISOString();
+
+  return withOfflineQueue(
+    async () => {
+      const { data, error } = await client()
+        .from("schedule_items")
+        .update({ is_complete: done })
+        .eq("id", itemId)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as ScheduleItem;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "schedule_items",
+        operation: "update" as const,
+        payload: { is_complete: done },
+        matchColumn: "id",
+        matchValue: itemId,
+      },
+      fallback: {
+        id: itemId,
+        schedule_id: "",
+        card_id: "",
+        position: 0,
+        is_complete: done,
+        created_at: now,
+        updated_at: now,
+      } as ScheduleItem,
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -204,26 +417,49 @@ export async function getRewards(profileId: string): Promise<Reward[]> {
 /**
  * Insert a reward row only if one with the same reason doesn't already exist.
  * This prevents double-counting when an item is toggled done more than once.
+ * When offline, the mutation is enqueued and replayed with a duplicate check.
  */
 export async function addRewardIfNew(
   profileId: string,
   stars: number,
   reason: string,
 ): Promise<Reward | null> {
-  const { data: existing } = await client()
-    .from("rewards")
-    .select("id")
-    .eq("profile_id", profileId)
-    .eq("reason", reason)
-    .maybeSingle();
+  const now = new Date().toISOString();
 
-  if (existing) return null;
+  return withOfflineQueue(
+    async () => {
+      const { data: existing } = await client()
+        .from("rewards")
+        .select("id")
+        .eq("profile_id", profileId)
+        .eq("reason", reason)
+        .maybeSingle();
 
-  const { data, error } = await client()
-    .from("rewards")
-    .insert({ profile_id: profileId, stars, reason })
-    .select()
-    .single();
-  if (error) throw error;
-  return data as Reward;
+      if (existing) return null;
+
+      const { data, error } = await client()
+        .from("rewards")
+        .insert({ profile_id: profileId, stars, reason })
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Reward;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "rewards",
+        operation: "insert_if_not_exists" as const,
+        payload: {
+          profile_id: profileId,
+          stars,
+          reason,
+        } as unknown as Record<string, unknown>,
+        duplicateCheckColumns: ["profile_id", "reason"],
+        matchColumn: "id",
+        matchValue: "",
+      },
+      fallback: null,
+    }),
+  );
 }
