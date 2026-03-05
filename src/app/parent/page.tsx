@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRequireAuth } from "@/hooks/useAuth";
+import ParentGate from "@/components/ParentGate";
 import { getProfiles, createProfile } from "@/lib/db";
 import {
   getActiveProfileId,
@@ -97,165 +98,167 @@ export default function ParentPage() {
   const activeProfile = profiles.find((p) => p.id === activeId) ?? null;
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Parent Dashboard</h1>
-        <Button variant="outline" onClick={handleLogout}>
-          Log Out
-        </Button>
-      </div>
-
-      {/* Active profile banner */}
-      {activeProfile && (
-        <div
-          role="status"
-          className="rounded-lg border bg-primary/10 p-4 text-center text-lg font-semibold"
-        >
-          Active profile: {activeProfile.display_name}
+    <ParentGate>
+      <div className="flex flex-col gap-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Parent Dashboard</h1>
+          <Button variant="outline" onClick={handleLogout}>
+            Log Out
+          </Button>
         </div>
-      )}
 
-      {/* Profiles section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Profiles</CardTitle>
-          <CardDescription>
-            Select or create a child profile
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-6">
-          {/* Error state */}
-          {profilesError && (
-            <p className="text-sm text-destructive">
-              Failed to load profiles. Please try again.
-            </p>
-          )}
-
-          {/* Profile list */}
-          {profilesLoading ? (
-            <p className="text-muted-foreground">Loading profiles…</p>
-          ) : profiles.length === 0 ? (
-            <p className="text-muted-foreground">
-              No profiles yet. Create one below.
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-3" aria-label="Profiles">
-              {profiles.map((profile) => {
-                const isActive = profile.id === activeId;
-                return (
-                  <li key={profile.id}>
-                    <Button
-                      variant={isActive ? "default" : "outline"}
-                      size="lg"
-                      className="w-full justify-start text-lg"
-                      aria-pressed={isActive}
-                      onClick={() => handleSelect(profile)}
-                    >
-                      {profile.display_name}
-                      {isActive && (
-                        <span className="ml-auto text-sm font-normal">
-                          ✓ Active
-                        </span>
-                      )}
-                    </Button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-
-          {/* Create profile form */}
-          <form
-            onSubmit={handleCreate}
-            className="flex flex-col gap-3 sm:flex-row sm:items-end"
+        {/* Active profile banner */}
+        {activeProfile && (
+          <div
+            role="status"
+            className="rounded-lg border bg-primary/10 p-4 text-center text-lg font-semibold"
           >
-            <div className="flex flex-1 flex-col gap-1.5">
-              <Label htmlFor="new-profile-name">New profile name</Label>
-              <Input
-                id="new-profile-name"
-                placeholder="e.g. Alex"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                required
-                maxLength={50}
-              />
-            </div>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={createMutation.isPending || !newName.trim()}
+            Active profile: {activeProfile.display_name}
+          </div>
+        )}
+
+        {/* Profiles section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Profiles</CardTitle>
+            <CardDescription>
+              Select or create a child profile
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-6">
+            {/* Error state */}
+            {profilesError && (
+              <p className="text-sm text-destructive">
+                Failed to load profiles. Please try again.
+              </p>
+            )}
+
+            {/* Profile list */}
+            {profilesLoading ? (
+              <p className="text-muted-foreground">Loading profiles…</p>
+            ) : profiles.length === 0 ? (
+              <p className="text-muted-foreground">
+                No profiles yet. Create one below.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3" aria-label="Profiles">
+                {profiles.map((profile) => {
+                  const isActive = profile.id === activeId;
+                  return (
+                    <li key={profile.id}>
+                      <Button
+                        variant={isActive ? "default" : "outline"}
+                        size="lg"
+                        className="w-full justify-start text-lg"
+                        aria-pressed={isActive}
+                        onClick={() => handleSelect(profile)}
+                      >
+                        {profile.display_name}
+                        {isActive && (
+                          <span className="ml-auto text-sm font-normal">
+                            ✓ Active
+                          </span>
+                        )}
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {/* Create profile form */}
+            <form
+              onSubmit={handleCreate}
+              className="flex flex-col gap-3 sm:flex-row sm:items-end"
             >
-              {createMutation.isPending ? "Creating…" : "Add Profile"}
-            </Button>
-          </form>
+              <div className="flex flex-1 flex-col gap-1.5">
+                <Label htmlFor="new-profile-name">New profile name</Label>
+                <Input
+                  id="new-profile-name"
+                  placeholder="e.g. Alex"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  required
+                  maxLength={50}
+                />
+              </div>
+              <Button
+                type="submit"
+                size="lg"
+                disabled={createMutation.isPending || !newName.trim()}
+              >
+                {createMutation.isPending ? "Creating…" : "Add Profile"}
+              </Button>
+            </form>
 
-          {createMutation.isError && (
-            <p className="text-sm text-destructive">
-              Could not create profile. Please try again.
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Dashboard cards (placeholders) */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Schedule</CardTitle>
-            <CardDescription>
-              Manage your child&apos;s daily routine
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button size="lg" className="w-full">
-              Edit Schedule
-            </Button>
+            {createMutation.isError && (
+              <p className="text-sm text-destructive">
+                Could not create profile. Please try again.
+              </p>
+            )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Talk Board</CardTitle>
-            <CardDescription>
-              Customize AAC communication buttons
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button size="lg" className="w-full">
-              Edit Talk Board
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Dashboard cards (placeholders) */}
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule</CardTitle>
+              <CardDescription>
+                Manage your child&apos;s daily routine
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button size="lg" className="w-full">
+                Edit Schedule
+              </Button>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Rewards</CardTitle>
-            <CardDescription>
-              Set up rewards and track stars
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button size="lg" className="w-full">
-              Manage Rewards
-            </Button>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Talk Board</CardTitle>
+              <CardDescription>
+                Customize AAC communication buttons
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button size="lg" className="w-full">
+                Edit Talk Board
+              </Button>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Settings</CardTitle>
-            <CardDescription>
-              Configure app preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button size="lg" variant="secondary" className="w-full">
-              Open Settings
-            </Button>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Rewards</CardTitle>
+              <CardDescription>
+                Set up rewards and track stars
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button size="lg" className="w-full">
+                Manage Rewards
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Settings</CardTitle>
+              <CardDescription>
+                Configure app preferences
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button size="lg" variant="secondary" className="w-full">
+                Open Settings
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </ParentGate>
   );
 }
