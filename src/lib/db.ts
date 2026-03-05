@@ -9,6 +9,7 @@ import type {
   Schedule,
   ScheduleItem,
   ScheduleItemInsert,
+  Reward,
   Settings,
   SettingsPatch,
 } from "./types";
@@ -155,4 +156,44 @@ export async function updateScheduleItemDone(
     .single();
   if (error) throw error;
   return data as ScheduleItem;
+}
+
+// ---------------------------------------------------------------------------
+// Rewards
+// ---------------------------------------------------------------------------
+export async function getRewards(profileId: string): Promise<Reward[]> {
+  const { data, error } = await client()
+    .from("rewards")
+    .select("*")
+    .eq("profile_id", profileId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return data as Reward[];
+}
+
+/**
+ * Insert a reward row only if one with the same reason doesn't already exist.
+ * This prevents double-counting when an item is toggled done more than once.
+ */
+export async function addRewardIfNew(
+  profileId: string,
+  stars: number,
+  reason: string,
+): Promise<Reward | null> {
+  const { data: existing } = await client()
+    .from("rewards")
+    .select("id")
+    .eq("profile_id", profileId)
+    .eq("reason", reason)
+    .maybeSingle();
+
+  if (existing) return null;
+
+  const { data, error } = await client()
+    .from("rewards")
+    .insert({ profile_id: profileId, stars, reason })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as Reward;
 }
