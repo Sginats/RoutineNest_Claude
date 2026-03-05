@@ -195,7 +195,16 @@ export default function IconPicker({ value, onChange, userId }: IconPickerProps)
 
           {/* Non-intrusive licensing attribution */}
           <p className="text-xs text-muted-foreground">
-            Pictograms by{" "}
+            ARASAAC pictograms:{" "}
+            <a
+              href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              CC BY-NC-SA
+            </a>
+            . Non-commercial use only. Pictograms by{" "}
             <a
               href="https://arasaac.org"
               target="_blank"
@@ -204,16 +213,7 @@ export default function IconPicker({ value, onChange, userId }: IconPickerProps)
             >
               ARASAAC
             </a>{" "}
-            © Gobierno de Aragón, licensed under{" "}
-            <a
-              href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              CC BY-NC-SA 4.0
-            </a>
-            .
+            © Gobierno de Aragón.
           </p>
         </div>
       )}
