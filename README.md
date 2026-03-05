@@ -1,6 +1,16 @@
 # RoutineNest
 
-A PWA / Capacitor-based routine helper app for children who benefit from visual schedules and AAC communication support. Built with Next.js 15, Supabase, and Tailwind CSS.
+A PWA / Capacitor-based routine helper app for children who benefit from visual schedules and AAC communication support. Built with Next.js 16, Supabase, and Tailwind CSS.
+
+## Features
+
+- **Visual Schedule** — Big tile grid for daily routines with clear done states
+- **AAC Talk Board** — Tap-to-speak communication cards with text-to-speech
+- **Star Rewards** — Earn stars by completing schedule items
+- **Parent Lock** — Hold-to-enter gate protects parent areas
+- **Calm Mode** — Muted colours, reduced motion for sensory comfort
+- **Offline Support** — Works without internet; syncs when reconnected
+- **PWA + Capacitor** — Install as a web app or build for Android/iOS
 
 ## Prerequisites
 
@@ -10,7 +20,7 @@ A PWA / Capacitor-based routine helper app for children who benefit from visual 
 
 ---
 
-## Setup
+## Quick Start
 
 ### 1. Clone and install dependencies
 
@@ -35,7 +45,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
 
 # Optional — leave blank to disable analytics
-NEXT_PUBLIC_POSTHOG_KEY=<your-posthog-project-key>
+NEXT_PUBLIC_POSTHOG_KEY=
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
@@ -77,30 +87,13 @@ The `{userId}` prefix is intentional: Supabase RLS storage policies can match
 `auth.uid()::text` against the first path segment so that only the owning user
 can upload or delete their own icons.
 
----
+### 5. Create a Supabase user
 
-## Supabase Storage Setup
-
-Create a storage bucket named:
-
-```
-card-icons
-```
-
-This bucket stores uploaded icons for custom routine cards.
+In the Supabase dashboard → Authentication → Users, create an email/password user. This will be the parent account.
 
 ---
 
-## Authentication
-
-Kid Mode pages (`/kid/*`) require the parent to be logged in on the device.
-
-This ensures all routine data is protected by Supabase Row-Level Security (RLS).
-The `ParentGate` component prevents children from accessing parent settings.
-
----
-
-## Running the app
+## Running the App
 
 ### Web (development)
 
@@ -110,11 +103,19 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+**Testing on a phone (same network):**
+
+```bash
+npm run dev -- --hostname 0.0.0.0
+```
+
+Then open `http://<your-computer-ip>:3000` on your phone's browser.
+
 ### Web (production build)
 
 ```bash
 npm run build   # generates static export in out/
-npm run start
+npx serve out   # or any static file server
 ```
 
 ### Mobile (Capacitor)
@@ -147,6 +148,52 @@ npm run cap:sync
 
 ---
 
+## Deploy to Vercel
+
+1. Push this repo to GitHub.
+2. Import the repo in [Vercel](https://vercel.com/new).
+3. Add environment variables in Vercel project settings:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_POSTHOG_KEY` (optional)
+   - `NEXT_PUBLIC_POSTHOG_HOST` (optional)
+4. Deploy. Vercel auto-detects Next.js and builds with `next build`.
+
+> **Note:** The `output: "export"` setting in `next.config.ts` produces a fully static site. Vercel serves it as static files — no server-side rendering cost.
+
+---
+
+## PWA Install Test
+
+1. Open the deployed URL in Chrome (desktop or Android) or Safari (iOS).
+2. Look for the install prompt (Chrome: address bar install icon; Safari: Share → Add to Home Screen).
+3. Install and verify the app launches in standalone mode (no browser chrome).
+4. Go offline (airplane mode) and verify the app shell still loads with cached data.
+
+---
+
+## Authentication
+
+Kid Mode pages (`/kid/*`) require the parent to be logged in on the device.
+
+This ensures all routine data is protected by Supabase Row-Level Security (RLS).
+The `ParentGate` component prevents children from accessing parent settings.
+
+---
+
+## Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Calm Mode | Muted colours, no animations | Off |
+| Grid Size | Number of columns (2, 3, or 4) | 3 |
+| Sound | Enable/disable TTS and audio | On |
+| Analytics | Anonymous usage analytics (PostHog) | On |
+
+All settings are per-profile and stored in Supabase. The analytics preference is stored in localStorage.
+
+---
+
 ## Linting
 
 ```bash
@@ -155,6 +202,13 @@ npm run lint
 
 ---
 
-## Third-party notices
+## Privacy & Terms
 
-- **ARASAAC pictograms** used in the icon picker are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) — non-commercial use only. Pictograms © Gobierno de Aragón / [arasaac.org](https://arasaac.org).
+- [Privacy Policy](./PRIVACY.md)
+- [Terms of Use](./TERMS.md)
+
+---
+
+## Third-party Notices
+
+- **ARASAAC pictograms** used in the icon picker are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) — **non-commercial use only**. Pictograms © Gobierno de Aragón / [arasaac.org](https://arasaac.org). If you use RoutineNest commercially, you must provide your own icon assets instead of ARASAAC pictograms.
