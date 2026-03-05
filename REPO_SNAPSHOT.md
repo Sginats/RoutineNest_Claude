@@ -4,7 +4,7 @@ Last updated: 2026-03-05
 
 ## Current State
 
-This repo has completed STEP 1 — Next.js app scaffolded with TypeScript, ESLint, and Tailwind CSS.
+This repo has completed STEP 12 — Kid Schedule MVP with read + tap-done functionality.
 
 ## Directory Structure
 
@@ -27,11 +27,31 @@ This repo has completed STEP 1 — Next.js app scaffolded with TypeScript, ESLin
 │   ├── vercel.svg
 │   └── window.svg
 └── src/
-    └── app/
-        ├── favicon.ico
-        ├── globals.css
-        ├── layout.tsx
-        └── page.tsx
+    ├── app/
+    │   ├── favicon.ico
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   ├── providers.tsx
+    │   ├── page.tsx
+    │   ├── login/page.tsx
+    │   ├── parent/page.tsx
+    │   ├── settings/page.tsx
+    │   └── kid/
+    │       ├── schedule/page.tsx   ← STEP 12
+    │       ├── talk/page.tsx
+    │       └── rewards/page.tsx
+    ├── components/
+    │   ├── ParentGate.tsx
+    │   └── ui/ (button, card, input, label, switch)
+    ├── hooks/
+    │   └── useAuth.ts
+    └── lib/
+        ├── db.ts
+        ├── types.ts
+        ├── settingsHooks.ts
+        ├── profileStore.ts
+        ├── supabaseClient.ts
+        └── utils.ts
 ```
 
 ## Stack (planned)
@@ -52,7 +72,11 @@ This repo has completed STEP 1 — Next.js app scaffolded with TypeScript, ESLin
 
 - [x] STEP 0 — Add grounding files (PROJECT_CONTEXT, LLM_RULES, REPO_SNAPSHOT, CONTRIBUTING)
 - [x] STEP 1 — Scaffold Next.js app with TypeScript and Tailwind
+- [x] STEP 7 — DB schema, auth, RLS
+- [x] STEP 9 — Settings page (calm mode, grid size, sound)
+- [x] STEP 10 — Parent dashboard (profiles, selection)
+- [x] STEP 12 — Kid Schedule MVP (read + tap done)
 
 ## Next Steps
 
-- [ ] STEP 2 — (TBD)
+- [ ] STEP 13 — (TBD)
