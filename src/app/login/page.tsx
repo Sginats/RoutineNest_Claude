@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,17 +25,18 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   // If already logged in, redirect to /parent
-  if (authLoading) {
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace("/parent");
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || user) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <p className="text-muted-foreground">Loading…</p>
       </div>
     );
-  }
-
-  if (user) {
-    router.replace("/parent");
-    return null;
   }
 
   async function handleSubmit(e: React.FormEvent) {
