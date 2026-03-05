@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
@@ -14,6 +14,7 @@ import {
 } from "@/lib/db";
 import type { ScheduleItem, Card as CardType } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { trackScreen, trackScheduleItemCompleted } from "@/lib/analytics";
 
 export default function SchedulePage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -49,6 +50,13 @@ export default function SchedulePage() {
   const cardMap = new Map<string, CardType>();
   cards?.forEach((c) => cardMap.set(c.id, c));
 
+  // Track screen view once user and profile are ready
+  useEffect(() => {
+    if (user && profileId) {
+      trackScreen("schedule");
+    }
+  }, [user, profileId]);
+
   // Optimistic mutation for toggling done state
   const queryClient = useQueryClient();
   const { mutate: toggleDone } = useMutation({
@@ -64,6 +72,9 @@ export default function SchedulePage() {
       const result = await updateScheduleItemDone(itemId, done);
       if (awardStar && profileId) {
         await addRewardIfNew(profileId, 1, `schedule_item:${itemId}`);
+      }
+      if (done) {
+        trackScheduleItemCompleted(itemId);
       }
       return result;
     },

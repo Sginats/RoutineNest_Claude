@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
@@ -9,6 +9,7 @@ import { getCards } from "@/lib/db";
 import type { Card as CardType } from "@/lib/types";
 import { speak } from "@/lib/tts";
 import { cn } from "@/lib/utils";
+import { trackScreen, trackAACCardTapped } from "@/lib/analytics";
 
 export default function TalkPage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -29,10 +30,19 @@ export default function TalkPage() {
   const gridSize = settings?.grid_size ?? 3;
   const soundEnabled = settings?.sound_enabled ?? true;
 
+  // Track screen view once user and profile are ready
+  useEffect(() => {
+    if (user && profileId) {
+      trackScreen("talk");
+    }
+  }, [user, profileId]);
+
   function handleTap(card: CardType) {
     setPressedId(card.id);
     const text = card.tts_text?.trim() || card.label;
     speak(text, soundEnabled);
+    // Track category only — never label or tts_text
+    trackAACCardTapped(card.category);
     // Clear pressed state after a short delay
     setTimeout(() => setPressedId(null), 200);
   }

@@ -15,6 +15,10 @@ import { useRequireAuth } from "@/hooks/useAuth";
 import ParentGate from "@/components/ParentGate";
 import { useSettings, useUpdateSettings } from "@/lib/settingsHooks";
 import { getActiveProfileId } from "@/lib/profileStore";
+import {
+  getAnalyticsEnabled,
+  setAnalyticsEnabled,
+} from "@/lib/analytics";
 
 const GRID_OPTIONS = [2, 3, 4] as const;
 
@@ -26,6 +30,18 @@ export default function SettingsPage() {
   const { data: settings, isLoading: settingsLoading } =
     useSettings(profileId);
   const { mutate: updateSettings } = useUpdateSettings(profileId);
+
+  // Analytics preference is stored in localStorage (client-only).
+  // getAnalyticsEnabled() returns true during SSR (window is undefined),
+  // matching the default opt-in state, so there is no hydration mismatch.
+  const [analyticsEnabled, setAnalyticsEnabledState] = useState(
+    () => getAnalyticsEnabled(),
+  );
+
+  function handleAnalyticsToggle(checked: boolean) {
+    setAnalyticsEnabled(checked);
+    setAnalyticsEnabledState(checked);
+  }
 
   if (authLoading || !user) {
     return (
@@ -149,6 +165,38 @@ export default function SettingsPage() {
                   updateSettings({ sound_enabled: checked })
                 }
                 aria-label="Toggle sound"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Privacy / Analytics settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Privacy</CardTitle>
+            <CardDescription>
+              Control anonymous usage analytics
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <Label
+                htmlFor="analytics-enabled"
+                className="flex flex-col gap-1"
+              >
+                <span className="text-base font-medium">
+                  Analytics Enabled
+                </span>
+                <span className="text-sm text-muted-foreground font-normal">
+                  Send anonymous usage data to help improve the app. No
+                  personal information is collected.
+                </span>
+              </Label>
+              <Switch
+                id="analytics-enabled"
+                checked={analyticsEnabled}
+                onCheckedChange={handleAnalyticsToggle}
+                aria-label="Toggle analytics"
               />
             </div>
           </CardContent>
