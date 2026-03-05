@@ -1,10 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./providers";
+
+export const viewport: Viewport = {
+  themeColor: "#228b86",
+};
 
 export const metadata: Metadata = {
   title: "RoutineNest",
   description: "Routines + AAC communication app for children",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "RoutineNest",
+  },
 };
 
 export default function RootLayout({
