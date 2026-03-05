@@ -4,17 +4,34 @@ Last updated: 2026-03-05
 
 ## Current State
 
-This repo is in the initial setup phase (STEP 0).
+This repo has completed STEP 1 — Next.js app scaffolded with TypeScript, ESLint, and Tailwind CSS.
 
 ## Directory Structure
 
 ```
 /
-├── PROJECT_CONTEXT.md   # App description, stack, features
-├── LLM_RULES.md         # Hard rules for Copilot / LLM agents
-├── REPO_SNAPSHOT.md      # This file — current repo state
-├── CONTRIBUTING.md       # Contribution guidelines
-└── README.md             # Repo readme
+├── PROJECT_CONTEXT.md
+├── LLM_RULES.md
+├── REPO_SNAPSHOT.md
+├── CONTRIBUTING.md
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── next.config.ts
+├── eslint.config.mjs
+├── postcss.config.mjs
+├── public/
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+└── src/
+    └── app/
+        ├── favicon.ico
+        ├── globals.css
+        ├── layout.tsx
+        └── page.tsx
 ```
 
 ## Stack (planned)
@@ -34,7 +51,8 @@ This repo is in the initial setup phase (STEP 0).
 ## Completed Steps
 
 - [x] STEP 0 — Add grounding files (PROJECT_CONTEXT, LLM_RULES, REPO_SNAPSHOT, CONTRIBUTING)
+- [x] STEP 1 — Scaffold Next.js app with TypeScript and Tailwind
 
 ## Next Steps
 
-- [ ] STEP 1 — Scaffold Next.js app with TypeScript and Tailwind
+- [ ] STEP 2 — (TBD)
