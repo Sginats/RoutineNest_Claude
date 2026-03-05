@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,12 +9,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useRequireAuth } from "@/hooks/useAuth";
+import { useSettings, useUpdateSettings } from "@/lib/settingsHooks";
+import { getActiveProfileId } from "@/lib/profileStore";
+
+const GRID_OPTIONS = [2, 3, 4] as const;
 
 export default function SettingsPage() {
-  const { user, loading } = useRequireAuth();
+  const { user, loading: authLoading } = useRequireAuth();
+  // Read active profile from localStorage (SSR-safe via getActiveProfileId)
+  const [profileId] = useState(() => getActiveProfileId());
 
-  if (loading || !user) {
+  const { data: settings, isLoading: settingsLoading } =
+    useSettings(profileId);
+  const { mutate: updateSettings } = useUpdateSettings(profileId);
+
+  if (authLoading || !user) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <p className="text-muted-foreground">Loading…</p>
@@ -21,10 +34,43 @@ export default function SettingsPage() {
     );
   }
 
+  if (!profileId) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h1 className="text-3xl font-bold">Settings</h1>
+        <Card>
+          <CardContent className="py-8 text-center">
+            <p className="text-muted-foreground">
+              No profile selected. Please go to the{" "}
+              <a href="/parent" className="text-primary underline">
+                Parent Dashboard
+              </a>{" "}
+              and select a child profile first.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <p className="text-muted-foreground">Loading settings…</p>
+      </div>
+    );
+  }
+
+  // Derive current values (defaults when no row exists yet)
+  const calmMode = settings?.calm_mode ?? false;
+  const gridSize = settings?.grid_size ?? 3;
+  const soundEnabled = settings?.sound_enabled ?? true;
+
   return (
     <div className="flex flex-col gap-8">
       <h1 className="text-3xl font-bold">Settings</h1>
 
+      {/* Display settings */}
       <Card>
         <CardHeader>
           <CardTitle>Display</CardTitle>
@@ -32,27 +78,77 @@ export default function SettingsPage() {
             Customize how the app looks and feels
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <Button size="lg" variant="outline" className="w-full justify-start">
-            Calm Mode
-          </Button>
-          <Button size="lg" variant="outline" className="w-full justify-start">
-            Big-Button Mode
-          </Button>
+        <CardContent className="flex flex-col gap-6">
+          {/* Calm Mode */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="calm-mode" className="flex flex-col gap-1">
+              <span className="text-base font-medium">Calm Mode</span>
+              <span className="text-sm text-muted-foreground font-normal">
+                Reduce animations and visual stimulation
+              </span>
+            </Label>
+            <Switch
+              id="calm-mode"
+              checked={calmMode}
+              onCheckedChange={(checked) =>
+                updateSettings({ calm_mode: checked })
+              }
+              aria-label="Toggle calm mode"
+            />
+          </div>
+
+          {/* Grid Size */}
+          <div className="flex flex-col gap-2">
+            <Label className="flex flex-col gap-1">
+              <span className="text-base font-medium">Grid Size</span>
+              <span className="text-sm text-muted-foreground font-normal">
+                Number of columns in card grids
+              </span>
+            </Label>
+            <div className="flex gap-2">
+              {GRID_OPTIONS.map((size) => (
+                <Button
+                  key={size}
+                  variant={gridSize === size ? "default" : "outline"}
+                  size="lg"
+                  className="flex-1"
+                  onClick={() => updateSettings({ grid_size: size })}
+                  aria-pressed={gridSize === size}
+                  aria-label={`${size} columns`}
+                >
+                  {size}
+                </Button>
+              ))}
+            </div>
+          </div>
         </CardContent>
       </Card>
 
+      {/* Sound settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Security</CardTitle>
+          <CardTitle>Sound</CardTitle>
           <CardDescription>
-            Manage parent lock and access controls
+            Manage audio feedback and text-to-speech
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <Button size="lg" variant="outline" className="w-full justify-start">
-            Parent Lock
-          </Button>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="sound-enabled" className="flex flex-col gap-1">
+              <span className="text-base font-medium">Sound Enabled</span>
+              <span className="text-sm text-muted-foreground font-normal">
+                Play sounds and enable text-to-speech
+              </span>
+            </Label>
+            <Switch
+              id="sound-enabled"
+              checked={soundEnabled}
+              onCheckedChange={(checked) =>
+                updateSettings({ sound_enabled: checked })
+              }
+              aria-label="Toggle sound"
+            />
+          </div>
         </CardContent>
       </Card>
     </div>

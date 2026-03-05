@@ -53,6 +53,8 @@ export interface Settings {
   calm_mode: boolean;
   big_button_mode: boolean;
   parent_lock_enabled: boolean;
+  grid_size: number;
+  sound_enabled: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -71,5 +73,5 @@ export type ScheduleItemInsert = Omit<
 };
 
 export type SettingsPatch = Partial<
-  Pick<Settings, "calm_mode" | "big_button_mode" | "parent_lock_enabled">
+  Pick<Settings, "calm_mode" | "big_button_mode" | "parent_lock_enabled" | "grid_size" | "sound_enabled">
 >;
