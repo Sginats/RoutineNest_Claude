@@ -39,6 +39,7 @@ export function setAnalyticsEnabled(enabled: boolean): void {
 
 export function initAnalytics(): void {
   if (typeof window === "undefined") return;
+  if (process.env.NODE_ENV !== "production") return; // Skip in development
 
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   if (!key) return; // No key configured — silently skip

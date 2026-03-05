@@ -79,6 +79,18 @@ can upload or delete their own icons.
 
 ---
 
+## Supabase Storage
+
+Create a storage bucket named:
+
+```
+card-icons
+```
+
+This bucket stores uploaded icon images for custom cards.
+
+---
+
 ## Authentication
 
 Kid Mode pages (`/kid/*`) require the parent to be logged in on the device.
