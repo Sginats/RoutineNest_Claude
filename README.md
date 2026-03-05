@@ -81,13 +81,13 @@ can upload or delete their own icons.
 
 ## Supabase Storage Setup
 
-Create a bucket named:
+Create a storage bucket named:
 
 ```
 card-icons
 ```
 
-This bucket stores uploaded icons for custom cards.
+This bucket stores uploaded icons for custom routine cards.
 
 ---
 

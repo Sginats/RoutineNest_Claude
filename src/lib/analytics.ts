@@ -42,7 +42,7 @@ export function initAnalytics(): void {
   if (process.env.NODE_ENV !== "production") return; // Skip in development
 
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-  if (!key) return; // No key configured — silently skip
+  if (!key || key.includes("YOUR_")) return; // No key configured — silently skip
 
   const host =
     process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
