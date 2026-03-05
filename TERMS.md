@@ -31,7 +31,7 @@ The built-in pictogram picker uses images from
 use RoutineNest in a commercial context, you must not use ARASAAC images and
 should provide your own icon assets.
 
-## Open source licence
+## Open source license
 
 RoutineNest source code is available on GitHub. Please see the repository
 licence file for details.
