@@ -200,7 +200,7 @@ export default function SchedulePage() {
         aria-label={`${doneCount} of ${totalCount} tasks complete`}
       >
         <div
-          className="h-full rounded-full bg-success transition-all duration-500"
+          className="h-full rounded-full bg-success transition-all duration-300"
           style={{ width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%` }}
         />
       </div>
@@ -220,10 +220,10 @@ export default function SchedulePage() {
                 })
               }
               className={cn(
-                "min-h-[130px] min-w-[44px] rounded-2xl border-3 p-4",
+                "min-h-[130px] min-w-[44px] rounded-2xl border-2 p-4",
                 "flex flex-col items-center justify-center gap-3 text-center",
                 "cursor-pointer select-none shadow-sm",
-                "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-offset-2",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 calmMode
                   ? ""
                   : "transition-transform active:scale-95 hover:shadow-md",

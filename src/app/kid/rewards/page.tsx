@@ -56,7 +56,7 @@ export default function RewardsPage() {
         ⭐ My Stars
       </h1>
 
-      <div className="flex flex-col items-center gap-6 rounded-3xl border-3 border-border bg-card p-8 shadow-sm w-full max-w-sm">
+      <div className="flex flex-col items-center gap-6 rounded-3xl border-2 border-border bg-card p-8 shadow-sm w-full max-w-sm">
         <p className="text-7xl" role="img" aria-label={`${totalStars} stars`}>
           ⭐
         </p>
