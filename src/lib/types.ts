@@ -12,8 +12,10 @@ export interface Card {
   id: string;
   profile_id: string;
   label: string;
+  tts_text: string | null;
   image_url: string | null;
   category: string;
+  position: number;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
