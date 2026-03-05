@@ -15,6 +15,9 @@ import {
 import type { ScheduleItem, Card as CardType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { trackScreen, trackScheduleItemCompleted } from "@/lib/analytics";
+import { KidShell } from "@/components/kid/KidShell";
+import { BigTileButton } from "@/components/kid/BigTileButton";
+import { EmptyState } from "@/components/kid/EmptyState";
 
 export default function SchedulePage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -131,17 +134,12 @@ export default function SchedulePage() {
   // No profile selected
   if (!profileId) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-7xl" role="img" aria-label="House">
-          🏠
-        </span>
-        <h1 className="text-2xl font-extrabold">
-          Ask a parent to set up RoutineNest
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          A grown-up needs to create your profile first.
-        </p>
-      </div>
+      <EmptyState
+        emoji="🏠"
+        emojiLabel="House"
+        title="Ask a parent to set up RoutineNest"
+        description="A grown-up needs to create your profile first."
+      />
     );
   }
 
@@ -157,15 +155,12 @@ export default function SchedulePage() {
   // No schedule or no items yet
   if (!schedules?.length || !items?.length) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-7xl" role="img" aria-label="Calendar">
-          📋
-        </span>
-        <h1 className="text-2xl font-extrabold">No tasks yet!</h1>
-        <p className="text-muted-foreground text-lg">
-          Ask a parent to add some tasks to your schedule.
-        </p>
-      </div>
+      <EmptyState
+        emoji="📋"
+        emojiLabel="Calendar"
+        title="No tasks yet!"
+        description="Ask a parent to add some tasks to your schedule."
+      />
     );
   }
 
@@ -180,16 +175,15 @@ export default function SchedulePage() {
   const totalCount = items.length;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold text-primary">
-          📋 {schedules[0].title}
-        </h1>
+    <KidShell
+      title={schedules[0].title}
+      emoji="📋"
+      trailing={
         <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
           {doneCount}/{totalCount} done
         </span>
-      </div>
-
+      }
+    >
       {/* Progress bar */}
       <div
         className="h-3 w-full overflow-hidden rounded-full bg-muted"
@@ -209,9 +203,16 @@ export default function SchedulePage() {
         {items.map((item) => {
           const card = cardMap.get(item.card_id);
           return (
-            <button
+            <BigTileButton
               key={item.id}
-              type="button"
+              label={card?.label ?? "Task"}
+              imageUrl={card?.image_url}
+              fallbackEmoji={item.is_complete ? "✅" : "⭐"}
+              active={item.is_complete}
+              activeLabel="Done! ⭐"
+              calm={calmMode}
+              ariaLabel={`${card?.label ?? "Task"}, ${item.is_complete ? "done" : "not done"}`}
+              ariaPressed={item.is_complete}
               onClick={() =>
                 toggleDone({
                   itemId: item.id,
@@ -219,52 +220,10 @@ export default function SchedulePage() {
                   awardStar: !item.is_complete,
                 })
               }
-              className={cn(
-                "min-h-[130px] min-w-[44px] rounded-2xl border-2 p-4",
-                "flex flex-col items-center justify-center gap-3 text-center",
-                "cursor-pointer select-none shadow-sm",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                calmMode
-                  ? ""
-                  : "transition-transform active:scale-95 hover:shadow-md",
-                item.is_complete
-                  ? "border-success bg-success/10"
-                  : "border-border bg-card hover:border-primary/60",
-              )}
-              aria-pressed={item.is_complete}
-              aria-label={`${card?.label ?? "Task"}, ${item.is_complete ? "done" : "not done"}`}
-            >
-              {card?.image_url ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={card.image_url}
-                  alt=""
-                  className="h-16 w-16 rounded-xl object-cover"
-                  aria-hidden="true"
-                />
-              ) : (
-                <span
-                  className="text-4xl"
-                  role="img"
-                  aria-hidden="true"
-                >
-                  {item.is_complete ? "✅" : "⭐"}
-                </span>
-              )}
-
-              <span className="text-base font-bold leading-tight">
-                {card?.label ?? "Task"}
-              </span>
-
-              {item.is_complete && (
-                <span className="text-sm font-bold text-success">
-                  Done! ⭐
-                </span>
-              )}
-            </button>
+            />
           );
         })}
       </div>
-    </div>
+    </KidShell>
   );
 }

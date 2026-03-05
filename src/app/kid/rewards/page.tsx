@@ -6,6 +6,8 @@ import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { useSettings } from "@/lib/settingsHooks";
 import { getRewards } from "@/lib/db";
+import { KidShell } from "@/components/kid/KidShell";
+import { EmptyState } from "@/components/kid/EmptyState";
 
 export default function RewardsPage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -53,17 +55,12 @@ export default function RewardsPage() {
 
   if (!profileId) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 px-4 text-center">
-        <span className="text-7xl" role="img" aria-label="House">
-          🏠
-        </span>
-        <h1 className="text-2xl font-extrabold">
-          Ask a parent to set up RoutineNest
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          A grown-up needs to create your profile first.
-        </p>
-      </div>
+      <EmptyState
+        emoji="🏠"
+        emojiLabel="House"
+        title="Ask a parent to set up RoutineNest"
+        description="A grown-up needs to create your profile first."
+      />
     );
   }
 
@@ -76,32 +73,30 @@ export default function RewardsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 pt-8">
-      <h1 className="text-3xl font-extrabold text-primary">
-        ⭐ My Stars
-      </h1>
+    <KidShell title="My Stars" emoji="⭐">
+      <div className="flex justify-center">
+        <div className="relative flex flex-col items-center gap-6 rounded-3xl border-2 border-border bg-card p-8 shadow-sm w-full max-w-sm">
+          {/* Gentle celebration overlay — only if calm mode is OFF */}
+          {showCelebration && (
+            <div
+              className="absolute inset-0 flex items-center justify-center rounded-3xl bg-success/10 animate-pulse"
+              aria-live="polite"
+            >
+              <span className="text-5xl">🎉</span>
+            </div>
+          )}
 
-      <div className="relative flex flex-col items-center gap-6 rounded-3xl border-2 border-border bg-card p-8 shadow-sm w-full max-w-sm">
-        {/* Gentle celebration overlay — only if calm mode is OFF */}
-        {showCelebration && (
-          <div
-            className="absolute inset-0 flex items-center justify-center rounded-3xl bg-success/10 animate-pulse"
-            aria-live="polite"
-          >
-            <span className="text-5xl">🎉</span>
-          </div>
-        )}
-
-        <p className="text-7xl" role="img" aria-label={`${totalStars} stars`}>
-          ⭐
-        </p>
-        <p className="text-5xl font-extrabold text-primary">{totalStars}</p>
-        <p className="text-lg font-semibold text-muted-foreground text-center">
-          {totalStars === 0
-            ? "Finish your tasks to earn your first star!"
-            : `You earned ${totalStars} star${totalStars === 1 ? "" : "s"}! Great job!`}
-        </p>
+          <p className="text-7xl" role="img" aria-label={`${totalStars} stars`}>
+            ⭐
+          </p>
+          <p className="text-5xl font-extrabold text-primary">{totalStars}</p>
+          <p className="text-lg font-semibold text-muted-foreground text-center">
+            {totalStars === 0
+              ? "Finish your tasks to earn your first star!"
+              : `You earned ${totalStars} star${totalStars === 1 ? "" : "s"}! Great job!`}
+          </p>
+        </div>
       </div>
-    </div>
+    </KidShell>
   );
 }
