@@ -1,11 +1,13 @@
 # AI Context — RoutineNest
 
-All AI coding agents working on this repository must read the following files before implementing changes:
+All AI coding agents must read the following files before implementing changes:
 
 1. AI_CONTEXT.md
 2. PROJECT_SUMMARY.md
-3. REPO_SNAPSHOT.md
-4. CONTRIBUTING.md
+3. ARCHITECTURE_MAP.md
+4. REPO_SNAPSHOT.md
+5. CONTRIBUTING.md
+6. AGENT_TASKS.md
 
 ## Project Purpose
 
