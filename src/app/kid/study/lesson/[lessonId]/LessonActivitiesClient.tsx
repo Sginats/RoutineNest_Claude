@@ -26,6 +26,8 @@ import {
   TapCorrectActivity,
   VisualMatchingActivity,
   SequencingActivity,
+  ListenChooseActivity,
+  SpeakTapAacActivity,
 } from "@/components/activities";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +38,7 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
 
   const { data: settings } = useSettings(profileId);
   const calmMode = settings?.calm_mode ?? false;
+  const soundEnabled = settings?.sound_enabled ?? true;
 
   const { data: subscriptionTier, isLoading: subscriptionLoading } = useSubscription(user?.id);
   const isPremium = subscriptionTier === "premium";
@@ -377,6 +380,7 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
             activityType={currentActivity.activity_type}
             instructions={currentActivity.instructions}
             calm={calmMode}
+            soundEnabled={soundEnabled}
             isPending={isPending}
             onComplete={handleComplete}
           />
@@ -413,6 +417,7 @@ function ActivityGameplay({
   activityType,
   instructions,
   calm,
+  soundEnabled,
   isPending,
   onComplete,
 }: {
@@ -420,6 +425,7 @@ function ActivityGameplay({
   activityType: string;
   instructions: string;
   calm: boolean;
+  soundEnabled: boolean;
   isPending: boolean;
   onComplete: () => void;
 }) {
@@ -459,6 +465,28 @@ function ActivityGameplay({
           instructions={instructions}
           steps={gameData.steps}
           calm={calm}
+          onComplete={onComplete}
+        />
+      );
+
+    case "listen_choose":
+      return (
+        <ListenChooseActivity
+          instructions={instructions}
+          choices={gameData.choices}
+          calm={calm}
+          soundEnabled={soundEnabled}
+          onComplete={onComplete}
+        />
+      );
+
+    case "speak_tap_aac":
+      return (
+        <SpeakTapAacActivity
+          instructions={instructions}
+          options={gameData.options}
+          calm={calm}
+          soundEnabled={soundEnabled}
           onComplete={onComplete}
         />
       );

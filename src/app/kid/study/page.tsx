@@ -12,6 +12,7 @@ import {
   SEED_MODULES,
   SEED_LESSONS,
   SEED_ACTIVITIES,
+  filterModulesByClassLevelWithFallback,
 } from "@/lib/studySeedData";
 import type { DayOfWeek } from "@/lib/studyTypes";
 import { KidShell } from "@/components/kid/KidShell";
@@ -34,6 +35,7 @@ export default function StudyHomePage() {
 
   const { data: settings } = useSettings(profileId);
   const calmMode = settings?.calm_mode ?? false;
+  const bigButtonMode = settings?.big_button_mode ?? false;
 
   const { data: learningPlan, isLoading: planLoading } = useQuery({
     queryKey: ["childLearningPlan", profileId],
@@ -85,7 +87,10 @@ export default function StudyHomePage() {
     return base.sort((a, b) => a.order - b.order);
   }, [learningPlan, todaySubjectIds]);
 
-  // Compute progress percentage per subject
+  // The learner's class level — used to filter modules to age-appropriate content
+  const classLevelId = learningPlan?.class_level_id ?? null;
+
+  // Compute progress percentage per subject (using class-level-filtered modules)
   const subjectProgress = useMemo(() => {
     const map = new Map<string, number>();
     if (!progress?.length) return map;
@@ -95,10 +100,14 @@ export default function StudyHomePage() {
     );
 
     for (const subject of subjects) {
-      const modules = SEED_MODULES.filter(
+      // Filter modules to those at or below the learner's class level.
+      // Falls back to all subject modules if no matching content is found.
+      const allSubjectModules = SEED_MODULES.filter(
         (m) => m.subject_area_id === subject.id,
       );
-      const moduleIds = new Set(modules.map((m) => m.id));
+      const effectiveModules = filterModulesByClassLevelWithFallback(allSubjectModules, classLevelId);
+
+      const moduleIds = new Set(effectiveModules.map((m) => m.id));
       const lessons = SEED_LESSONS.filter((l) => moduleIds.has(l.module_id));
       const lessonIds = new Set(lessons.map((l) => l.id));
       const activities = SEED_ACTIVITIES.filter((a) =>
@@ -116,7 +125,7 @@ export default function StudyHomePage() {
       map.set(subject.id, Math.round((completed / activities.length) * 100));
     }
     return map;
-  }, [subjects, progress]);
+  }, [subjects, progress, classLevelId]);
 
   const allComplete =
     subjects.length > 0 &&
@@ -175,6 +184,7 @@ export default function StudyHomePage() {
         locked={subject.is_premium}
         index={i}
         calm={calmMode}
+        bigButtonMode={bigButtonMode}
         onClick={() => router.push(`/kid/study/subject/${subject.id}`)}
       />,
     );
@@ -190,7 +200,14 @@ export default function StudyHomePage() {
 
   return (
     <KidShell title="Today's Plan" emoji="📚">
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+      {/* Grid: big_button_mode reduces columns to 1 on mobile (max 2 on larger screens) */}
+      <div
+        className={
+          bigButtonMode
+            ? "grid grid-cols-1 gap-4 sm:grid-cols-2"
+            : "grid grid-cols-2 gap-4 md:grid-cols-3"
+        }
+      >
         {tilesWithBreaks}
       </div>
 
