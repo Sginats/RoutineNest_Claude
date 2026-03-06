@@ -44,11 +44,17 @@ function buildActivitySubjectMap(): Map<string, string> {
   return map;
 }
 
-/** Count unique dates in YYYY-MM-DD to compute streak from the most recent date backwards. */
+/** Convert an ISO timestamp to a local YYYY-MM-DD string. */
+function toLocalDateStr(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** Count unique local dates to compute streak from the most recent date backwards. */
 function computeStreak(dates: string[]): number {
   if (dates.length === 0) return 0;
-  const unique = [...new Set(dates.map((d) => d.slice(0, 10)))].sort().reverse();
-  const today = new Date().toISOString().slice(0, 10);
+  const unique = [...new Set(dates.map(toLocalDateStr))].sort().reverse();
+  const today = toLocalDateStr(new Date().toISOString());
 
   // Streak must start from today or yesterday
   const first = unique[0];

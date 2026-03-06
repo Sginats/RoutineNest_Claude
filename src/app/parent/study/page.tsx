@@ -87,7 +87,13 @@ export default function ParentStudyPlannerPage() {
       );
       // Derive year category from class level
       const cl = SEED_CLASS_LEVELS.find((c) => c.id === existingPlan.class_level_id);
-      if (cl) setSelectedYearCategory(cl.year_category_id);
+      if (cl) {
+        setSelectedYearCategory(cl.year_category_id);
+      } else {
+        // Plan references an unknown class level — reset to pick a new one
+        setSelectedClassLevel("");
+        setSelectedYearCategory("");
+      }
     }
   }, [existingPlan]);
 
