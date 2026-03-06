@@ -262,7 +262,7 @@ export default function ParentStudyPlannerPage() {
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <ParentGate>
-    <main className="mx-auto max-w-2xl space-y-6 px-4 py-10">
+      <main className="mx-auto max-w-2xl space-y-6 px-4 py-10">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

@@ -42,8 +42,8 @@ Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, 
     │   ├── settings/page.tsx
     │   ├── parent/
     │   │   ├── page.tsx                        (+ subscription status banner)
-    │   │   ├── study/page.tsx
-    │   │   ├── study/progress/page.tsx
+    │   │   ├── study/page.tsx                  (+ ParentGate, weekly planner)
+    │   │   ├── study/progress/page.tsx         (+ ParentGate)
     │   │   └── subscription/page.tsx
     │   └── kid/
     │       ├── break/page.tsx                  (calm prompts + timer)
@@ -67,6 +67,8 @@ Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, 
     │   │   ├── TapCorrectActivity.tsx
     │   │   ├── VisualMatchingActivity.tsx
     │   │   ├── SequencingActivity.tsx
+    │   │   ├── ListenChooseActivity.tsx
+    │   │   ├── SpeakTapAacActivity.tsx
     │   │   └── index.ts
     │   ├── kid/ (KidShell, BigTileButton, EmptyState)
     │   ├── study/ (StudyTile, LessonCard, BreakCard, ProgressBar, RewardStars, SubjectBadge)
@@ -76,12 +78,12 @@ Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, 
     └── lib/
         ├── activityGameplayData.ts
         ├── analytics.ts
+        ├── billing.ts
         ├── db.ts
         ├── env.ts                              (safe for prerender — no throw)
         ├── profileStore.ts
         ├── queryPersistence.ts
         ├── settingsHooks.ts
-        ├── speak.ts
         ├── storage.ts
         ├── studyDb.ts
         ├── studySeedData.ts
@@ -104,7 +106,7 @@ Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, 
 | Visual schedule | ✅ Complete |
 | AAC Talk Board (always free) | ✅ Complete |
 | Study curriculum + seed data | ✅ Complete |
-| Activity gameplay (3 types) | ✅ Complete |
+| Activity gameplay (5 types) | ✅ Complete |
 | Rewards + streaks + badges | ✅ Complete |
 | Break page | ✅ Complete |
 | Parent dashboard | ✅ Complete |
@@ -115,7 +117,7 @@ Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, 
 | Theme system (Playful + Calm) | ✅ Complete |
 | Stripe payment integration | ❌ Not started |
 | Additional activity types | ❌ Not started |
-| Weekly planner UI | ❌ Not started |
+| Weekly planner (parent study page) | ✅ Complete |
 
 ## Completed Steps
 
@@ -153,8 +155,8 @@ Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, 
 ### Activity System
 
 - Activity types: `tap_correct`, `visual_matching`, `sequencing`, `listen_choose`, `speak_tap_aac`, `trace`, `parent_guided`, `routine_checkoff`, `printable`.
-- Interactive gameplay implemented for: `tap_correct`, `visual_matching`, `sequencing`.
-- Other types fall back to a simple "Done" button with instructions.
+- Interactive gameplay implemented for: `tap_correct`, `visual_matching`, `sequencing`, `listen_choose`, `speak_tap_aac`.
+- Other types (`trace`, `parent_guided`, `routine_checkoff`, `printable`) fall back to a simple "Done" button with instructions.
 - Gameplay data defined in `activityGameplayData.ts` keyed by activity ID.
 - Components in `src/components/activities/`.
 
@@ -184,21 +186,19 @@ Ready. Run `npm run cap:build`, then open in Android Studio / Xcode. Signing con
 - Grep for secrets — none should be in committed files.
 - Test offline: schedule, AAC, study all load from cache; mutations queue and replay.
 - Test accessibility: touch targets ≥ 48 px, focus order, screen reader labels, calm mode.
-- Test parent lock: 3-second hold gate, no route bypass.
+- Test parent lock: 3-second hold gate required on all /parent/* routes (dashboard, schedule, settings, study planner, progress, subscription). No route bypass.
 
 ## Known Limitations
 
-- Stripe payment not yet integrated — subscription tier set manually.
-- Only 3 of 9 activity types have interactive gameplay.
-- Weekly planner UI not yet built.
+- Stripe payment not yet integrated — subscription tier set manually in Supabase.
+- 4 of 9 activity types (`trace`, `parent_guided`, `routine_checkoff`, `printable`) fall back to a simple "Done" button.
 - No multi-parent invites or therapist portal.
 - Conflict resolution is last-write-wins only.
 
 ## Next Steps
 
-- [ ] Stripe payment integration (checkout, webhook, billing portal, subscription sync)
-- [ ] Additional activity gameplay types (listen_choose, trace)
-- [ ] Weekly planner UI for parents
+- [ ] Stripe payment backend integration (checkout, webhook, billing portal, subscription sync)
+- [ ] Interactive gameplay for remaining activity types (trace, parent_guided)
 - [ ] A/B testing with PostHog feature flags
 
 ---
