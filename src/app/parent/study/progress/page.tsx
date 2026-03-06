@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { ProgressBar } from "@/components/study/ProgressBar";
 import { RewardStars } from "@/components/study/RewardStars";
+import { ParentStatCard } from "@/components/parent/ParentStatCard";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { getChildProgress, getChildLearningPlan } from "@/lib/studyDb";
@@ -237,10 +238,34 @@ export default function ParentProgressPage() {
       {hasProgress && (
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatCard label="Activities" value={stats.totalActivities} icon="✅" />
-            <StatCard label="Lessons" value={stats.totalLessons} icon="📖" />
-            <StatCard label="Stars" value={stats.totalStars} icon="⭐" />
-            <StatCard label="Day Streak" value={stats.streak} icon="🔥" />
+            <ParentStatCard
+              title="Activities"
+              value={stats.totalActivities}
+              icon="check_circle"
+              iconBg="bg-green-100 dark:bg-green-900/30"
+              iconColor="text-green-600"
+            />
+            <ParentStatCard
+              title="Lessons"
+              value={stats.totalLessons}
+              icon="menu_book"
+              iconBg="bg-blue-100 dark:bg-blue-900/30"
+              iconColor="text-blue-600"
+            />
+            <ParentStatCard
+              title="Stars"
+              value={stats.totalStars}
+              icon="stars"
+              iconBg="bg-amber-100 dark:bg-amber-900/30"
+              iconColor="text-amber-500"
+            />
+            <ParentStatCard
+              title="Day Streak"
+              value={stats.streak}
+              icon="local_fire_department"
+              iconBg="bg-red-100 dark:bg-red-900/30"
+              iconColor="text-red-500"
+            />
           </div>
 
           {/* Star display */}
@@ -351,28 +376,6 @@ export default function ParentProgressPage() {
         </Link>
       </div>
     </main>
-  );
-}
-
-// ── Sub-components ───────────────────────────────────────────────────────────
-
-function StatCard({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: number;
-  icon: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="flex flex-col items-center justify-center py-4">
-        <span className="text-2xl">{icon}</span>
-        <span className="mt-1 text-2xl font-bold">{value}</span>
-        <span className="text-xs text-muted-foreground">{label}</span>
-      </CardContent>
-    </Card>
   );
 }
 

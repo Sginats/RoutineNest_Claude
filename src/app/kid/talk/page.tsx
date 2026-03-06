@@ -130,15 +130,15 @@ export default function TalkPage() {
   return (
     <KidShell title="Talk Board" emoji="💬">
       {/* Sentence bar */}
-      <div className="flex items-center gap-2 rounded-xl bg-white p-3 shadow">
-        <div className="flex flex-1 items-center gap-2 overflow-x-auto">
+      <div className="flex items-center gap-2 rounded-2xl bg-card p-3 shadow-sm border border-border">
+        <div className="flex flex-1 items-center gap-2 overflow-x-auto min-h-[44px]">
           {sentence.length === 0 ? (
             <span className="text-sm text-muted-foreground">Tap cards to build a sentence…</span>
           ) : (
             sentence.map((word, i) => (
               <span
                 key={i}
-                className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
+                className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary"
               >
                 {word.icon && (
                   /* eslint-disable-next-line @next/next/no-img-element */
@@ -153,7 +153,7 @@ export default function TalkPage() {
           type="button"
           onClick={handleBackspace}
           disabled={sentence.length === 0}
-          className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-muted disabled:opacity-30"
+          className="shrink-0 rounded-lg p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted disabled:opacity-30"
           aria-label="Remove last word"
         >
           <span className="material-symbols-outlined text-xl">backspace</span>
@@ -162,7 +162,7 @@ export default function TalkPage() {
           type="button"
           onClick={handleClear}
           disabled={sentence.length === 0}
-          className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-muted disabled:opacity-30"
+          className="shrink-0 rounded-lg p-2 min-h-[44px] min-w-[44px] text-muted-foreground hover:bg-muted disabled:opacity-30"
           aria-label="Clear sentence"
         >
           <span className="material-symbols-outlined text-xl">close</span>
@@ -192,8 +192,8 @@ export default function TalkPage() {
         onClick={handleSpeak}
         disabled={sentence.length === 0}
         className={cn(
-          "flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-bold text-primary-foreground shadow-md",
-          "disabled:opacity-40",
+          "flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-lg font-bold text-primary-foreground shadow-md",
+          "min-h-[56px] disabled:opacity-40",
           !calmMode && "transition-transform active:scale-[0.98]",
         )}
         aria-label="Speak sentence"
