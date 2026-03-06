@@ -253,7 +253,7 @@ export default function SubscriptionPage() {
 
         {/* Action buttons */}
         <div className="flex flex-wrap gap-3">
-          {!isPremium && (
+          {!isPremium && billingConfigured && (
             <Button
               onClick={handleUpgrade}
               disabled={checkoutLoading}
@@ -261,9 +261,18 @@ export default function SubscriptionPage() {
             >
               {checkoutLoading
                 ? "Opening checkout…"
-                : billingConfigured
-                ? "🔓 Upgrade to Premium — £4.99/month"
-                : "🔓 Upgrade to Premium"}
+                : "🔓 Upgrade to Premium — £4.99/month"}
+            </Button>
+          )}
+
+          {!isPremium && !billingConfigured && (
+            <Button
+              variant="outline"
+              disabled
+              className="min-h-[52px] text-base font-bold cursor-not-allowed opacity-60"
+              aria-label="Payments coming soon"
+            >
+              🔓 Upgrade to Premium — Coming Soon
             </Button>
           )}
 
