@@ -9,6 +9,7 @@ import { useSettings } from "@/lib/settingsHooks";
 
 const NAV_ITEMS = [
   { href: "/kid/talk", label: "Talk", emoji: "💬" },
+  { href: "/kid/study", label: "Study", emoji: "📖" },
   { href: "/kid/schedule", label: "Tasks", emoji: "📋" },
   { href: "/kid/rewards", label: "Stars", emoji: "⭐" },
   { href: "/parent", label: "Parent", emoji: "👤" },
