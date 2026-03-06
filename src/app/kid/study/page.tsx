@@ -53,12 +53,15 @@ export default function StudyHomePage() {
     enabled: !!learningPlan?.id,
   });
 
-  // Get today's subjects from weekly plan (if configured)
-  const todaySubjectIds = useMemo(() => {
-    if (!weeklyEntries?.length) return null; // null = no weekly plan, show all
+  // Get today's subjects from weekly plan (if configured).
+  // Returns null when no filtering should be applied (no plan, or no entries
+  // for today — intentional so rest days still show all plan subjects).
+  // Returns a string[] of subject IDs when today has specific assignments.
+  const todaySubjectIds = useMemo((): string[] | null => {
+    if (!weeklyEntries?.length) return null;
     const today = getTodayDayName();
     const todayEntries = weeklyEntries.filter((e) => e.day === today);
-    if (todayEntries.length === 0) return null; // no entries for today, show all
+    if (todayEntries.length === 0) return null;
     return todayEntries.map((e) => e.subject_area_id);
   }, [weeklyEntries]);
 
