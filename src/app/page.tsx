@@ -1,5 +1,13 @@
 import Link from "next/link";
 
+const TILES = [
+  { href: "/kid/study", emoji: "📖", label: "Study", bg: "bg-accent text-accent-foreground" },
+  { href: "/kid/talk", emoji: "💬", label: "Talk", bg: "bg-primary text-primary-foreground" },
+  { href: "/kid/schedule", emoji: "📋", label: "Schedule", bg: "bg-secondary text-secondary-foreground" },
+  { href: "/kid/rewards", emoji: "⭐", label: "Rewards", bg: "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200" },
+  { href: "/kid/break", emoji: "🌿", label: "Break", bg: "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/30 dark:text-emerald-200" },
+] as const;
+
 export default function Home() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-8 px-4 text-center">
@@ -13,25 +21,17 @@ export default function Home() {
         Routines + communication for children — designed with care.
       </p>
 
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <Link
-          href="/kid/talk"
-          className="inline-flex min-h-[56px] min-w-[180px] items-center justify-center gap-3 rounded-2xl bg-primary px-6 text-lg font-bold text-primary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
-        >
-          <span aria-hidden="true">💬</span> Talk
-        </Link>
-        <Link
-          href="/kid/study"
-          className="inline-flex min-h-[56px] min-w-[180px] items-center justify-center gap-3 rounded-2xl bg-accent px-6 text-lg font-bold text-accent-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
-        >
-          <span aria-hidden="true">📖</span> Study
-        </Link>
-        <Link
-          href="/kid/schedule"
-          className="inline-flex min-h-[56px] min-w-[180px] items-center justify-center gap-3 rounded-2xl bg-secondary px-6 text-lg font-bold text-secondary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
-        >
-          <span aria-hidden="true">📋</span> My Tasks
-        </Link>
+      <div className="grid grid-cols-2 gap-4 w-full max-w-md sm:grid-cols-3">
+        {TILES.map((tile) => (
+          <Link
+            key={tile.href}
+            href={tile.href}
+            className={`inline-flex min-h-[120px] flex-col items-center justify-center gap-3 rounded-2xl px-4 py-5 text-lg font-bold shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${tile.bg}`}
+          >
+            <span className="text-4xl" aria-hidden="true">{tile.emoji}</span>
+            <span>{tile.label}</span>
+          </Link>
+        ))}
       </div>
 
       <Link

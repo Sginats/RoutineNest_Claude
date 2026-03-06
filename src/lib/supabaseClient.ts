@@ -3,9 +3,10 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/env";
 
 /**
  * Browser-safe Supabase client.
- * env.ts throws early if values are missing, so the assertions are safe.
+ * Returns `null` when env vars are not set (e.g. during static export /
+ * prerendering).  Every consumer must handle the `null` case.
  */
-export const supabase: SupabaseClient = createClient(
-  SUPABASE_URL as string,
-  SUPABASE_ANON_KEY as string
-);
+export const supabase: SupabaseClient | null =
+  SUPABASE_URL && SUPABASE_ANON_KEY
+    ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;

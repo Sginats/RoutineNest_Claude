@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
+import { getProfiles } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,10 +29,16 @@ export default function LoginPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // If already logged in, redirect to /parent
+  // If already logged in, redirect to onboarding (no profiles) or /parent
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace("/parent");
+      getProfiles()
+        .then((profiles) => {
+          router.replace(profiles.length === 0 ? "/onboarding" : "/parent");
+        })
+        .catch(() => {
+          router.replace("/parent");
+        });
     }
   }, [user, authLoading, router]);
 
@@ -82,7 +89,13 @@ export default function LoginPage() {
         setError(signInError.message);
         setLoading(false);
       } else {
-        router.replace("/parent");
+        // Check if user has profiles — if not, go to onboarding
+        try {
+          const profiles = await getProfiles();
+          router.replace(profiles.length === 0 ? "/onboarding" : "/parent");
+        } catch {
+          router.replace("/parent");
+        }
       }
     }
   }

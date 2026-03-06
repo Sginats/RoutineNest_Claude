@@ -4,7 +4,7 @@ Last updated: 2026-03-06
 
 ## Current State
 
-This repo has completed STEP 16 — Subscription/paywall system.
+This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & streaks, and kid home UX improvements.
 
 ## Directory Structure
 
@@ -22,31 +22,33 @@ This repo has completed STEP 16 — Subscription/paywall system.
 │       ├── 20260305000003_card_icons_bucket.sql
 │       ├── 20260305000004_study_plan_tables.sql
 │       ├── 20260305000005_weekly_plan_entries.sql
-│       └── 20260305000006_subscription_tier.sql   ← STEP 16
+│       └── 20260305000006_subscription_tier.sql
 └── src/
     ├── app/
     │   ├── favicon.ico
     │   ├── globals.css
     │   ├── layout.tsx
     │   ├── providers.tsx
-    │   ├── page.tsx
+    │   ├── page.tsx                            (5-tile kid home: Study, Talk, Schedule, Rewards, Break)
     │   ├── debug-env/page.tsx
-    │   ├── login/page.tsx
+    │   ├── login/page.tsx                      (+ first-time user → onboarding redirect)
+    │   ├── onboarding/page.tsx                 ← STEP 17 (5-step wizard)
     │   ├── settings/page.tsx
     │   ├── parent/
-    │   │   ├── page.tsx                      (+ subscription status banner)
+    │   │   ├── page.tsx                        (+ subscription status banner)
     │   │   ├── study/page.tsx
     │   │   ├── study/progress/page.tsx
-    │   │   └── subscription/page.tsx         ← STEP 16
+    │   │   └── subscription/page.tsx
     │   └── kid/
+    │       ├── break/page.tsx                  ← STEP 17 (calm prompts + timer)
     │       ├── schedule/page.tsx
     │       ├── talk/page.tsx
-    │       ├── rewards/page.tsx
+    │       ├── rewards/page.tsx                (+ streaks, badges)
     │       └── study/
     │           ├── page.tsx
-    │           ├── subject/[subjectId]/      (+ premium gate)
-    │           ├── module/[moduleId]/        (+ premium gate)
-    │           └── lesson/[lessonId]/        (+ premium gate)
+    │           ├── subject/[subjectId]/        (+ premium gate)
+    │           ├── module/[moduleId]/          (+ premium gate)
+    │           └── lesson/[lessonId]/          (+ interactive gameplay)
     ├── components/
     │   ├── ErrorBoundary.tsx
     │   ├── IconPicker.tsx
@@ -54,16 +56,22 @@ This repo has completed STEP 16 — Subscription/paywall system.
     │   ├── OfflineBanner.tsx
     │   ├── ParentGate.tsx
     │   ├── ThemeProvider.tsx
-    │   ├── UpgradeBanner.tsx                 ← STEP 16
+    │   ├── UpgradeBanner.tsx
+    │   ├── activities/                         ← STEP 17
+    │   │   ├── TapCorrectActivity.tsx
+    │   │   ├── VisualMatchingActivity.tsx
+    │   │   ├── SequencingActivity.tsx
+    │   │   └── index.ts
     │   ├── kid/ (KidShell, BigTileButton, EmptyState)
     │   ├── study/ (StudyTile, LessonCard, BreakCard, ProgressBar, RewardStars, SubjectBadge)
     │   └── ui/ (button, card, input, label, switch)
     ├── hooks/
     │   └── useAuth.ts
     └── lib/
+        ├── activityGameplayData.ts             ← STEP 17
         ├── analytics.ts
-        ├── db.ts                             (+ getProfile, updateSubscriptionTier)
-        ├── env.ts
+        ├── db.ts
+        ├── env.ts                              (safe for prerender — no throw)
         ├── profileStore.ts
         ├── queryPersistence.ts
         ├── settingsHooks.ts
@@ -72,11 +80,11 @@ This repo has completed STEP 16 — Subscription/paywall system.
         ├── studyDb.ts
         ├── studySeedData.ts
         ├── studyTypes.ts
-        ├── supabaseClient.ts
-        ├── subscriptionHooks.ts              ← STEP 16
+        ├── supabaseClient.ts                   (nullable — returns null without env vars)
+        ├── subscriptionHooks.ts
         ├── syncQueue.ts
         ├── tts.ts
-        ├── types.ts                          (+ SubscriptionTier, ProfilePatch)
+        ├── types.ts
         └── utils.ts
 ```
 
@@ -113,6 +121,15 @@ This repo has completed STEP 16 — Subscription/paywall system.
   - Parent dashboard: subscription status banner + Upgrade/Manage button
   - Premium gating in kid study pages: subject, module, and lesson pages show UpgradeBanner instead of content for free users
   - AAC Talk Board: never gated (always free)
+- [x] STEP 17 — Activity gameplay, onboarding, rewards & kid home improvements
+  - Build fix: `env.ts` no longer throws during prerender; `supabaseClient.ts` returns null without env vars
+  - Kid home: 5-tile grid layout (Study, Talk, Schedule, Rewards, Break)
+  - Break page: calm prompts, break timer, "I'm Ready" return
+  - Onboarding wizard: 5-step flow (name → class level → subjects → session length → intensity)
+  - Login: first-time users redirected to `/onboarding` when no profiles exist
+  - Activity gameplay: 3 interactive types (TapCorrect, VisualMatching, Sequencing)
+  - `activityGameplayData.ts`: pre-built gameplay data for seed activities
+  - Rewards page: streak counter, 7 earnable badges (star + streak thresholds)
 
 ## Architecture Notes
 
@@ -122,6 +139,20 @@ This repo has completed STEP 16 — Subscription/paywall system.
 - Premium: full study curriculum (premium subjects/modules/lessons), advanced learning plans, progress analytics
 - AAC is **always free** — enforced in code (TalkPage has no subscription check)
 
+### Activity System
+- Activity types: `tap_correct`, `visual_matching`, `sequencing`, `listen_choose`, `speak_tap_aac`, `trace`, `parent_guided`, `routine_checkoff`, `printable`
+- Interactive gameplay implemented for: `tap_correct`, `visual_matching`, `sequencing`
+- Other types fall back to a simple "Done" button with instructions
+- Gameplay data defined in `activityGameplayData.ts` keyed by activity ID
+- Components in `src/components/activities/`
+
+### Build
+- `env.ts` exports env vars without throwing — safe for static export / prerendering
+- `supabaseClient.ts` returns `null` when env vars are missing — all consumers handle null
+
 ## Next Steps
 
-- [ ] STEP 17 — (TBD)
+- [ ] STEP 18 — Payment integration (Stripe)
+- [ ] STEP 19 — Additional activity gameplay types (listen_choose, trace)
+- [ ] STEP 20 — Weekly planner UI for parents
+- [ ] STEP 21 — A/B testing with PostHog feature flags

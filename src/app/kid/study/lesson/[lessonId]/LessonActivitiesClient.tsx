@@ -14,6 +14,7 @@ import {
   SEED_ACTIVITIES,
   SEED_MODULES,
 } from "@/lib/studySeedData";
+import { getActivityGameplayData } from "@/lib/activityGameplayData";
 import { KidShell } from "@/components/kid/KidShell";
 import { EmptyState } from "@/components/kid/EmptyState";
 import { ProgressBar } from "@/components/study/ProgressBar";
@@ -21,6 +22,11 @@ import { RewardStars } from "@/components/study/RewardStars";
 import { SubjectBadge } from "@/components/study/SubjectBadge";
 import { BreakCard } from "@/components/study/BreakCard";
 import { UpgradeBanner } from "@/components/UpgradeBanner";
+import {
+  TapCorrectActivity,
+  VisualMatchingActivity,
+  SequencingActivity,
+} from "@/components/activities";
 import { cn } from "@/lib/utils";
 
 export default function LessonActivitiesClient({ lessonId }: { lessonId: string }) {
@@ -356,10 +362,6 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
           icon={currentActivity.icon}
         />
 
-        <p className="text-center text-lg text-muted-foreground">
-          {currentActivity.instructions}
-        </p>
-
         {currentActivity.reward_points > 0 && (
           <RewardStars
             earned={isActivityCompleted(currentActivity.id) ? 1 : 0}
@@ -368,23 +370,16 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
           />
         )}
 
-        {/* Done button */}
+        {/* Interactive gameplay or simple done button */}
         {!isActivityCompleted(currentActivity.id) ? (
-          <button
-            type="button"
-            onClick={handleComplete}
-            disabled={isPending}
-            className={cn(
-              "mt-2 w-full max-w-xs rounded-2xl border-2 border-success bg-success/10 px-8 py-5",
-              "text-xl font-extrabold text-success",
-              "hover:bg-success/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              calmMode ? "" : "transition-transform active:scale-95",
-            )}
-            aria-label="Mark activity as done"
-          >
-            {isPending ? "Saving…" : "Done ✅"}
-          </button>
+          <ActivityGameplay
+            activityId={currentActivity.id}
+            activityType={currentActivity.activity_type}
+            instructions={currentActivity.instructions}
+            calm={calmMode}
+            isPending={isPending}
+            onComplete={handleComplete}
+          />
         ) : (
           <div className="mt-2 flex items-center gap-2 text-lg font-bold text-success">
             <span>✅</span> Completed!
@@ -407,4 +402,88 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
       </button>
     </KidShell>
   );
+}
+
+// ---------------------------------------------------------------------------
+// ActivityGameplay — renders interactive gameplay or a simple done button
+// ---------------------------------------------------------------------------
+
+function ActivityGameplay({
+  activityId,
+  activityType,
+  instructions,
+  calm,
+  isPending,
+  onComplete,
+}: {
+  activityId: string;
+  activityType: string;
+  instructions: string;
+  calm: boolean;
+  isPending: boolean;
+  onComplete: () => void;
+}) {
+  const gameData = useMemo(
+    () =>
+      getActivityGameplayData(
+        activityId,
+        activityType as import("@/lib/studyTypes").ActivityType,
+      ),
+    [activityId, activityType],
+  );
+
+  switch (gameData.type) {
+    case "tap_correct":
+      return (
+        <TapCorrectActivity
+          instructions={instructions}
+          choices={gameData.choices}
+          calm={calm}
+          onComplete={onComplete}
+        />
+      );
+
+    case "visual_matching":
+      return (
+        <VisualMatchingActivity
+          instructions={instructions}
+          pairs={gameData.pairs}
+          calm={calm}
+          onComplete={onComplete}
+        />
+      );
+
+    case "sequencing":
+      return (
+        <SequencingActivity
+          instructions={instructions}
+          steps={gameData.steps}
+          calm={calm}
+          onComplete={onComplete}
+        />
+      );
+
+    default:
+      // Simple "Done" button for activity types without interactive gameplay
+      return (
+        <div className="flex flex-col items-center gap-4 w-full">
+          <p className="text-center text-lg text-muted-foreground">{instructions}</p>
+          <button
+            type="button"
+            onClick={onComplete}
+            disabled={isPending}
+            className={cn(
+              "mt-2 w-full max-w-xs rounded-2xl border-2 border-success bg-success/10 px-8 py-5",
+              "text-xl font-extrabold text-success",
+              "hover:bg-success/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              calm ? "" : "transition-transform active:scale-95",
+            )}
+            aria-label="Mark activity as done"
+          >
+            {isPending ? "Saving…" : "Done ✅"}
+          </button>
+        </div>
+      );
+  }
 }
