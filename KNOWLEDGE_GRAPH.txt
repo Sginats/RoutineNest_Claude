@@ -1,0 +1,1179 @@
+================================================================================
+ROUTINENEST — MACHINE-READABLE KNOWLEDGE GRAPH
+================================================================================
+Generated from: Sginats/RoutineNest_Claude
+Purpose: Full dependency graph for AI agents to understand the architecture.
+--------------------------------------------------------------------------------
+
+
+================================================================================
+STEP 1 — FILE NODES
+================================================================================
+
+# --- Root configuration ---
+FILE capacitor.config.ts
+FILE components.json
+FILE eslint.config.mjs
+FILE next.config.ts
+FILE package.json
+FILE package-lock.json
+FILE postcss.config.mjs
+FILE tsconfig.json
+FILE .env.local.example
+
+# --- Application source ---
+FILE src/app/globals.css
+FILE src/app/favicon.ico
+FILE src/app/layout.tsx
+FILE src/app/page.tsx
+FILE src/app/providers.tsx
+FILE src/app/debug-env/page.tsx
+FILE src/app/kid/break/page.tsx
+FILE src/app/kid/rewards/page.tsx
+FILE src/app/kid/schedule/page.tsx
+FILE src/app/kid/talk/page.tsx
+FILE src/app/kid/study/page.tsx
+FILE src/app/kid/study/subject/[subjectId]/page.tsx
+FILE src/app/kid/study/subject/[subjectId]/SubjectModulesClient.tsx
+FILE src/app/kid/study/module/[moduleId]/page.tsx
+FILE src/app/kid/study/module/[moduleId]/ModuleLessonsClient.tsx
+FILE src/app/kid/study/lesson/[lessonId]/page.tsx
+FILE src/app/kid/study/lesson/[lessonId]/LessonActivitiesClient.tsx
+FILE src/app/login/page.tsx
+FILE src/app/onboarding/page.tsx
+FILE src/app/parent/page.tsx
+FILE src/app/parent/study/page.tsx
+FILE src/app/parent/study/progress/page.tsx
+FILE src/app/parent/subscription/page.tsx
+FILE src/app/settings/page.tsx
+
+# --- Shared components ---
+FILE src/components/ErrorBoundary.tsx
+FILE src/components/IconPicker.tsx
+FILE src/components/NavBar.tsx
+FILE src/components/OfflineBanner.tsx
+FILE src/components/ParentGate.tsx
+FILE src/components/UpgradeBanner.tsx
+
+# --- Activity components ---
+FILE src/components/activities/index.ts
+FILE src/components/activities/TapCorrectActivity.tsx
+FILE src/components/activities/VisualMatchingActivity.tsx
+FILE src/components/activities/SequencingActivity.tsx
+
+# --- Kid-facing UI components ---
+FILE src/components/kid/BigTileButton.tsx
+FILE src/components/kid/EmptyState.tsx
+FILE src/components/kid/KidShell.tsx
+
+# --- Study UI components ---
+FILE src/components/study/BreakCard.tsx
+FILE src/components/study/LessonCard.tsx
+FILE src/components/study/ProgressBar.tsx
+FILE src/components/study/RewardStars.tsx
+FILE src/components/study/StudyTile.tsx
+FILE src/components/study/SubjectBadge.tsx
+
+# --- Shadcn/ui primitive components ---
+FILE src/components/ui/button.tsx
+FILE src/components/ui/card.tsx
+FILE src/components/ui/input.tsx
+FILE src/components/ui/label.tsx
+FILE src/components/ui/switch.tsx
+
+# --- Hooks ---
+FILE src/hooks/useAuth.ts
+
+# --- Library modules ---
+FILE src/lib/activityGameplayData.ts
+FILE src/lib/analytics.ts
+FILE src/lib/db.ts
+FILE src/lib/env.ts
+FILE src/lib/profileStore.ts
+FILE src/lib/queryPersistence.ts
+FILE src/lib/settingsHooks.ts
+FILE src/lib/speak.ts
+FILE src/lib/storage.ts
+FILE src/lib/studyDb.ts
+FILE src/lib/studySeedData.ts
+FILE src/lib/studyTypes.ts
+FILE src/lib/subscriptionHooks.ts
+FILE src/lib/supabaseClient.ts
+FILE src/lib/syncQueue.ts
+FILE src/lib/tts.ts
+FILE src/lib/types.ts
+FILE src/lib/utils.ts
+
+# --- Supabase migrations ---
+FILE supabase/migrations/20260305000000_initial_schema.sql
+FILE supabase/migrations/20260305000001_add_grid_size_sound.sql
+FILE supabase/migrations/20260305000002_add_card_tts_position.sql
+FILE supabase/migrations/20260305000003_card_icons_bucket.sql
+FILE supabase/migrations/20260305000004_study_plan_tables.sql
+FILE supabase/migrations/20260305000005_weekly_plan_entries.sql
+FILE supabase/migrations/20260305000006_subscription_tier.sql
+FILE supabase/schema.sql
+
+# --- Public / PWA assets ---
+FILE public/manifest.json
+FILE public/icons/icon-192x192.png
+FILE public/icons/icon-512x512.png
+FILE public/file.svg
+FILE public/globe.svg
+FILE public/next.svg
+FILE public/vercel.svg
+FILE public/window.svg
+
+# --- Documentation ---
+FILE AGENT_TASKS.md
+FILE AI_CONTEXT.md
+FILE ARCHITECTURE_MAP.md
+FILE CONTENT_SYSTEM.md
+FILE CONTRIBUTING.md
+FILE PRIVACY.md
+FILE PROJECT_PARSE.txt
+FILE PROJECT_SUMMARY.md
+FILE REPO_SNAPSHOT.md
+FILE SYSTEM_PROMPT.md
+FILE TERMS.md
+
+
+================================================================================
+STEP 2 — PAGE NODES
+================================================================================
+
+PAGE "/"
+PAGE "/debug-env"
+PAGE "/kid/break"
+PAGE "/kid/rewards"
+PAGE "/kid/schedule"
+PAGE "/kid/study"
+PAGE "/kid/study/subject/[subjectId]"
+PAGE "/kid/study/module/[moduleId]"
+PAGE "/kid/study/lesson/[lessonId]"
+PAGE "/kid/talk"
+PAGE "/login"
+PAGE "/onboarding"
+PAGE "/parent"
+PAGE "/parent/study"
+PAGE "/parent/study/progress"
+PAGE "/parent/subscription"
+PAGE "/settings"
+
+
+================================================================================
+STEP 3 — COMPONENT NODES
+================================================================================
+
+# --- Root layout wrappers ---
+COMPONENT Providers
+COMPONENT SyncManager
+
+# --- Shared layout ---
+COMPONENT NavBar
+COMPONENT OfflineBanner
+COMPONENT ErrorBoundary
+
+# --- Auth & access control ---
+COMPONENT ParentGate
+COMPONENT UpgradeBanner
+
+# --- Card management ---
+COMPONENT IconPicker
+
+# --- Kid-facing primitives ---
+COMPONENT BigTileButton
+COMPONENT EmptyState
+COMPONENT KidShell
+
+# --- Study UI ---
+COMPONENT BreakCard
+COMPONENT LessonCard
+COMPONENT ProgressBar
+COMPONENT RewardStars
+COMPONENT StudyTile
+COMPONENT SubjectBadge
+
+# --- Interactive activity components ---
+COMPONENT TapCorrectActivity
+COMPONENT VisualMatchingActivity
+COMPONENT SequencingActivity
+
+# --- Client-side page components (co-located with pages) ---
+COMPONENT SubjectModulesClient
+COMPONENT ModuleLessonsClient
+COMPONENT LessonActivitiesClient
+
+# --- Shadcn/ui primitives ---
+COMPONENT Button
+COMPONENT Card
+COMPONENT CardContent
+COMPONENT CardDescription
+COMPONENT CardHeader
+COMPONENT CardTitle
+COMPONENT Input
+COMPONENT Label
+COMPONENT Switch
+
+
+================================================================================
+STEP 4 — HOOK NODES
+================================================================================
+
+HOOK useAuth
+HOOK useRequireAuth
+HOOK useSettings
+HOOK useUpdateSettings
+HOOK useSubscription
+HOOK useIsPremium
+HOOK useUpdateSubscription
+
+
+================================================================================
+STEP 5 — MODULE NODES
+================================================================================
+
+MODULE activityGameplayData.ts
+MODULE analytics.ts
+MODULE db.ts
+MODULE env.ts
+MODULE profileStore.ts
+MODULE queryPersistence.ts
+MODULE settingsHooks.ts
+MODULE speak.ts
+MODULE storage.ts
+MODULE studyDb.ts
+MODULE studySeedData.ts
+MODULE studyTypes.ts
+MODULE subscriptionHooks.ts
+MODULE supabaseClient.ts
+MODULE syncQueue.ts
+MODULE tts.ts
+MODULE types.ts
+MODULE utils.ts
+
+
+================================================================================
+STEP 6 — DATABASE NODES
+================================================================================
+
+# --- Core tables (initial schema) ---
+TABLE profiles
+TABLE cards
+TABLE schedules
+TABLE schedule_items
+TABLE rewards
+TABLE settings
+
+# --- Study curriculum (study_plan_tables migration) ---
+TABLE year_categories
+TABLE class_levels
+TABLE subject_areas
+TABLE study_modules
+TABLE lessons
+TABLE activities
+
+# --- Child learning state (study_plan_tables migration) ---
+TABLE child_learning_plans
+TABLE child_progress
+TABLE child_preferences
+
+# --- Weekly planning (weekly_plan_entries migration) ---
+TABLE weekly_plan_entries
+
+# --- Storage bucket (card_icons_bucket migration) ---
+STORAGE_BUCKET card-icons
+
+
+================================================================================
+STEP 7 — ACTIVITY SYSTEM
+================================================================================
+
+# Activity types defined in src/lib/studyTypes.ts
+ACTIVITY tap_correct
+ACTIVITY visual_matching
+ACTIVITY sequencing
+ACTIVITY listen_choose
+ACTIVITY speak_tap_aac
+ACTIVITY trace
+ACTIVITY routine_checkoff
+ACTIVITY parent_guided
+ACTIVITY printable
+
+
+================================================================================
+STEP 8 — DEPENDENCY NODES
+================================================================================
+
+# --- Runtime dependencies (package.json > dependencies) ---
+DEPENDENCY @capacitor-community/text-to-speech
+DEPENDENCY @capacitor/android
+DEPENDENCY @capacitor/core
+DEPENDENCY @capacitor/ios
+DEPENDENCY @ducanh2912/next-pwa
+DEPENDENCY @radix-ui/react-slot
+DEPENDENCY @radix-ui/react-switch
+DEPENDENCY @supabase/supabase-js
+DEPENDENCY @tanstack/react-query
+DEPENDENCY @tanstack/react-query-persist-client
+DEPENDENCY class-variance-authority
+DEPENDENCY clsx
+DEPENDENCY idb-keyval
+DEPENDENCY next
+DEPENDENCY posthog-js
+DEPENDENCY react
+DEPENDENCY react-dom
+DEPENDENCY tailwind-merge
+
+# --- Dev dependencies (package.json > devDependencies) ---
+DEV_DEPENDENCY @capacitor/cli
+DEV_DEPENDENCY @tailwindcss/postcss
+DEV_DEPENDENCY @types/node
+DEV_DEPENDENCY @types/react
+DEV_DEPENDENCY @types/react-dom
+DEV_DEPENDENCY eslint
+DEV_DEPENDENCY eslint-config-next
+DEV_DEPENDENCY tailwindcss
+DEV_DEPENDENCY typescript
+
+
+================================================================================
+STEP 9 — RELATIONSHIPS
+================================================================================
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROOT LAYOUT (src/app/layout.tsx) — wraps every page
+# ─────────────────────────────────────────────────────────────────────────────
+
+FILE src/app/layout.tsx → RENDERS COMPONENT Providers
+FILE src/app/layout.tsx → RENDERS COMPONENT NavBar
+FILE src/app/layout.tsx → RENDERS COMPONENT OfflineBanner
+FILE src/app/layout.tsx → RENDERS COMPONENT ErrorBoundary
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/" (Home)
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/" → NAVIGATES_TO PAGE "/kid/study"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/talk"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/schedule"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/rewards"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/break"
+PAGE "/" → NAVIGATES_TO PAGE "/login"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/talk"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/talk" → RENDERS COMPONENT KidShell
+PAGE "/kid/talk" → RENDERS COMPONENT BigTileButton
+PAGE "/kid/talk" → RENDERS COMPONENT EmptyState
+PAGE "/kid/talk" → USES HOOK useRequireAuth
+PAGE "/kid/talk" → USES HOOK useSettings
+PAGE "/kid/talk" → USES MODULE profileStore.ts
+PAGE "/kid/talk" → USES MODULE tts.ts
+PAGE "/kid/talk" → USES MODULE analytics.ts
+PAGE "/kid/talk" → USES MODULE utils.ts
+PAGE "/kid/talk" → READS TABLE cards
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/schedule"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/schedule" → RENDERS COMPONENT KidShell
+PAGE "/kid/schedule" → RENDERS COMPONENT BigTileButton
+PAGE "/kid/schedule" → RENDERS COMPONENT EmptyState
+PAGE "/kid/schedule" → USES HOOK useRequireAuth
+PAGE "/kid/schedule" → USES HOOK useSettings
+PAGE "/kid/schedule" → USES MODULE profileStore.ts
+PAGE "/kid/schedule" → USES MODULE analytics.ts
+PAGE "/kid/schedule" → USES MODULE utils.ts
+PAGE "/kid/schedule" → READS TABLE schedules
+PAGE "/kid/schedule" → READS TABLE schedule_items
+PAGE "/kid/schedule" → READS TABLE cards
+PAGE "/kid/schedule" → WRITES TABLE schedule_items
+PAGE "/kid/schedule" → WRITES TABLE rewards
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/rewards"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/rewards" → RENDERS COMPONENT KidShell
+PAGE "/kid/rewards" → RENDERS COMPONENT EmptyState
+PAGE "/kid/rewards" → USES HOOK useRequireAuth
+PAGE "/kid/rewards" → USES HOOK useSettings
+PAGE "/kid/rewards" → USES MODULE profileStore.ts
+PAGE "/kid/rewards" → USES MODULE utils.ts
+PAGE "/kid/rewards" → READS TABLE rewards
+PAGE "/kid/rewards" → READS TABLE child_progress
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/break"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/break" → RENDERS COMPONENT KidShell
+PAGE "/kid/break" → USES HOOK useSettings
+PAGE "/kid/break" → USES MODULE profileStore.ts
+PAGE "/kid/break" → USES MODULE utils.ts
+PAGE "/kid/break" → NAVIGATES_TO PAGE "/"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/study"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/study" → RENDERS COMPONENT KidShell
+PAGE "/kid/study" → RENDERS COMPONENT EmptyState
+PAGE "/kid/study" → RENDERS COMPONENT StudyTile
+PAGE "/kid/study" → RENDERS COMPONENT BreakCard
+PAGE "/kid/study" → USES HOOK useRequireAuth
+PAGE "/kid/study" → USES HOOK useSettings
+PAGE "/kid/study" → USES MODULE profileStore.ts
+PAGE "/kid/study" → USES MODULE studyDb.ts
+PAGE "/kid/study" → USES MODULE studySeedData.ts
+PAGE "/kid/study" → USES MODULE studyTypes.ts
+PAGE "/kid/study" → READS TABLE child_learning_plans
+PAGE "/kid/study" → READS TABLE child_progress
+PAGE "/kid/study" → READS TABLE weekly_plan_entries
+PAGE "/kid/study" → NAVIGATES_TO PAGE "/kid/study/subject/[subjectId]"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/study/subject/[subjectId]"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/study/subject/[subjectId]" → RENDERS COMPONENT SubjectModulesClient
+PAGE "/kid/study/subject/[subjectId]" → USES MODULE studySeedData.ts
+
+COMPONENT SubjectModulesClient → RENDERS COMPONENT KidShell
+COMPONENT SubjectModulesClient → RENDERS COMPONENT EmptyState
+COMPONENT SubjectModulesClient → RENDERS COMPONENT StudyTile
+COMPONENT SubjectModulesClient → RENDERS COMPONENT ProgressBar
+COMPONENT SubjectModulesClient → RENDERS COMPONENT UpgradeBanner
+COMPONENT SubjectModulesClient → USES HOOK useRequireAuth
+COMPONENT SubjectModulesClient → USES HOOK useSettings
+COMPONENT SubjectModulesClient → USES HOOK useSubscription
+COMPONENT SubjectModulesClient → USES MODULE profileStore.ts
+COMPONENT SubjectModulesClient → USES MODULE studyDb.ts
+COMPONENT SubjectModulesClient → USES MODULE studySeedData.ts
+COMPONENT SubjectModulesClient → READS TABLE child_progress
+COMPONENT SubjectModulesClient → NAVIGATES_TO PAGE "/kid/study/module/[moduleId]"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/study/module/[moduleId]"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/study/module/[moduleId]" → RENDERS COMPONENT ModuleLessonsClient
+PAGE "/kid/study/module/[moduleId]" → USES MODULE studySeedData.ts
+
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT KidShell
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT EmptyState
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT LessonCard
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT ProgressBar
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT UpgradeBanner
+COMPONENT ModuleLessonsClient → USES HOOK useRequireAuth
+COMPONENT ModuleLessonsClient → USES HOOK useSettings
+COMPONENT ModuleLessonsClient → USES HOOK useSubscription
+COMPONENT ModuleLessonsClient → USES MODULE profileStore.ts
+COMPONENT ModuleLessonsClient → USES MODULE studyDb.ts
+COMPONENT ModuleLessonsClient → USES MODULE studySeedData.ts
+COMPONENT ModuleLessonsClient → READS TABLE child_progress
+COMPONENT ModuleLessonsClient → NAVIGATES_TO PAGE "/kid/study/lesson/[lessonId]"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/kid/study/lesson/[lessonId]"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/kid/study/lesson/[lessonId]" → RENDERS COMPONENT LessonActivitiesClient
+PAGE "/kid/study/lesson/[lessonId]" → USES MODULE studySeedData.ts
+
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT KidShell
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT EmptyState
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT ProgressBar
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT RewardStars
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT SubjectBadge
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT BreakCard
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT UpgradeBanner
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT TapCorrectActivity
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT VisualMatchingActivity
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT SequencingActivity
+COMPONENT LessonActivitiesClient → USES HOOK useRequireAuth
+COMPONENT LessonActivitiesClient → USES HOOK useSettings
+COMPONENT LessonActivitiesClient → USES HOOK useSubscription
+COMPONENT LessonActivitiesClient → USES MODULE profileStore.ts
+COMPONENT LessonActivitiesClient → USES MODULE studyDb.ts
+COMPONENT LessonActivitiesClient → USES MODULE studySeedData.ts
+COMPONENT LessonActivitiesClient → USES MODULE activityGameplayData.ts
+COMPONENT LessonActivitiesClient → USES MODULE db.ts
+COMPONENT LessonActivitiesClient → USES MODULE utils.ts
+COMPONENT LessonActivitiesClient → READS TABLE child_progress
+COMPONENT LessonActivitiesClient → WRITES TABLE child_progress
+COMPONENT LessonActivitiesClient → WRITES TABLE rewards
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/login"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/login" → RENDERS COMPONENT Card
+PAGE "/login" → RENDERS COMPONENT Button
+PAGE "/login" → RENDERS COMPONENT Input
+PAGE "/login" → RENDERS COMPONENT Label
+PAGE "/login" → USES HOOK useAuth
+PAGE "/login" → USES MODULE supabaseClient.ts
+PAGE "/login" → USES MODULE db.ts
+PAGE "/login" → READS TABLE profiles
+PAGE "/login" → NAVIGATES_TO PAGE "/onboarding"
+PAGE "/login" → NAVIGATES_TO PAGE "/parent"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/onboarding"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/onboarding" → RENDERS COMPONENT Card
+PAGE "/onboarding" → RENDERS COMPONENT Button
+PAGE "/onboarding" → RENDERS COMPONENT Input
+PAGE "/onboarding" → RENDERS COMPONENT Label
+PAGE "/onboarding" → USES HOOK useRequireAuth
+PAGE "/onboarding" → USES MODULE db.ts
+PAGE "/onboarding" → USES MODULE profileStore.ts
+PAGE "/onboarding" → USES MODULE studyDb.ts
+PAGE "/onboarding" → USES MODULE studySeedData.ts
+PAGE "/onboarding" → USES MODULE utils.ts
+PAGE "/onboarding" → WRITES TABLE profiles
+PAGE "/onboarding" → WRITES TABLE child_learning_plans
+PAGE "/onboarding" → WRITES TABLE child_preferences
+PAGE "/onboarding" → NAVIGATES_TO PAGE "/parent/study"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/parent"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/parent" → RENDERS COMPONENT Card
+PAGE "/parent" → RENDERS COMPONENT Button
+PAGE "/parent" → RENDERS COMPONENT Input
+PAGE "/parent" → RENDERS COMPONENT Label
+PAGE "/parent" → RENDERS COMPONENT ParentGate
+PAGE "/parent" → RENDERS COMPONENT IconPicker
+PAGE "/parent" → USES HOOK useRequireAuth
+PAGE "/parent" → USES HOOK useSubscription
+PAGE "/parent" → USES MODULE db.ts
+PAGE "/parent" → USES MODULE profileStore.ts
+PAGE "/parent" → READS TABLE profiles
+PAGE "/parent" → READS TABLE cards
+PAGE "/parent" → READS TABLE schedules
+PAGE "/parent" → READS TABLE schedule_items
+PAGE "/parent" → WRITES TABLE profiles
+PAGE "/parent" → WRITES TABLE cards
+PAGE "/parent" → WRITES TABLE schedules
+PAGE "/parent" → WRITES TABLE schedule_items
+PAGE "/parent" → NAVIGATES_TO PAGE "/parent/study"
+PAGE "/parent" → NAVIGATES_TO PAGE "/parent/study/progress"
+PAGE "/parent" → NAVIGATES_TO PAGE "/kid/rewards"
+PAGE "/parent" → NAVIGATES_TO PAGE "/settings"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/parent/study"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/parent/study" → RENDERS COMPONENT Card
+PAGE "/parent/study" → RENDERS COMPONENT Button
+PAGE "/parent/study" → RENDERS COMPONENT Label
+PAGE "/parent/study" → RENDERS COMPONENT Switch
+PAGE "/parent/study" → RENDERS COMPONENT SubjectBadge
+PAGE "/parent/study" → USES HOOK useRequireAuth
+PAGE "/parent/study" → USES MODULE profileStore.ts
+PAGE "/parent/study" → USES MODULE studyDb.ts
+PAGE "/parent/study" → USES MODULE studySeedData.ts
+PAGE "/parent/study" → USES MODULE studyTypes.ts
+PAGE "/parent/study" → READS TABLE child_learning_plans
+PAGE "/parent/study" → READS TABLE child_preferences
+PAGE "/parent/study" → READS TABLE weekly_plan_entries
+PAGE "/parent/study" → WRITES TABLE child_learning_plans
+PAGE "/parent/study" → WRITES TABLE child_preferences
+PAGE "/parent/study" → WRITES TABLE weekly_plan_entries
+PAGE "/parent/study" → NAVIGATES_TO PAGE "/parent/study/progress"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/parent/study/progress"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/parent/study/progress" → RENDERS COMPONENT Card
+PAGE "/parent/study/progress" → RENDERS COMPONENT Button
+PAGE "/parent/study/progress" → RENDERS COMPONENT ProgressBar
+PAGE "/parent/study/progress" → RENDERS COMPONENT RewardStars
+PAGE "/parent/study/progress" → USES HOOK useRequireAuth
+PAGE "/parent/study/progress" → USES MODULE profileStore.ts
+PAGE "/parent/study/progress" → USES MODULE studyDb.ts
+PAGE "/parent/study/progress" → USES MODULE studySeedData.ts
+PAGE "/parent/study/progress" → READS TABLE child_progress
+PAGE "/parent/study/progress" → READS TABLE child_learning_plans
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/parent/subscription"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/parent/subscription" → RENDERS COMPONENT Card
+PAGE "/parent/subscription" → RENDERS COMPONENT Button
+PAGE "/parent/subscription" → RENDERS COMPONENT ParentGate
+PAGE "/parent/subscription" → USES HOOK useRequireAuth
+PAGE "/parent/subscription" → USES HOOK useSubscription
+PAGE "/parent/subscription" → USES HOOK useUpdateSubscription
+PAGE "/parent/subscription" → USES MODULE utils.ts
+PAGE "/parent/subscription" → READS TABLE profiles
+PAGE "/parent/subscription" → WRITES TABLE profiles
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE "/settings"
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE "/settings" → RENDERS COMPONENT Card
+PAGE "/settings" → RENDERS COMPONENT Button
+PAGE "/settings" → RENDERS COMPONENT Label
+PAGE "/settings" → RENDERS COMPONENT Switch
+PAGE "/settings" → RENDERS COMPONENT ParentGate
+PAGE "/settings" → USES HOOK useRequireAuth
+PAGE "/settings" → USES HOOK useSettings
+PAGE "/settings" → USES HOOK useUpdateSettings
+PAGE "/settings" → USES MODULE profileStore.ts
+PAGE "/settings" → USES MODULE analytics.ts
+PAGE "/settings" → READS TABLE settings
+PAGE "/settings" → WRITES TABLE settings
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HOOK RELATIONSHIPS
+# ─────────────────────────────────────────────────────────────────────────────
+
+HOOK useAuth → IMPORTS MODULE supabaseClient.ts
+HOOK useAuth → USES DEPENDENCY @supabase/supabase-js
+HOOK useAuth → READS STORAGE Supabase_auth_session
+
+HOOK useRequireAuth → USES HOOK useAuth
+HOOK useRequireAuth → NAVIGATES_TO PAGE "/login"
+
+HOOK useSettings → USES MODULE db.ts
+HOOK useSettings → IMPORTS MODULE types.ts
+HOOK useSettings → USES DEPENDENCY @tanstack/react-query
+HOOK useSettings → READS TABLE settings
+
+HOOK useUpdateSettings → USES MODULE db.ts
+HOOK useUpdateSettings → IMPORTS MODULE types.ts
+HOOK useUpdateSettings → USES DEPENDENCY @tanstack/react-query
+HOOK useUpdateSettings → WRITES TABLE settings
+
+HOOK useSubscription → USES MODULE db.ts
+HOOK useSubscription → IMPORTS MODULE types.ts
+HOOK useSubscription → USES DEPENDENCY @tanstack/react-query
+HOOK useSubscription → READS TABLE profiles
+
+HOOK useIsPremium → USES HOOK useSubscription
+
+HOOK useUpdateSubscription → USES MODULE db.ts
+HOOK useUpdateSubscription → IMPORTS MODULE types.ts
+HOOK useUpdateSubscription → USES DEPENDENCY @tanstack/react-query
+HOOK useUpdateSubscription → WRITES TABLE profiles
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MODULE RELATIONSHIPS
+# ─────────────────────────────────────────────────────────────────────────────
+
+MODULE db.ts → IMPORTS MODULE supabaseClient.ts
+MODULE db.ts → IMPORTS MODULE syncQueue.ts
+MODULE db.ts → IMPORTS MODULE types.ts
+MODULE db.ts → READS TABLE profiles
+MODULE db.ts → READS TABLE cards
+MODULE db.ts → READS TABLE schedules
+MODULE db.ts → READS TABLE schedule_items
+MODULE db.ts → READS TABLE rewards
+MODULE db.ts → READS TABLE settings
+MODULE db.ts → WRITES TABLE profiles
+MODULE db.ts → WRITES TABLE cards
+MODULE db.ts → WRITES TABLE schedules
+MODULE db.ts → WRITES TABLE schedule_items
+MODULE db.ts → WRITES TABLE rewards
+MODULE db.ts → WRITES TABLE settings
+
+MODULE studyDb.ts → IMPORTS MODULE supabaseClient.ts
+MODULE studyDb.ts → IMPORTS MODULE syncQueue.ts
+MODULE studyDb.ts → IMPORTS MODULE studyTypes.ts
+MODULE studyDb.ts → READS TABLE child_learning_plans
+MODULE studyDb.ts → READS TABLE child_progress
+MODULE studyDb.ts → READS TABLE child_preferences
+MODULE studyDb.ts → READS TABLE weekly_plan_entries
+MODULE studyDb.ts → WRITES TABLE child_learning_plans
+MODULE studyDb.ts → WRITES TABLE child_progress
+MODULE studyDb.ts → WRITES TABLE child_preferences
+MODULE studyDb.ts → WRITES TABLE weekly_plan_entries
+
+MODULE supabaseClient.ts → IMPORTS MODULE env.ts
+MODULE supabaseClient.ts → USES DEPENDENCY @supabase/supabase-js
+
+MODULE syncQueue.ts → IMPORTS MODULE supabaseClient.ts
+MODULE syncQueue.ts → USES DEPENDENCY idb-keyval
+MODULE syncQueue.ts → READS STORAGE IndexedDB
+
+MODULE queryPersistence.ts → USES DEPENDENCY idb-keyval
+MODULE queryPersistence.ts → USES DEPENDENCY @tanstack/react-query-persist-client
+MODULE queryPersistence.ts → READS STORAGE IndexedDB
+MODULE queryPersistence.ts → WRITES STORAGE IndexedDB
+
+MODULE analytics.ts → USES DEPENDENCY posthog-js
+MODULE analytics.ts → READS STORAGE localStorage
+MODULE analytics.ts → WRITES STORAGE localStorage
+
+MODULE profileStore.ts → READS STORAGE localStorage
+MODULE profileStore.ts → WRITES STORAGE localStorage
+
+MODULE storage.ts → IMPORTS MODULE supabaseClient.ts
+MODULE storage.ts → USES DEPENDENCY @supabase/supabase-js
+MODULE storage.ts → WRITES STORAGE_BUCKET card-icons
+
+MODULE tts.ts → USES DEPENDENCY @capacitor-community/text-to-speech
+MODULE tts.ts → USES DEPENDENCY @capacitor/core
+MODULE tts.ts → USES WEB_API SpeechSynthesis
+
+MODULE settingsHooks.ts → IMPORTS MODULE db.ts
+MODULE settingsHooks.ts → IMPORTS MODULE types.ts
+MODULE settingsHooks.ts → USES DEPENDENCY @tanstack/react-query
+
+MODULE subscriptionHooks.ts → IMPORTS MODULE db.ts
+MODULE subscriptionHooks.ts → IMPORTS MODULE types.ts
+MODULE subscriptionHooks.ts → USES DEPENDENCY @tanstack/react-query
+
+MODULE activityGameplayData.ts → IMPORTS MODULE studyTypes.ts
+
+MODULE utils.ts → USES DEPENDENCY clsx
+MODULE utils.ts → USES DEPENDENCY tailwind-merge
+
+MODULE env.ts → READS process.env NEXT_PUBLIC_SUPABASE_URL
+MODULE env.ts → READS process.env NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COMPONENT RELATIONSHIPS (non-page components)
+# ─────────────────────────────────────────────────────────────────────────────
+
+COMPONENT Providers → USES MODULE queryPersistence.ts
+COMPONENT Providers → USES MODULE syncQueue.ts
+COMPONENT Providers → USES MODULE analytics.ts
+COMPONENT Providers → RENDERS COMPONENT SyncManager
+COMPONENT Providers → USES DEPENDENCY @tanstack/react-query
+COMPONENT Providers → USES DEPENDENCY @tanstack/react-query-persist-client
+
+COMPONENT SyncManager → USES MODULE syncQueue.ts
+COMPONENT SyncManager → USES MODULE analytics.ts
+
+COMPONENT NavBar → USES HOOK useSettings
+COMPONENT NavBar → USES MODULE profileStore.ts
+COMPONENT NavBar → USES MODULE utils.ts
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/talk"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/study"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/schedule"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/rewards"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/parent"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/settings"
+
+COMPONENT UpgradeBanner → NAVIGATES_TO PAGE "/parent/subscription"
+COMPONENT UpgradeBanner → USES MODULE utils.ts
+
+COMPONENT IconPicker → USES MODULE storage.ts
+COMPONENT IconPicker → RENDERS COMPONENT Button
+COMPONENT IconPicker → RENDERS COMPONENT Input
+COMPONENT IconPicker → RENDERS COMPONENT Label
+
+COMPONENT StudyTile → RENDERS COMPONENT ProgressBar
+COMPONENT StudyTile → USES MODULE utils.ts
+
+COMPONENT LessonCard → USES MODULE utils.ts
+
+COMPONENT TapCorrectActivity → USES MODULE utils.ts
+COMPONENT VisualMatchingActivity → USES MODULE utils.ts
+COMPONENT SequencingActivity → USES MODULE utils.ts
+
+COMPONENT BigTileButton → USES MODULE utils.ts
+COMPONENT KidShell → USES MODULE utils.ts
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ACTIVITY → COMPONENT MAPPINGS
+# ─────────────────────────────────────────────────────────────────────────────
+
+ACTIVITY tap_correct → MAPS_TO COMPONENT TapCorrectActivity
+ACTIVITY visual_matching → MAPS_TO COMPONENT VisualMatchingActivity
+ACTIVITY sequencing → MAPS_TO COMPONENT SequencingActivity
+ACTIVITY listen_choose → NO_COMPONENT (unimplemented — planned)
+ACTIVITY speak_tap_aac → NO_COMPONENT (unimplemented — planned)
+ACTIVITY trace → NO_COMPONENT (unimplemented — planned)
+ACTIVITY routine_checkoff → NO_COMPONENT (unimplemented — planned)
+ACTIVITY parent_guided → NO_COMPONENT (unimplemented — planned)
+ACTIVITY printable → NO_COMPONENT (unimplemented — planned)
+
+ACTIVITY tap_correct → DATA_SOURCE MODULE activityGameplayData.ts
+ACTIVITY visual_matching → DATA_SOURCE MODULE activityGameplayData.ts
+ACTIVITY sequencing → DATA_SOURCE MODULE activityGameplayData.ts
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DATABASE SCHEMA RELATIONSHIPS (foreign keys)
+# ─────────────────────────────────────────────────────────────────────────────
+
+TABLE profiles → REFERENCED_BY TABLE cards (column: profile_id)
+TABLE profiles → REFERENCED_BY TABLE schedules (column: profile_id)
+TABLE profiles → REFERENCED_BY TABLE rewards (column: profile_id)
+TABLE profiles → REFERENCED_BY TABLE settings (column: profile_id)
+TABLE profiles → REFERENCED_BY TABLE child_learning_plans (column: profile_id)
+TABLE profiles → REFERENCED_BY TABLE child_progress (column: profile_id)
+TABLE profiles → REFERENCED_BY TABLE child_preferences (column: profile_id)
+
+TABLE cards → REFERENCED_BY TABLE schedule_items (column: card_id)
+TABLE schedules → REFERENCED_BY TABLE schedule_items (column: schedule_id)
+
+TABLE year_categories → REFERENCED_BY TABLE class_levels (column: year_category_id)
+TABLE class_levels → REFERENCED_BY TABLE study_modules (column: class_level_id)
+TABLE class_levels → REFERENCED_BY TABLE child_learning_plans (column: class_level_id)
+TABLE subject_areas → REFERENCED_BY TABLE study_modules (column: subject_area_id)
+TABLE subject_areas → REFERENCED_BY TABLE weekly_plan_entries (column: subject_area_id)
+TABLE study_modules → REFERENCED_BY TABLE lessons (column: module_id)
+TABLE lessons → REFERENCED_BY TABLE activities (column: lesson_id)
+TABLE child_learning_plans → REFERENCED_BY TABLE weekly_plan_entries (column: learning_plan_id)
+
+
+================================================================================
+STEP 10 — FLAT RELATIONSHIP INDEX
+================================================================================
+# Every edge on a single line for machine parsing.
+# Format: SUBJECT → PREDICATE OBJECT
+
+PAGE "/" → NAVIGATES_TO PAGE "/kid/study"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/talk"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/schedule"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/rewards"
+PAGE "/" → NAVIGATES_TO PAGE "/kid/break"
+PAGE "/" → NAVIGATES_TO PAGE "/login"
+PAGE "/kid/talk" → RENDERS COMPONENT KidShell
+PAGE "/kid/talk" → RENDERS COMPONENT BigTileButton
+PAGE "/kid/talk" → RENDERS COMPONENT EmptyState
+PAGE "/kid/talk" → USES HOOK useRequireAuth
+PAGE "/kid/talk" → USES HOOK useSettings
+PAGE "/kid/talk" → USES MODULE profileStore.ts
+PAGE "/kid/talk" → USES MODULE tts.ts
+PAGE "/kid/talk" → USES MODULE analytics.ts
+PAGE "/kid/talk" → USES MODULE utils.ts
+PAGE "/kid/talk" → READS TABLE cards
+PAGE "/kid/schedule" → RENDERS COMPONENT KidShell
+PAGE "/kid/schedule" → RENDERS COMPONENT BigTileButton
+PAGE "/kid/schedule" → RENDERS COMPONENT EmptyState
+PAGE "/kid/schedule" → USES HOOK useRequireAuth
+PAGE "/kid/schedule" → USES HOOK useSettings
+PAGE "/kid/schedule" → USES MODULE profileStore.ts
+PAGE "/kid/schedule" → USES MODULE analytics.ts
+PAGE "/kid/schedule" → USES MODULE utils.ts
+PAGE "/kid/schedule" → READS TABLE schedules
+PAGE "/kid/schedule" → READS TABLE schedule_items
+PAGE "/kid/schedule" → READS TABLE cards
+PAGE "/kid/schedule" → WRITES TABLE schedule_items
+PAGE "/kid/schedule" → WRITES TABLE rewards
+PAGE "/kid/rewards" → RENDERS COMPONENT KidShell
+PAGE "/kid/rewards" → RENDERS COMPONENT EmptyState
+PAGE "/kid/rewards" → USES HOOK useRequireAuth
+PAGE "/kid/rewards" → USES HOOK useSettings
+PAGE "/kid/rewards" → USES MODULE profileStore.ts
+PAGE "/kid/rewards" → USES MODULE utils.ts
+PAGE "/kid/rewards" → READS TABLE rewards
+PAGE "/kid/rewards" → READS TABLE child_progress
+PAGE "/kid/break" → RENDERS COMPONENT KidShell
+PAGE "/kid/break" → USES HOOK useSettings
+PAGE "/kid/break" → USES MODULE profileStore.ts
+PAGE "/kid/break" → USES MODULE utils.ts
+PAGE "/kid/break" → NAVIGATES_TO PAGE "/"
+PAGE "/kid/study" → RENDERS COMPONENT KidShell
+PAGE "/kid/study" → RENDERS COMPONENT EmptyState
+PAGE "/kid/study" → RENDERS COMPONENT StudyTile
+PAGE "/kid/study" → RENDERS COMPONENT BreakCard
+PAGE "/kid/study" → USES HOOK useRequireAuth
+PAGE "/kid/study" → USES HOOK useSettings
+PAGE "/kid/study" → USES MODULE profileStore.ts
+PAGE "/kid/study" → USES MODULE studyDb.ts
+PAGE "/kid/study" → USES MODULE studySeedData.ts
+PAGE "/kid/study" → USES MODULE studyTypes.ts
+PAGE "/kid/study" → READS TABLE child_learning_plans
+PAGE "/kid/study" → READS TABLE child_progress
+PAGE "/kid/study" → READS TABLE weekly_plan_entries
+PAGE "/kid/study" → NAVIGATES_TO PAGE "/kid/study/subject/[subjectId]"
+PAGE "/kid/study/subject/[subjectId]" → RENDERS COMPONENT SubjectModulesClient
+PAGE "/kid/study/subject/[subjectId]" → USES MODULE studySeedData.ts
+COMPONENT SubjectModulesClient → RENDERS COMPONENT KidShell
+COMPONENT SubjectModulesClient → RENDERS COMPONENT EmptyState
+COMPONENT SubjectModulesClient → RENDERS COMPONENT StudyTile
+COMPONENT SubjectModulesClient → RENDERS COMPONENT ProgressBar
+COMPONENT SubjectModulesClient → RENDERS COMPONENT UpgradeBanner
+COMPONENT SubjectModulesClient → USES HOOK useRequireAuth
+COMPONENT SubjectModulesClient → USES HOOK useSettings
+COMPONENT SubjectModulesClient → USES HOOK useSubscription
+COMPONENT SubjectModulesClient → USES MODULE profileStore.ts
+COMPONENT SubjectModulesClient → USES MODULE studyDb.ts
+COMPONENT SubjectModulesClient → USES MODULE studySeedData.ts
+COMPONENT SubjectModulesClient → READS TABLE child_progress
+COMPONENT SubjectModulesClient → NAVIGATES_TO PAGE "/kid/study/module/[moduleId]"
+PAGE "/kid/study/module/[moduleId]" → RENDERS COMPONENT ModuleLessonsClient
+PAGE "/kid/study/module/[moduleId]" → USES MODULE studySeedData.ts
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT KidShell
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT EmptyState
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT LessonCard
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT ProgressBar
+COMPONENT ModuleLessonsClient → RENDERS COMPONENT UpgradeBanner
+COMPONENT ModuleLessonsClient → USES HOOK useRequireAuth
+COMPONENT ModuleLessonsClient → USES HOOK useSettings
+COMPONENT ModuleLessonsClient → USES HOOK useSubscription
+COMPONENT ModuleLessonsClient → USES MODULE profileStore.ts
+COMPONENT ModuleLessonsClient → USES MODULE studyDb.ts
+COMPONENT ModuleLessonsClient → USES MODULE studySeedData.ts
+COMPONENT ModuleLessonsClient → READS TABLE child_progress
+COMPONENT ModuleLessonsClient → NAVIGATES_TO PAGE "/kid/study/lesson/[lessonId]"
+PAGE "/kid/study/lesson/[lessonId]" → RENDERS COMPONENT LessonActivitiesClient
+PAGE "/kid/study/lesson/[lessonId]" → USES MODULE studySeedData.ts
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT KidShell
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT EmptyState
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT ProgressBar
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT RewardStars
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT SubjectBadge
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT BreakCard
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT UpgradeBanner
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT TapCorrectActivity
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT VisualMatchingActivity
+COMPONENT LessonActivitiesClient → RENDERS COMPONENT SequencingActivity
+COMPONENT LessonActivitiesClient → USES HOOK useRequireAuth
+COMPONENT LessonActivitiesClient → USES HOOK useSettings
+COMPONENT LessonActivitiesClient → USES HOOK useSubscription
+COMPONENT LessonActivitiesClient → USES MODULE profileStore.ts
+COMPONENT LessonActivitiesClient → USES MODULE studyDb.ts
+COMPONENT LessonActivitiesClient → USES MODULE studySeedData.ts
+COMPONENT LessonActivitiesClient → USES MODULE activityGameplayData.ts
+COMPONENT LessonActivitiesClient → USES MODULE db.ts
+COMPONENT LessonActivitiesClient → USES MODULE utils.ts
+COMPONENT LessonActivitiesClient → READS TABLE child_progress
+COMPONENT LessonActivitiesClient → WRITES TABLE child_progress
+COMPONENT LessonActivitiesClient → WRITES TABLE rewards
+PAGE "/login" → RENDERS COMPONENT Card
+PAGE "/login" → RENDERS COMPONENT Button
+PAGE "/login" → RENDERS COMPONENT Input
+PAGE "/login" → RENDERS COMPONENT Label
+PAGE "/login" → USES HOOK useAuth
+PAGE "/login" → USES MODULE supabaseClient.ts
+PAGE "/login" → USES MODULE db.ts
+PAGE "/login" → READS TABLE profiles
+PAGE "/login" → NAVIGATES_TO PAGE "/onboarding"
+PAGE "/login" → NAVIGATES_TO PAGE "/parent"
+PAGE "/onboarding" → RENDERS COMPONENT Card
+PAGE "/onboarding" → RENDERS COMPONENT Button
+PAGE "/onboarding" → RENDERS COMPONENT Input
+PAGE "/onboarding" → RENDERS COMPONENT Label
+PAGE "/onboarding" → USES HOOK useRequireAuth
+PAGE "/onboarding" → USES MODULE db.ts
+PAGE "/onboarding" → USES MODULE profileStore.ts
+PAGE "/onboarding" → USES MODULE studyDb.ts
+PAGE "/onboarding" → USES MODULE studySeedData.ts
+PAGE "/onboarding" → USES MODULE utils.ts
+PAGE "/onboarding" → WRITES TABLE profiles
+PAGE "/onboarding" → WRITES TABLE child_learning_plans
+PAGE "/onboarding" → WRITES TABLE child_preferences
+PAGE "/onboarding" → NAVIGATES_TO PAGE "/parent/study"
+PAGE "/parent" → RENDERS COMPONENT Card
+PAGE "/parent" → RENDERS COMPONENT Button
+PAGE "/parent" → RENDERS COMPONENT Input
+PAGE "/parent" → RENDERS COMPONENT Label
+PAGE "/parent" → RENDERS COMPONENT ParentGate
+PAGE "/parent" → RENDERS COMPONENT IconPicker
+PAGE "/parent" → USES HOOK useRequireAuth
+PAGE "/parent" → USES HOOK useSubscription
+PAGE "/parent" → USES MODULE db.ts
+PAGE "/parent" → USES MODULE profileStore.ts
+PAGE "/parent" → READS TABLE profiles
+PAGE "/parent" → READS TABLE cards
+PAGE "/parent" → READS TABLE schedules
+PAGE "/parent" → READS TABLE schedule_items
+PAGE "/parent" → WRITES TABLE profiles
+PAGE "/parent" → WRITES TABLE cards
+PAGE "/parent" → WRITES TABLE schedules
+PAGE "/parent" → WRITES TABLE schedule_items
+PAGE "/parent" → NAVIGATES_TO PAGE "/parent/study"
+PAGE "/parent" → NAVIGATES_TO PAGE "/parent/study/progress"
+PAGE "/parent" → NAVIGATES_TO PAGE "/kid/rewards"
+PAGE "/parent" → NAVIGATES_TO PAGE "/settings"
+PAGE "/parent/study" → RENDERS COMPONENT Card
+PAGE "/parent/study" → RENDERS COMPONENT Button
+PAGE "/parent/study" → RENDERS COMPONENT Label
+PAGE "/parent/study" → RENDERS COMPONENT Switch
+PAGE "/parent/study" → RENDERS COMPONENT SubjectBadge
+PAGE "/parent/study" → USES HOOK useRequireAuth
+PAGE "/parent/study" → USES MODULE profileStore.ts
+PAGE "/parent/study" → USES MODULE studyDb.ts
+PAGE "/parent/study" → USES MODULE studySeedData.ts
+PAGE "/parent/study" → USES MODULE studyTypes.ts
+PAGE "/parent/study" → READS TABLE child_learning_plans
+PAGE "/parent/study" → READS TABLE child_preferences
+PAGE "/parent/study" → READS TABLE weekly_plan_entries
+PAGE "/parent/study" → WRITES TABLE child_learning_plans
+PAGE "/parent/study" → WRITES TABLE child_preferences
+PAGE "/parent/study" → WRITES TABLE weekly_plan_entries
+PAGE "/parent/study" → NAVIGATES_TO PAGE "/parent/study/progress"
+PAGE "/parent/study/progress" → RENDERS COMPONENT Card
+PAGE "/parent/study/progress" → RENDERS COMPONENT Button
+PAGE "/parent/study/progress" → RENDERS COMPONENT ProgressBar
+PAGE "/parent/study/progress" → RENDERS COMPONENT RewardStars
+PAGE "/parent/study/progress" → USES HOOK useRequireAuth
+PAGE "/parent/study/progress" → USES MODULE profileStore.ts
+PAGE "/parent/study/progress" → USES MODULE studyDb.ts
+PAGE "/parent/study/progress" → USES MODULE studySeedData.ts
+PAGE "/parent/study/progress" → READS TABLE child_progress
+PAGE "/parent/study/progress" → READS TABLE child_learning_plans
+PAGE "/parent/subscription" → RENDERS COMPONENT Card
+PAGE "/parent/subscription" → RENDERS COMPONENT Button
+PAGE "/parent/subscription" → RENDERS COMPONENT ParentGate
+PAGE "/parent/subscription" → USES HOOK useRequireAuth
+PAGE "/parent/subscription" → USES HOOK useSubscription
+PAGE "/parent/subscription" → USES HOOK useUpdateSubscription
+PAGE "/parent/subscription" → USES MODULE utils.ts
+PAGE "/parent/subscription" → READS TABLE profiles
+PAGE "/parent/subscription" → WRITES TABLE profiles
+PAGE "/settings" → RENDERS COMPONENT Card
+PAGE "/settings" → RENDERS COMPONENT Button
+PAGE "/settings" → RENDERS COMPONENT Label
+PAGE "/settings" → RENDERS COMPONENT Switch
+PAGE "/settings" → RENDERS COMPONENT ParentGate
+PAGE "/settings" → USES HOOK useRequireAuth
+PAGE "/settings" → USES HOOK useSettings
+PAGE "/settings" → USES HOOK useUpdateSettings
+PAGE "/settings" → USES MODULE profileStore.ts
+PAGE "/settings" → USES MODULE analytics.ts
+PAGE "/settings" → READS TABLE settings
+PAGE "/settings" → WRITES TABLE settings
+HOOK useAuth → IMPORTS MODULE supabaseClient.ts
+HOOK useAuth → USES DEPENDENCY @supabase/supabase-js
+HOOK useAuth → READS STORAGE Supabase_auth_session
+HOOK useRequireAuth → USES HOOK useAuth
+HOOK useRequireAuth → NAVIGATES_TO PAGE "/login"
+HOOK useSettings → USES MODULE db.ts
+HOOK useSettings → IMPORTS MODULE types.ts
+HOOK useSettings → USES DEPENDENCY @tanstack/react-query
+HOOK useSettings → READS TABLE settings
+HOOK useUpdateSettings → USES MODULE db.ts
+HOOK useUpdateSettings → IMPORTS MODULE types.ts
+HOOK useUpdateSettings → USES DEPENDENCY @tanstack/react-query
+HOOK useUpdateSettings → WRITES TABLE settings
+HOOK useSubscription → USES MODULE db.ts
+HOOK useSubscription → IMPORTS MODULE types.ts
+HOOK useSubscription → USES DEPENDENCY @tanstack/react-query
+HOOK useSubscription → READS TABLE profiles
+HOOK useIsPremium → USES HOOK useSubscription
+HOOK useUpdateSubscription → USES MODULE db.ts
+HOOK useUpdateSubscription → IMPORTS MODULE types.ts
+HOOK useUpdateSubscription → USES DEPENDENCY @tanstack/react-query
+HOOK useUpdateSubscription → WRITES TABLE profiles
+MODULE db.ts → IMPORTS MODULE supabaseClient.ts
+MODULE db.ts → IMPORTS MODULE syncQueue.ts
+MODULE db.ts → IMPORTS MODULE types.ts
+MODULE db.ts → READS TABLE profiles
+MODULE db.ts → READS TABLE cards
+MODULE db.ts → READS TABLE schedules
+MODULE db.ts → READS TABLE schedule_items
+MODULE db.ts → READS TABLE rewards
+MODULE db.ts → READS TABLE settings
+MODULE db.ts → WRITES TABLE profiles
+MODULE db.ts → WRITES TABLE cards
+MODULE db.ts → WRITES TABLE schedules
+MODULE db.ts → WRITES TABLE schedule_items
+MODULE db.ts → WRITES TABLE rewards
+MODULE db.ts → WRITES TABLE settings
+MODULE studyDb.ts → IMPORTS MODULE supabaseClient.ts
+MODULE studyDb.ts → IMPORTS MODULE syncQueue.ts
+MODULE studyDb.ts → IMPORTS MODULE studyTypes.ts
+MODULE studyDb.ts → READS TABLE child_learning_plans
+MODULE studyDb.ts → READS TABLE child_progress
+MODULE studyDb.ts → READS TABLE child_preferences
+MODULE studyDb.ts → READS TABLE weekly_plan_entries
+MODULE studyDb.ts → WRITES TABLE child_learning_plans
+MODULE studyDb.ts → WRITES TABLE child_progress
+MODULE studyDb.ts → WRITES TABLE child_preferences
+MODULE studyDb.ts → WRITES TABLE weekly_plan_entries
+MODULE supabaseClient.ts → IMPORTS MODULE env.ts
+MODULE supabaseClient.ts → USES DEPENDENCY @supabase/supabase-js
+MODULE syncQueue.ts → IMPORTS MODULE supabaseClient.ts
+MODULE syncQueue.ts → USES DEPENDENCY idb-keyval
+MODULE syncQueue.ts → READS STORAGE IndexedDB
+MODULE queryPersistence.ts → USES DEPENDENCY idb-keyval
+MODULE queryPersistence.ts → USES DEPENDENCY @tanstack/react-query-persist-client
+MODULE queryPersistence.ts → READS STORAGE IndexedDB
+MODULE queryPersistence.ts → WRITES STORAGE IndexedDB
+MODULE analytics.ts → USES DEPENDENCY posthog-js
+MODULE analytics.ts → READS STORAGE localStorage
+MODULE analytics.ts → WRITES STORAGE localStorage
+MODULE profileStore.ts → READS STORAGE localStorage
+MODULE profileStore.ts → WRITES STORAGE localStorage
+MODULE storage.ts → IMPORTS MODULE supabaseClient.ts
+MODULE storage.ts → USES DEPENDENCY @supabase/supabase-js
+MODULE storage.ts → WRITES STORAGE_BUCKET card-icons
+MODULE tts.ts → USES DEPENDENCY @capacitor-community/text-to-speech
+MODULE tts.ts → USES DEPENDENCY @capacitor/core
+MODULE tts.ts → USES WEB_API SpeechSynthesis
+MODULE settingsHooks.ts → IMPORTS MODULE db.ts
+MODULE settingsHooks.ts → IMPORTS MODULE types.ts
+MODULE settingsHooks.ts → USES DEPENDENCY @tanstack/react-query
+MODULE subscriptionHooks.ts → IMPORTS MODULE db.ts
+MODULE subscriptionHooks.ts → IMPORTS MODULE types.ts
+MODULE subscriptionHooks.ts → USES DEPENDENCY @tanstack/react-query
+MODULE activityGameplayData.ts → IMPORTS MODULE studyTypes.ts
+MODULE utils.ts → USES DEPENDENCY clsx
+MODULE utils.ts → USES DEPENDENCY tailwind-merge
+COMPONENT Providers → USES MODULE queryPersistence.ts
+COMPONENT Providers → USES MODULE syncQueue.ts
+COMPONENT Providers → USES MODULE analytics.ts
+COMPONENT Providers → RENDERS COMPONENT SyncManager
+COMPONENT Providers → USES DEPENDENCY @tanstack/react-query
+COMPONENT Providers → USES DEPENDENCY @tanstack/react-query-persist-client
+COMPONENT SyncManager → USES MODULE syncQueue.ts
+COMPONENT SyncManager → USES MODULE analytics.ts
+COMPONENT NavBar → USES HOOK useSettings
+COMPONENT NavBar → USES MODULE profileStore.ts
+COMPONENT NavBar → USES MODULE utils.ts
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/talk"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/study"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/schedule"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/kid/rewards"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/parent"
+COMPONENT NavBar → NAVIGATES_TO PAGE "/settings"
+COMPONENT UpgradeBanner → NAVIGATES_TO PAGE "/parent/subscription"
+COMPONENT UpgradeBanner → USES MODULE utils.ts
+COMPONENT IconPicker → USES MODULE storage.ts
+COMPONENT IconPicker → RENDERS COMPONENT Button
+COMPONENT IconPicker → RENDERS COMPONENT Input
+COMPONENT IconPicker → RENDERS COMPONENT Label
+COMPONENT StudyTile → RENDERS COMPONENT ProgressBar
+COMPONENT StudyTile → USES MODULE utils.ts
+COMPONENT LessonCard → USES MODULE utils.ts
+COMPONENT BigTileButton → USES MODULE utils.ts
+COMPONENT KidShell → USES MODULE utils.ts
+COMPONENT TapCorrectActivity → USES MODULE utils.ts
+COMPONENT VisualMatchingActivity → USES MODULE utils.ts
+COMPONENT SequencingActivity → USES MODULE utils.ts
+ACTIVITY tap_correct → MAPS_TO COMPONENT TapCorrectActivity
+ACTIVITY visual_matching → MAPS_TO COMPONENT VisualMatchingActivity
+ACTIVITY sequencing → MAPS_TO COMPONENT SequencingActivity
+ACTIVITY tap_correct → DATA_SOURCE MODULE activityGameplayData.ts
+ACTIVITY visual_matching → DATA_SOURCE MODULE activityGameplayData.ts
+ACTIVITY sequencing → DATA_SOURCE MODULE activityGameplayData.ts
+TABLE profiles → REFERENCED_BY TABLE cards
+TABLE profiles → REFERENCED_BY TABLE schedules
+TABLE profiles → REFERENCED_BY TABLE rewards
+TABLE profiles → REFERENCED_BY TABLE settings
+TABLE profiles → REFERENCED_BY TABLE child_learning_plans
+TABLE profiles → REFERENCED_BY TABLE child_progress
+TABLE profiles → REFERENCED_BY TABLE child_preferences
+TABLE cards → REFERENCED_BY TABLE schedule_items
+TABLE schedules → REFERENCED_BY TABLE schedule_items
+TABLE year_categories → REFERENCED_BY TABLE class_levels
+TABLE class_levels → REFERENCED_BY TABLE study_modules
+TABLE class_levels → REFERENCED_BY TABLE child_learning_plans
+TABLE subject_areas → REFERENCED_BY TABLE study_modules
+TABLE subject_areas → REFERENCED_BY TABLE weekly_plan_entries
+TABLE study_modules → REFERENCED_BY TABLE lessons
+TABLE lessons → REFERENCED_BY TABLE activities
+TABLE child_learning_plans → REFERENCED_BY TABLE weekly_plan_entries
+
+================================================================================
+END OF KNOWLEDGE GRAPH
+================================================================================
