@@ -21,6 +21,12 @@ export default function Home() {
           <span aria-hidden="true">💬</span> Talk
         </Link>
         <Link
+          href="/kid/study"
+          className="inline-flex min-h-[56px] min-w-[180px] items-center justify-center gap-3 rounded-2xl bg-accent px-6 text-lg font-bold text-accent-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
+        >
+          <span aria-hidden="true">📖</span> Study
+        </Link>
+        <Link
           href="/kid/schedule"
           className="inline-flex min-h-[56px] min-w-[180px] items-center justify-center gap-3 rounded-2xl bg-secondary px-6 text-lg font-bold text-secondary-foreground shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
         >
