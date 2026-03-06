@@ -92,7 +92,7 @@ export default function Home() {
       <div
         className={cn(
           "grid w-full gap-4",
-          bigButtonMode ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2",
+          bigButtonMode ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2 sm:grid-cols-3",
         )}
       >
         {TILES.map((tile) => (
@@ -100,8 +100,8 @@ export default function Home() {
             key={tile.href}
             href={tile.href}
             className={cn(
-              "group flex flex-col items-center justify-center gap-4 rounded-xl p-6 shadow-lg",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "group flex flex-col items-center justify-center gap-4 rounded-2xl p-6 shadow-lg",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               bigButtonMode ? "min-h-[200px]" : "min-h-[160px]",
               calmMode ? "" : "transition-transform active:scale-95",
               tile.bg,
@@ -130,28 +130,11 @@ export default function Home() {
             </span>
           </Link>
         ))}
-
-        {/* Placeholder add tile */}
-        <div
-          className={cn(
-            "flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-muted-foreground/30 p-6",
-            bigButtonMode ? "min-h-[200px]" : "min-h-[160px]",
-          )}
-        >
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-            <span className="material-symbols-outlined text-4xl text-muted-foreground" aria-hidden="true">
-              add
-            </span>
-          </div>
-          <span className="text-lg font-bold text-muted-foreground">
-            Coming soon
-          </span>
-        </div>
       </div>
 
       {/* Bottom nav bar */}
       <nav
-        className="mt-auto flex items-center justify-around rounded-2xl bg-card py-3 shadow-md"
+        className="mt-auto flex items-center justify-around rounded-2xl bg-card py-3 shadow-md border border-border"
         aria-label="Bottom navigation"
       >
         {[

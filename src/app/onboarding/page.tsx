@@ -167,7 +167,7 @@ export default function OnboardingPage() {
   return (
     <main className="mx-auto flex min-h-[80vh] max-w-lg flex-col items-center justify-center px-4 py-10">
       {/* Progress indicator */}
-      <div className="mb-6 flex items-center gap-2">
+      <div className="mb-8 flex items-center gap-2" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={TOTAL_STEPS} aria-label={`Step ${step} of ${TOTAL_STEPS}`}>
         {Array.from({ length: TOTAL_STEPS }, (_, i) => (
           <div
             key={i}
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={() => setClassLevel(cl.id)}
                     className={cn(
-                      "rounded-xl border-2 px-4 py-3 text-center font-semibold",
+                      "rounded-2xl border-2 px-4 py-4 text-center font-semibold min-h-[80px]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       "transition-colors",
                       classLevel === cl.id
@@ -447,9 +447,9 @@ export default function OnboardingPage() {
       )}
 
       {/* Navigation buttons */}
-      <div className="mt-6 flex w-full justify-between">
+      <div className="mt-8 flex w-full justify-between gap-4">
         {step > 1 ? (
-          <Button variant="outline" onClick={goBack} disabled={saving}>
+          <Button variant="outline" size="lg" onClick={goBack} disabled={saving} className="min-h-[48px]">
             ← Back
           </Button>
         ) : (
@@ -457,9 +457,10 @@ export default function OnboardingPage() {
         )}
 
         <Button
+          size="lg"
           onClick={goNext}
           disabled={!canNext() || saving}
-          className={cn(step === 1 && "px-8 text-base", step === 7 && "px-8 text-base")}
+          className={cn("min-h-[48px]", step === 1 && "px-8 text-base", step === 7 && "px-8 text-base")}
         >
           {saving
             ? "Saving…"

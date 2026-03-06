@@ -11,18 +11,22 @@ interface SuccessCardProps {
   onHome?: () => void;
   /** Retry the current activity */
   onRetry?: () => void;
+  /** Disable animations (calm mode) */
+  calm?: boolean;
 }
 
 /**
  * Activity completion success screen.
  * Shows a celebratory "Great Job!" heading, animated star display,
  * earned-stars label, and navigation buttons.
+ * Animations are disabled when calm mode is active.
  */
 export function SuccessCard({
   starsEarned = 0,
   onNext,
   onHome,
   onRetry,
+  calm = false,
 }: SuccessCardProps) {
   const stars = Math.max(0, Math.min(3, starsEarned));
 
@@ -41,11 +45,13 @@ export function SuccessCard({
             className={cn(
               "text-5xl leading-none select-none",
               i < stars
-                ? "text-star-yellow animate-bounce"
+                ? calm
+                  ? "text-star-yellow"
+                  : "text-star-yellow animate-bounce"
                 : "text-muted-foreground/30",
             )}
             style={
-              i < stars ? { animationDelay: `${i * 150}ms` } : undefined
+              i < stars && !calm ? { animationDelay: `${i * 150}ms` } : undefined
             }
             role="img"
             aria-hidden="true"
@@ -69,7 +75,7 @@ export function SuccessCard({
             "min-h-[48px] min-w-[200px] rounded-2xl bg-primary px-8 py-4",
             "text-lg font-bold text-primary-foreground shadow-md",
             "cursor-pointer select-none",
-            "transition-transform active:scale-95 hover:shadow-lg",
+            calm ? "" : "transition-transform active:scale-95 hover:shadow-lg",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           )}
         >
@@ -87,7 +93,7 @@ export function SuccessCard({
               "flex min-h-[48px] min-w-[48px] flex-col items-center gap-1",
               "cursor-pointer select-none rounded-xl p-3",
               "text-muted-foreground hover:text-foreground",
-              "transition-colors",
+              calm ? "" : "transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             )}
             aria-label="Go home"
@@ -107,7 +113,7 @@ export function SuccessCard({
               "flex min-h-[48px] min-w-[48px] flex-col items-center gap-1",
               "cursor-pointer select-none rounded-xl p-3",
               "text-muted-foreground hover:text-foreground",
-              "transition-colors",
+              calm ? "" : "transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             )}
             aria-label="Try again"

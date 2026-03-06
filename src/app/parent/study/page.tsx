@@ -14,8 +14,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SubjectBadge } from "@/components/study/SubjectBadge";
-import { useRequireAuth } from "@/hooks/useAuth";
 import ParentGate from "@/components/ParentGate";
+import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import {
   getChildLearningPlan,

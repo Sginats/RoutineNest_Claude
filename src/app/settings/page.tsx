@@ -82,6 +82,7 @@ export default function SettingsPage() {
   const calmMode = settings?.calm_mode ?? false;
   const gridSize = settings?.grid_size ?? 3;
   const soundEnabled = settings?.sound_enabled ?? true;
+  const bigButtonMode = settings?.big_button_mode ?? false;
 
   return (
     <ParentGate>
@@ -142,6 +143,26 @@ export default function SettingsPage() {
                   </Button>
                 ))}
               </div>
+            </div>
+
+            {/* Big Button Mode */}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="big-button-mode" className="flex flex-col gap-1">
+                <span className="text-base font-semibold">
+                  {bigButtonMode ? "🔳 Big Buttons On" : "🔲 Big Buttons Off"}
+                </span>
+                <span className="text-sm text-muted-foreground font-normal">
+                  Larger touch targets and fewer grid columns for easier tapping
+                </span>
+              </Label>
+              <Switch
+                id="big-button-mode"
+                checked={bigButtonMode}
+                onCheckedChange={(checked) =>
+                  updateSettings({ big_button_mode: checked })
+                }
+                aria-label="Toggle big button mode"
+              />
             </div>
           </CardContent>
         </Card>

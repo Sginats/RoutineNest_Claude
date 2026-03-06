@@ -11,6 +11,8 @@ interface ProgressBarProps {
   showPercent?: boolean;
   /** Bar height variant */
   size?: "sm" | "md" | "lg";
+  /** Bar colour variant */
+  color?: "primary" | "success" | "star";
 }
 
 const sizeClasses: Record<NonNullable<ProgressBarProps["size"]>, string> = {
@@ -19,15 +21,23 @@ const sizeClasses: Record<NonNullable<ProgressBarProps["size"]>, string> = {
   lg: "h-4",
 };
 
+const colorClasses: Record<NonNullable<ProgressBarProps["color"]>, string> = {
+  primary: "bg-primary",
+  success: "bg-success",
+  star: "bg-star-yellow",
+};
+
 /**
  * Kid-friendly progress bar with rounded ends and optional label.
  * Fully accessible with progressbar role and ARIA attributes.
+ * Consistent across all pages — use via this single component.
  */
 export function ProgressBar({
   value,
   label,
   showPercent = false,
   size = "md",
+  color = "primary",
 }: ProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, value));
 
@@ -54,7 +64,10 @@ export function ProgressBar({
         )}
       >
         <div
-          className="h-full rounded-full bg-primary transition-all"
+          className={cn(
+            "h-full rounded-full transition-all duration-300",
+            colorClasses[color],
+          )}
           style={{ width: `${clamped}%` }}
         />
       </div>
