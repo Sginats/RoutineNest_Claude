@@ -61,7 +61,7 @@ export function TapCorrectActivity({ instructions, choices, calm, onComplete }: 
 
           return (
             <button
-              key={`${choice.label}-${i}`}
+              key={`${choice.label}-${choice.emoji}`}
               type="button"
               onClick={() => handleTap(i)}
               className={cn(

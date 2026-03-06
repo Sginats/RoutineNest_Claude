@@ -20,6 +20,8 @@ function toLocalDateStr(iso: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+const MS_PER_DAY = 86_400_000;
+
 function computeStreak(dates: string[]): number {
   if (dates.length === 0) return 0;
   const unique = [...new Set(dates.map(toLocalDateStr))].sort().reverse();
@@ -27,14 +29,14 @@ function computeStreak(dates: string[]): number {
   const first = unique[0];
   if (!first) return 0;
   const diffFromToday = Math.floor(
-    (new Date(today).getTime() - new Date(first).getTime()) / 86_400_000,
+    (new Date(today).getTime() - new Date(first).getTime()) / MS_PER_DAY,
   );
   if (diffFromToday > 1) return 0;
   let streak = 1;
   for (let i = 1; i < unique.length; i++) {
     const prev = new Date(unique[i - 1]!).getTime();
     const curr = new Date(unique[i]!).getTime();
-    if (prev - curr === 86_400_000) streak++;
+    if (prev - curr === MS_PER_DAY) streak++;
     else break;
   }
   return streak;

@@ -75,7 +75,7 @@ export default function BreakPage() {
 
         {/* Break timer */}
         <div className="flex flex-col items-center gap-4">
-          <p className="text-5xl font-extrabold tabular-nums text-muted-foreground" aria-label={`${minutes} minutes ${secs} seconds`}>
+          <p className="text-5xl font-extrabold tabular-nums text-muted-foreground" role="timer" aria-label={`${minutes} minutes ${secs} seconds`}>
             {String(minutes).padStart(2, "0")}:{String(secs).padStart(2, "0")}
           </p>
           <div className="flex gap-3">
