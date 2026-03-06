@@ -32,6 +32,7 @@ export default function TalkPage() {
   const calmMode = settings?.calm_mode ?? false;
   const gridSize = settings?.grid_size ?? 3;
   const soundEnabled = settings?.sound_enabled ?? true;
+  const bigButtonMode = settings?.big_button_mode ?? false;
 
   // Track screen view once user and profile are ready
   useEffect(() => {
@@ -94,10 +95,15 @@ export default function TalkPage() {
     );
   }
 
+  // Grid column count.
+  // Precedence: big_button_mode reduces to max 2 columns for easier tapping,
+  // unless gridSize is explicitly set to 2 (in which case it stays at 2).
+  // If gridSize is set to 4, big_button_mode caps it at 2 columns.
+  const effectiveGridSize = bigButtonMode ? Math.min(gridSize, 2) : gridSize;
   const gridCols =
-    gridSize === 2
+    effectiveGridSize === 2
       ? "grid-cols-2"
-      : gridSize === 4
+      : effectiveGridSize === 4
         ? "grid-cols-4"
         : "grid-cols-3";
 
@@ -111,6 +117,7 @@ export default function TalkPage() {
             imageUrl={card.image_url}
             fallbackEmoji="💬"
             calm={calmMode}
+            bigButtonMode={bigButtonMode}
             pressed={pressedId === card.id}
             ariaLabel={card.label}
             onClick={() => handleTap(card)}

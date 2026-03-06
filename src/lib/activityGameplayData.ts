@@ -116,6 +116,100 @@ const SEQUENCING_DATA: Record<
 };
 
 // ---------------------------------------------------------------------------
+// Listen-choose data
+// ---------------------------------------------------------------------------
+
+/** Predefined choice sets for listen_choose activities (first = correct) */
+const LISTEN_CHOOSE_DATA: Record<
+  string,
+  { label: string; emoji: string }[]
+> = {
+  "act-water-listen": [
+    { label: "Water", emoji: "💧" },
+    { label: "Apple", emoji: "🍎" },
+    { label: "Book", emoji: "📖" },
+    { label: "Car", emoji: "🚗" },
+  ],
+  "act-help-listen": [
+    { label: "I need help", emoji: "🆘" },
+    { label: "I am happy", emoji: "😊" },
+    { label: "I want food", emoji: "🍞" },
+    { label: "Let's play", emoji: "🎮" },
+  ],
+  "act-feelings-listen": [
+    { label: "Happy", emoji: "😊" },
+    { label: "Sad", emoji: "😢" },
+    { label: "Angry", emoji: "😠" },
+    { label: "Tired", emoji: "😴" },
+  ],
+  "act-greet-listen": [
+    { label: "Hello!", emoji: "👋" },
+    { label: "Goodbye!", emoji: "🤚" },
+    { label: "Please", emoji: "🙏" },
+    { label: "Thank you", emoji: "💛" },
+  ],
+  "act-shapes-listen": [
+    { label: "Circle", emoji: "⭕" },
+    { label: "Square", emoji: "🟦" },
+    { label: "Triangle", emoji: "🔺" },
+    { label: "Rectangle", emoji: "📄" },
+  ],
+  "act-numbers-listen": [
+    { label: "Three", emoji: "3️⃣" },
+    { label: "One", emoji: "1️⃣" },
+    { label: "Five", emoji: "5️⃣" },
+    { label: "Seven", emoji: "7️⃣" },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Speak-tap AAC data
+// ---------------------------------------------------------------------------
+
+/** Predefined AAC response option sets for speak_tap_aac activities (first = correct) */
+const SPEAK_TAP_AAC_DATA: Record<
+  string,
+  { label: string; emoji: string; speakText?: string }[]
+> = {
+  "act-want-water-aac": [
+    { label: "Water", emoji: "💧", speakText: "I want water please" },
+    { label: "Food", emoji: "🍎" },
+    { label: "Break", emoji: "🧘" },
+    { label: "Play", emoji: "🎮" },
+  ],
+  "act-need-help-aac": [
+    { label: "Help", emoji: "🆘", speakText: "I need help please" },
+    { label: "No", emoji: "❌" },
+    { label: "Done", emoji: "✅" },
+    { label: "More", emoji: "➕" },
+  ],
+  "act-feeling-happy-aac": [
+    { label: "Happy", emoji: "😊", speakText: "I feel happy" },
+    { label: "Sad", emoji: "😢" },
+    { label: "Angry", emoji: "😠" },
+    { label: "Tired", emoji: "😴" },
+  ],
+  "act-say-hello-aac": [
+    { label: "Hello!", emoji: "👋", speakText: "Hello!" },
+    { label: "Goodbye", emoji: "🤚" },
+    { label: "Please", emoji: "🙏" },
+    { label: "Thank you", emoji: "💛" },
+  ],
+  "act-please-aac": [
+    { label: "Please", emoji: "🙏", speakText: "Yes please" },
+    { label: "No thank you", emoji: "🙅" },
+    { label: "Maybe", emoji: "🤔" },
+    { label: "Stop", emoji: "✋" },
+  ],
+  "act-break-aac": [
+    { label: "Break", emoji: "⏸️", speakText: "I need a break" },
+    { label: "Play", emoji: "🎮" },
+    { label: "Eat", emoji: "🍎" },
+    { label: "Sleep", emoji: "😴" },
+  ],
+};
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -131,6 +225,14 @@ export type ActivityGameplayData =
   | {
       type: "sequencing";
       steps: { label: string; emoji: string }[];
+    }
+  | {
+      type: "listen_choose";
+      choices: { label: string; emoji: string }[];
+    }
+  | {
+      type: "speak_tap_aac";
+      options: { label: string; emoji: string; speakText?: string }[];
     }
   | {
       type: "simple";
@@ -167,6 +269,32 @@ export function getActivityGameplayData(
       const steps = SEQUENCING_DATA[activityId];
       if (steps) return { type: "sequencing", steps };
       return { type: "simple" };
+    }
+    case "listen_choose": {
+      const choices = LISTEN_CHOOSE_DATA[activityId];
+      if (choices) return { type: "listen_choose", choices };
+      // Fallback generic listen-choose
+      return {
+        type: "listen_choose",
+        choices: [
+          { label: "Yes", emoji: "✅" },
+          { label: "No", emoji: "❌" },
+          { label: "Maybe", emoji: "🤔" },
+        ],
+      };
+    }
+    case "speak_tap_aac": {
+      const options = SPEAK_TAP_AAC_DATA[activityId];
+      if (options) return { type: "speak_tap_aac", options };
+      // Fallback generic AAC options
+      return {
+        type: "speak_tap_aac",
+        options: [
+          { label: "Yes", emoji: "✅", speakText: "Yes" },
+          { label: "No", emoji: "❌", speakText: "No" },
+          { label: "Help", emoji: "🆘", speakText: "I need help" },
+        ],
+      };
     }
     default:
       return { type: "simple" };

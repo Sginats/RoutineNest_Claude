@@ -324,39 +324,58 @@ const act = (
 
 export const SEED_MODULES: SeedModule[] = [
   // ── Communication ──────────────────────────────────────────────────────
-  mod("mod-comm-basic-needs", "sa-communication", "Expressing Basic Needs", "Learn to ask for help, food, drink, and a break using words and picture cards.", "🗣️", 1, 1, false),
-  mod("mod-comm-feelings", "sa-communication", "Naming My Feelings", "Identify and express happy, sad, angry, scared, and calm using visual supports.", "😊", 2, 2, false),
-  mod("mod-comm-greetings", "sa-communication", "Greetings & Goodbyes", "Practice saying hello, goodbye, please, and thank you in everyday situations.", "👋", 3, 1, false),
+  // Basic needs: earliest level — appropriate from Pre-K onward
+  mod("mod-comm-basic-needs", "sa-communication", "Expressing Basic Needs", "Learn to ask for help, food, drink, and a break using words and picture cards.", "🗣️", 1, 1, false, "cl-prek"),
+  // Feelings: kindergarten level
+  mod("mod-comm-feelings", "sa-communication", "Naming My Feelings", "Identify and express happy, sad, angry, scared, and calm using visual supports.", "😊", 2, 2, false, "cl-kindergarten"),
+  // Greetings: kindergarten level
+  mod("mod-comm-greetings", "sa-communication", "Greetings & Goodbyes", "Practice saying hello, goodbye, please, and thank you in everyday situations.", "👋", 3, 1, false, "cl-kindergarten"),
 
   // ── Reading/Language ───────────────────────────────────────────────────
-  mod("mod-read-letter-id", "sa-reading", "Letter Recognition", "Identify uppercase and lowercase letters through fun matching and tracing games.", "🔤", 1, 1, false),
-  mod("mod-read-phonics", "sa-reading", "Beginning Phonics", "Connect letters to their sounds and start blending simple CVC words.", "🔊", 2, 2, false),
-  mod("mod-read-sight-words", "sa-reading", "First Sight Words", "Recognize and read 20 high-frequency sight words with picture support.", "👀", 3, 2, true),
+  // Letter recognition: kindergarten
+  mod("mod-read-letter-id", "sa-reading", "Letter Recognition", "Identify uppercase and lowercase letters through fun matching and tracing games.", "🔤", 1, 1, false, "cl-kindergarten"),
+  // Phonics: Grade 1
+  mod("mod-read-phonics", "sa-reading", "Beginning Phonics", "Connect letters to their sounds and start blending simple CVC words.", "🔊", 2, 2, false, "cl-grade1"),
+  // Sight words: Grade 2 (premium)
+  mod("mod-read-sight-words", "sa-reading", "First Sight Words", "Recognize and read 20 high-frequency sight words with picture support.", "👀", 3, 2, true, "cl-grade2"),
 
   // ── Math ───────────────────────────────────────────────────────────────
-  mod("mod-math-counting", "sa-math", "Counting 1–10", "Count objects, match quantities, and write numerals from 1 to 10.", "🔢", 1, 1, false),
-  mod("mod-math-shapes", "sa-math", "Shapes All Around", "Identify circles, squares, triangles, and rectangles in the world around us.", "🔷", 2, 1, false),
-  mod("mod-math-patterns", "sa-math", "Simple Patterns", "Recognize and extend AB and ABC color and shape patterns.", "🔁", 3, 2, true),
+  // Counting: Pre-K (very early math)
+  mod("mod-math-counting", "sa-math", "Counting 1–10", "Count objects, match quantities, and write numerals from 1 to 10.", "🔢", 1, 1, false, "cl-prek"),
+  // Shapes: kindergarten
+  mod("mod-math-shapes", "sa-math", "Shapes All Around", "Identify circles, squares, triangles, and rectangles in the world around us.", "🔷", 2, 1, false, "cl-kindergarten"),
+  // Patterns: Grade 1 (premium)
+  mod("mod-math-patterns", "sa-math", "Simple Patterns", "Recognize and extend AB and ABC color and shape patterns.", "🔁", 3, 2, true, "cl-grade1"),
 
   // ── Daily Living Skills ────────────────────────────────────────────────
-  mod("mod-daily-morning", "sa-daily-living", "My Morning Routine", "Follow a visual schedule to get ready in the morning — wake up, wash, dress, eat.", "🌅", 1, 1, false),
-  mod("mod-daily-hygiene", "sa-daily-living", "Healthy Hygiene Habits", "Learn handwashing, tooth brushing, and toileting steps with visual checklists.", "🧼", 2, 1, false),
-  mod("mod-daily-mealtime", "sa-daily-living", "Mealtime Manners", "Practice setting a place, using utensils, and cleaning up after eating.", "🍽️", 3, 2, true),
+  // Morning routine: Pre-K (foundational life skill)
+  mod("mod-daily-morning", "sa-daily-living", "My Morning Routine", "Follow a visual schedule to get ready in the morning — wake up, wash, dress, eat.", "🌅", 1, 1, false, "cl-prek"),
+  // Hygiene: Pre-K (foundational)
+  mod("mod-daily-hygiene", "sa-daily-living", "Healthy Hygiene Habits", "Learn handwashing, tooth brushing, and toileting steps with visual checklists.", "🧼", 2, 1, false, "cl-prek"),
+  // Mealtime: kindergarten (premium)
+  mod("mod-daily-mealtime", "sa-daily-living", "Mealtime Manners", "Practice setting a place, using utensils, and cleaning up after eating.", "🍽️", 3, 2, true, "cl-kindergarten"),
 
   // ── Social Skills ──────────────────────────────────────────────────────
-  mod("mod-social-turn-taking", "sa-social", "Taking Turns", "Learn to wait, share, and take turns during games and conversations.", "🔄", 1, 1, false),
-  mod("mod-social-emotions", "sa-social", "Reading Faces", "Look at faces and body language to understand how others feel.", "🎭", 2, 2, false),
-  mod("mod-social-friendship", "sa-social", "Making Friends", "Practice joining play, sharing toys, and being a kind friend.", "💛", 3, 2, true),
+  // Turn-taking: kindergarten
+  mod("mod-social-turn-taking", "sa-social", "Taking Turns", "Learn to wait, share, and take turns during games and conversations.", "🔄", 1, 1, false, "cl-kindergarten"),
+  // Reading faces: Grade 1
+  mod("mod-social-emotions", "sa-social", "Reading Faces", "Look at faces and body language to understand how others feel.", "🎭", 2, 2, false, "cl-grade1"),
+  // Making friends: Grade 1 (premium)
+  mod("mod-social-friendship", "sa-social", "Making Friends", "Practice joining play, sharing toys, and being a kind friend.", "💛", 3, 2, true, "cl-grade1"),
 
   // ── Fine Motor/Cognitive ───────────────────────────────────────────────
-  mod("mod-motor-tracing", "sa-fine-motor", "Tracing Lines & Curves", "Strengthen pencil control by tracing straight, curved, and zigzag lines.", "✏️", 1, 1, true),
-  mod("mod-motor-puzzles", "sa-fine-motor", "Simple Puzzles", "Build problem-solving skills by completing 4- to 9-piece visual puzzles.", "🧩", 2, 2, true),
-  mod("mod-motor-sorting", "sa-fine-motor", "Sort & Classify", "Sort objects by color, shape, and size to develop logical thinking.", "📦", 3, 2, true),
+  // Tracing: kindergarten (premium)
+  mod("mod-motor-tracing", "sa-fine-motor", "Tracing Lines & Curves", "Strengthen pencil control by tracing straight, curved, and zigzag lines.", "✏️", 1, 1, true, "cl-kindergarten"),
+  // Puzzles: Grade 1 (premium)
+  mod("mod-motor-puzzles", "sa-fine-motor", "Simple Puzzles", "Build problem-solving skills by completing 4- to 9-piece visual puzzles.", "🧩", 2, 2, true, "cl-grade1"),
+  // Sorting: Grade 2 (premium)
+  mod("mod-motor-sorting", "sa-fine-motor", "Sort & Classify", "Sort objects by color, shape, and size to develop logical thinking.", "📦", 3, 2, true, "cl-grade2"),
 
   // ── Creative/Calm Activities ───────────────────────────────────────────
-  mod("mod-creative-coloring", "sa-creative", "Calm Coloring", "Relax with guided coloring pages featuring friendly animals and nature scenes.", "🖍️", 1, 1, true),
-  mod("mod-creative-music", "sa-creative", "Music & Movement", "Listen, clap, and move to simple songs that build rhythm and body awareness.", "🎵", 2, 1, true),
-  mod("mod-creative-sensory", "sa-creative", "Sensory Exploration", "Explore textures, sounds, and visuals in calming, low-stimulation activities.", "🫧", 3, 1, true),
+  // All creative modules: Pre-K onward (accessible to all levels)
+  mod("mod-creative-coloring", "sa-creative", "Calm Coloring", "Relax with guided coloring pages featuring friendly animals and nature scenes.", "🖍️", 1, 1, true, "cl-prek"),
+  mod("mod-creative-music", "sa-creative", "Music & Movement", "Listen, clap, and move to simple songs that build rhythm and body awareness.", "🎵", 2, 1, true, "cl-prek"),
+  mod("mod-creative-sensory", "sa-creative", "Sensory Exploration", "Explore textures, sounds, and visuals in calming, low-stimulation activities.", "🫧", 3, 1, true, "cl-prek"),
 ];
 
 // ---------------------------------------------------------------------------
@@ -769,3 +788,38 @@ export const SEED_ACTIVITIES: SeedActivity[] = [
   act("act-visuals-tap", "les-sensory-visuals", "Choose Your Light", "Tap to pick a gentle light pattern — slow bubbles, soft swirls, or twinkling stars.", "✨", 1, 1, 4, 5, "tap_correct", "Tap each option to see a gentle light show. Which one do you like? Tap your favorite and watch it for a while.", true),
   act("act-visuals-breathe", "les-sensory-visuals", "Breathe with the Light", "Watch the light grow and shrink. Breathe in as it grows. Breathe out as it shrinks.", "🌬️", 2, 1, 4, 5, "parent_guided", "Watch the glowing circle. Breathe in slowly as it gets bigger. Breathe out slowly as it gets smaller. Do this 5 times with a grown-up nearby.", true, { requires_parent_help: true }),
 ];
+
+
+// ---------------------------------------------------------------------------
+// Class-level filtering utilities
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns the order (1-based integer) of a class level, used for
+ * cumulative-progression filtering. Lower order = earlier/foundational level.
+ * Returns 0 if the class level is not found (no filtering restriction).
+ */
+export function getClassLevelOrder(classLevelId: string): number {
+  const level = SEED_CLASS_LEVELS.find((cl) => cl.id === classLevelId);
+  return level?.order ?? 0;
+}
+
+/**
+ * Filters modules to those at or below the given class level.
+ * This implements a cumulative learning model: higher-level learners can
+ * still access foundational content.
+ *
+ * If classLevelId is null/undefined or not found in SEED_CLASS_LEVELS,
+ * all modules are returned (no restriction).
+ *
+ * @param modules - The module list to filter
+ * @param classLevelId - The learner's current class level ID
+ */
+export function filterModulesByClassLevel<
+  T extends { class_level_id: string },
+>(modules: T[], classLevelId: string | null | undefined): T[] {
+  if (!classLevelId) return modules;
+  const maxOrder = getClassLevelOrder(classLevelId);
+  if (maxOrder === 0) return modules;
+  return modules.filter((m) => getClassLevelOrder(m.class_level_id) <= maxOrder);
+}

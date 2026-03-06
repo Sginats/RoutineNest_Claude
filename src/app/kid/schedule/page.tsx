@@ -119,6 +119,7 @@ export default function SchedulePage() {
   // Derive settings (defaults when no row exists)
   const calmMode = settings?.calm_mode ?? false;
   const gridSize = settings?.grid_size ?? 3;
+  const bigButtonMode = settings?.big_button_mode ?? false;
 
   // --- Render states ---
 
@@ -164,10 +165,13 @@ export default function SchedulePage() {
     );
   }
 
+  // Grid column count.
+  // big_button_mode caps the grid at 2 columns for easier tapping.
+  const effectiveGridSize = bigButtonMode ? Math.min(gridSize, 2) : gridSize;
   const gridCols =
-    gridSize === 2
+    effectiveGridSize === 2
       ? "grid-cols-2"
-      : gridSize === 4
+      : effectiveGridSize === 4
         ? "grid-cols-4"
         : "grid-cols-3";
 
@@ -211,6 +215,7 @@ export default function SchedulePage() {
               active={item.is_complete}
               activeLabel="Done! ⭐"
               calm={calmMode}
+              bigButtonMode={bigButtonMode}
               ariaLabel={`${card?.label ?? "Task"}, ${item.is_complete ? "done" : "not done"}`}
               ariaPressed={item.is_complete}
               onClick={() =>

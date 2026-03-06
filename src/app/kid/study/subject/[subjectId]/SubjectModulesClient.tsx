@@ -8,12 +8,13 @@ import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { useSettings } from "@/lib/settingsHooks";
 import { useSubscription } from "@/lib/subscriptionHooks";
-import { getChildProgress } from "@/lib/studyDb";
+import { getChildProgress, getChildLearningPlan } from "@/lib/studyDb";
 import {
   SEED_SUBJECT_AREAS,
   SEED_MODULES,
   SEED_LESSONS,
   SEED_ACTIVITIES,
+  filterModulesByClassLevel,
 } from "@/lib/studySeedData";
 import { KidShell } from "@/components/kid/KidShell";
 import { EmptyState } from "@/components/kid/EmptyState";
@@ -38,18 +39,28 @@ export default function SubjectModulesClient({ subjectId }: { subjectId: string 
     enabled: !!profileId && !!user,
   });
 
+  const { data: learningPlan } = useQuery({
+    queryKey: ["childLearningPlan", profileId],
+    queryFn: () => getChildLearningPlan(profileId!),
+    enabled: !!profileId && !!user,
+  });
+
+  // Class level from learning plan — used for module filtering
+  const classLevelId = learningPlan?.class_level_id ?? null;
+
   const subject = useMemo(
     () => SEED_SUBJECT_AREAS.find((s) => s.id === subjectId),
     [subjectId],
   );
 
-  const modules = useMemo(
-    () =>
-      SEED_MODULES.filter((m) => m.subject_area_id === subjectId).sort(
-        (a, b) => a.order - b.order,
-      ),
-    [subjectId],
-  );
+  const modules = useMemo(() => {
+    const allSubjectModules = SEED_MODULES.filter(
+      (m) => m.subject_area_id === subjectId,
+    ).sort((a, b) => a.order - b.order);
+    // Apply class-level filtering; fall back to all if none match
+    const filtered = filterModulesByClassLevel(allSubjectModules, classLevelId);
+    return filtered.length > 0 ? filtered : allSubjectModules;
+  }, [subjectId, classLevelId]);
 
   // Compute progress per module
   const moduleProgress = useMemo(() => {

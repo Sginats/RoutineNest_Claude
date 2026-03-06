@@ -28,6 +28,11 @@ interface StudyTileProps {
   index?: number;
   /** Disable motion & hover effects (calm mode) */
   calm?: boolean;
+  /**
+   * Big-button mode — increases tile height and font size.
+   * Coexists with calm mode (calm suppresses animations, big-button enlarges tiles).
+   */
+  bigButtonMode?: boolean;
   /** Click handler */
   onClick?: () => void;
 }
@@ -45,6 +50,7 @@ export function StudyTile({
   locked = false,
   index = 0,
   calm = false,
+  bigButtonMode = false,
   onClick,
 }: StudyTileProps) {
   const accent = accentColors[index % accentColors.length];
@@ -55,11 +61,13 @@ export function StudyTile({
       onClick={locked ? undefined : onClick}
       disabled={locked}
       className={cn(
-        "relative min-h-[140px] min-w-[44px] rounded-2xl border-2 p-4",
+        "relative min-w-[44px] rounded-2xl border-2 p-4",
         "flex flex-col items-center justify-center gap-2 text-center",
         "cursor-pointer select-none shadow-sm",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         calm ? "" : "transition-transform active:scale-95 hover:shadow-md",
+        // big_button_mode increases min height and padding
+        bigButtonMode ? "min-h-[170px] px-5 py-6 gap-3" : "min-h-[140px]",
         locked ? "opacity-50 cursor-not-allowed border-border bg-muted" : accent,
       )}
       aria-label={locked ? `${title} (locked)` : title}
@@ -74,11 +82,22 @@ export function StudyTile({
         </span>
       )}
 
-      <span className="text-4xl" role="img" aria-hidden="true">
+      <span
+        className={cn(bigButtonMode ? "text-5xl" : "text-4xl")}
+        role="img"
+        aria-hidden="true"
+      >
         {icon}
       </span>
 
-      <span className="text-base font-bold leading-tight">{title}</span>
+      <span
+        className={cn(
+          "font-bold leading-tight",
+          bigButtonMode ? "text-lg" : "text-base",
+        )}
+      >
+        {title}
+      </span>
 
       {description && (
         <span className="text-sm text-muted-foreground">{description}</span>
