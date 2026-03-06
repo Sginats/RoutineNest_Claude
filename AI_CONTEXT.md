@@ -7,11 +7,25 @@ All AI coding agents must read the following files before implementing changes:
 3. ARCHITECTURE_MAP.md
 4. REPO_SNAPSHOT.md
 5. CONTRIBUTING.md
-6. AGENT_TASKS.md
+6. CONTENT_SYSTEM.md
+7. AGENT_TASKS.md
+8. SYSTEM_PROMPT.md
 
 ## Project Purpose
 
 RoutineNest is a mobile-first visual study and routine-support platform for children with autism and similar support needs. Parents configure learning plans, schedules, and communication cards. Children interact with a simple, predictable, icon-driven interface. Targets Web (Next.js), PWA, Android, and iOS (Capacitor).
+
+## Target Users
+
+- Children with autism and similar support needs (primary users of kid-facing interfaces).
+- Parents and caregivers (configure profiles, learning plans, schedules, and subscriptions).
+
+## Product Goals
+
+- **Predictable routines** — consistent, icon-driven daily schedule support.
+- **Communication support** — free AAC talk board for non-verbal and low-verbal children.
+- **Guided learning** — structured study curriculum adapted to age and ability.
+- **Positive reinforcement** — stars, streaks, and badges to motivate and reward progress.
 
 ## Architecture Principles
 

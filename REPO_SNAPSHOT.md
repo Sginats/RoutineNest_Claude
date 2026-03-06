@@ -12,8 +12,12 @@ Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, 
 /
 ├── AI_CONTEXT.md
 ├── PROJECT_SUMMARY.md
+├── ARCHITECTURE_MAP.md
 ├── REPO_SNAPSHOT.md
 ├── CONTRIBUTING.md
+├── CONTENT_SYSTEM.md
+├── AGENT_TASKS.md
+├── SYSTEM_PROMPT.md
 ├── PRIVACY.md
 ├── TERMS.md
 ├── supabase/
