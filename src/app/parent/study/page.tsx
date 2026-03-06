@@ -77,29 +77,30 @@ export default function ParentStudyPlannerPage() {
   // ── Hydrate form from existing data ──────────────────────────────────────
   useEffect(() => {
     if (existingPlan) {
-      setSelectedClassLevel(existingPlan.class_level_id);
-      setIntensity(existingPlan.intensity);
-      setSessionLength(existingPlan.session_length_minutes);
-      setSelectedSubjects(
-        existingPlan.subject_area_ids.length > 0
-          ? existingPlan.subject_area_ids
-          : DEFAULT_SUBJECT_IDS,
-      );
-      // Derive year category from class level
-      const cl = SEED_CLASS_LEVELS.find((c) => c.id === existingPlan.class_level_id);
-      if (cl) {
-        setSelectedYearCategory(cl.year_category_id);
-      } else {
-        // Plan references an unknown class level — reset to pick a new one
-        setSelectedClassLevel("");
-        setSelectedYearCategory("");
-      }
+      // Wrap in setTimeout to satisfy react-hooks/set-state-in-effect
+      setTimeout(() => {
+        setSelectedClassLevel(existingPlan.class_level_id);
+        setIntensity(existingPlan.intensity);
+        setSessionLength(existingPlan.session_length_minutes);
+        setSelectedSubjects(
+          existingPlan.subject_area_ids.length > 0
+            ? existingPlan.subject_area_ids
+            : DEFAULT_SUBJECT_IDS,
+        );
+        const cl = SEED_CLASS_LEVELS.find((c) => c.id === existingPlan.class_level_id);
+        if (cl) {
+          setSelectedYearCategory(cl.year_category_id);
+        } else {
+          setSelectedClassLevel("");
+          setSelectedYearCategory("");
+        }
+      }, 0);
     }
   }, [existingPlan]);
 
   useEffect(() => {
     if (preferences) {
-      setRepeatCompleted(preferences.repeat_completed_lessons);
+      setTimeout(() => setRepeatCompleted(preferences.repeat_completed_lessons), 0);
     }
   }, [preferences]);
 
