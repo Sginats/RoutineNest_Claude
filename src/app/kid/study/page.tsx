@@ -12,7 +12,7 @@ import {
   SEED_MODULES,
   SEED_LESSONS,
   SEED_ACTIVITIES,
-  filterModulesByClassLevel,
+  filterModulesByClassLevelWithFallback,
 } from "@/lib/studySeedData";
 import type { DayOfWeek } from "@/lib/studyTypes";
 import { KidShell } from "@/components/kid/KidShell";
@@ -100,13 +100,12 @@ export default function StudyHomePage() {
     );
 
     for (const subject of subjects) {
-      // Filter modules to those at or below the learner's class level
+      // Filter modules to those at or below the learner's class level.
+      // Falls back to all subject modules if no matching content is found.
       const allSubjectModules = SEED_MODULES.filter(
         (m) => m.subject_area_id === subject.id,
       );
-      const modules = filterModulesByClassLevel(allSubjectModules, classLevelId);
-      // Fallback: if filtering removes all modules, use all subject modules
-      const effectiveModules = modules.length > 0 ? modules : allSubjectModules;
+      const effectiveModules = filterModulesByClassLevelWithFallback(allSubjectModules, classLevelId);
 
       const moduleIds = new Set(effectiveModules.map((m) => m.id));
       const lessons = SEED_LESSONS.filter((l) => moduleIds.has(l.module_id));

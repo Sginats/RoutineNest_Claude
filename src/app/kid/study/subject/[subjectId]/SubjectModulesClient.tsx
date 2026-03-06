@@ -14,7 +14,7 @@ import {
   SEED_MODULES,
   SEED_LESSONS,
   SEED_ACTIVITIES,
-  filterModulesByClassLevel,
+  filterModulesByClassLevelWithFallback,
 } from "@/lib/studySeedData";
 import { KidShell } from "@/components/kid/KidShell";
 import { EmptyState } from "@/components/kid/EmptyState";
@@ -57,9 +57,8 @@ export default function SubjectModulesClient({ subjectId }: { subjectId: string 
     const allSubjectModules = SEED_MODULES.filter(
       (m) => m.subject_area_id === subjectId,
     ).sort((a, b) => a.order - b.order);
-    // Apply class-level filtering; fall back to all if none match
-    const filtered = filterModulesByClassLevel(allSubjectModules, classLevelId);
-    return filtered.length > 0 ? filtered : allSubjectModules;
+    // Apply class-level filtering with automatic fallback to all modules
+    return filterModulesByClassLevelWithFallback(allSubjectModules, classLevelId);
   }, [subjectId, classLevelId]);
 
   // Compute progress per module

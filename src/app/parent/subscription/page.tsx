@@ -138,10 +138,12 @@ export default function SubscriptionPage() {
   // Stripe webhooks.  Until the billing backend is wired up, we derive a
   // reasonable status from the DB tier column (used as a manual dev fallback).
   const billingStatus: BillingStatus = isPremium ? "active" : "free";
-  // NOTE: When real Stripe integration is live, read these from profile:
-  //   profile.subscription_status as BillingStatus
-  //   profile.current_period_end
-  //   profile.trial_end
+  // TODO(stripe-integration): When real Stripe integration is live, replace
+  // the hardcoded derivation above by reading from the profile row:
+  //   billingStatus = (profile.subscription_status as BillingStatus) ?? "free"
+  //   periodEnd = profile.current_period_end
+  //   trialEnd = profile.trial_end
+  // The profile fields are populated by the webhook handler in billing.ts.
 
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);

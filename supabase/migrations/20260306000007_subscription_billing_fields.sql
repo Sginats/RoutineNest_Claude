@@ -31,8 +31,7 @@ COMMENT ON COLUMN profiles.stripe_customer_id IS
 COMMENT ON COLUMN profiles.stripe_subscription_id IS
   'Stripe subscription ID. Set only by the billing backend via service-role key.';
 COMMENT ON COLUMN profiles.subscription_status IS
-  'Billing status from Stripe (active, trialing, past_due, canceled, etc). '
-  'Set only by the billing webhook handler.';
+  'Billing status from Stripe (active, trialing, past_due, canceled, etc). Set only by the billing webhook handler.';
 COMMENT ON COLUMN profiles.current_period_end IS
   'End of current billing period. Access persists until this date on cancellation.';
 COMMENT ON COLUMN profiles.trial_end IS

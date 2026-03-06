@@ -823,3 +823,21 @@ export function filterModulesByClassLevel<
   if (maxOrder === 0) return modules;
   return modules.filter((m) => getClassLevelOrder(m.class_level_id) <= maxOrder);
 }
+
+/**
+ * Filters modules by class level, with automatic fallback to the full list
+ * if the filter would return no results.
+ *
+ * Use this instead of filterModulesByClassLevel when you want to guarantee
+ * that the UI never shows an empty module list due to an incomplete
+ * class_level_id mapping in the seed data.
+ *
+ * @param modules - The full module list to filter (already scoped to a subject)
+ * @param classLevelId - The learner's current class level ID
+ */
+export function filterModulesByClassLevelWithFallback<
+  T extends { class_level_id: string },
+>(modules: T[], classLevelId: string | null | undefined): T[] {
+  const filtered = filterModulesByClassLevel(modules, classLevelId);
+  return filtered.length > 0 ? filtered : modules;
+}
