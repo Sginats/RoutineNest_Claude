@@ -25,6 +25,7 @@ const PHASE_SEQUENCE: Array<"in" | "hold" | "out"> = [
   "out",
   "hold",
 ];
+// Uniform 4s per phase keeps the exercise simple and predictable for children
 const PHASE_DURATION_MS = 4000;
 
 export default function BreakPage() {

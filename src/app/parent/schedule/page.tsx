@@ -10,16 +10,6 @@ import { getSchedules, getScheduleItems } from "@/lib/db";
 import type { Schedule, ScheduleItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-// Default icons for schedule items when no specific icon is available
-const DEFAULT_ICONS: Record<string, string> = {
-  morning: "sunny",
-  breakfast: "restaurant",
-  school: "school",
-  lunch: "lunch_dining",
-  play: "sports_esports",
-  bath: "bathtub",
-  bedtime: "bedtime",
-};
 
 function formatTime(position: number): string {
   const hour = 7 + position;

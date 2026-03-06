@@ -66,7 +66,7 @@ const BADGE_COLORS: Record<string, { bg: string; border: string; text: string }>
   indigo: { bg: "bg-indigo-100 dark:bg-indigo-900/30", border: "border-indigo-200 dark:border-indigo-800", text: "text-indigo-500" },
 };
 
-const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"] as const;
+const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
 export default function RewardsPage() {
   const { user, loading: authLoading } = useRequireAuth();

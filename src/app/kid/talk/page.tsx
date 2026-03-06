@@ -141,6 +141,7 @@ export default function TalkPage() {
                 className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
               >
                 {word.icon && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={word.icon} alt="" className="h-5 w-5 rounded" />
                 )}
                 {word.label}
