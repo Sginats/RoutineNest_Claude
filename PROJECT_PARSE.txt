@@ -1,0 +1,1268 @@
+================================================================================
+PROJECT_PARSE.txt — RoutineNest Complete Codebase Analysis
+Generated: 2026-03-06
+Purpose: Complete technical snapshot so an external AI can understand the
+         entire project without repository access.
+================================================================================
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 1 — REPOSITORY STRUCTURE
+════════════════════════════════════════════════════════════════════════════════
+
+/
+├── AI_CONTEXT.md          Persistent AI agent memory file. Must be read first.
+├── PROJECT_SUMMARY.md     Human-readable project overview and feature goals.
+├── ARCHITECTURE_MAP.md    System architecture and data-flow diagrams.
+├── REPO_SNAPSHOT.md       Current repo state, ownership maps, runtime rules.
+├── CONTRIBUTING.md        Developer setup guide.
+├── CONTENT_SYSTEM.md      Notes on the curriculum content structure.
+├── AGENT_TASKS.md         Pending and completed AI agent task log.
+├── SYSTEM_PROMPT.md       System-level instructions for AI agents.
+├── PRIVACY.md             App privacy policy.
+├── TERMS.md               App terms of service.
+├── PROJECT_PARSE.txt      This file — full codebase analysis.
+│
+├── next.config.ts         Next.js config. Sets output:"export" (static only).
+│                          Uses @ducanh2912/next-pwa for PWA support.
+├── capacitor.config.ts    Capacitor config. appId=com.routinenest.app.
+│                          webDir:"out" (static export consumed by native shells).
+├── package.json           npm manifest. Next 16.1.6, React 19, Supabase JS v2.
+├── tsconfig.json          TypeScript config. Strict mode, path alias @/ → src/
+├── components.json        shadcn/ui config.
+├── eslint.config.mjs      ESLint config using eslint-config-next.
+├── postcss.config.mjs     PostCSS config for Tailwind v4.
+├── .env.local.example     Template: NEXT_PUBLIC_SUPABASE_URL,
+│                                     NEXT_PUBLIC_SUPABASE_ANON_KEY,
+│                                     NEXT_PUBLIC_POSTHOG_KEY (optional),
+│                                     NEXT_PUBLIC_POSTHOG_HOST (optional).
+│
+├── public/
+│   ├── manifest.json      PWA web app manifest.
+│   └── icons/             PWA icons (192×192, 512×512 PNG).
+│
+├── supabase/
+│   ├── schema.sql         Full combined schema (reference snapshot).
+│   └── migrations/        Incremental Supabase SQL migrations (run in order).
+│       ├── 20260305000000_initial_schema.sql
+│       ├── 20260305000001_add_grid_size_sound.sql
+│       ├── 20260305000002_add_card_tts_position.sql
+│       ├── 20260305000003_card_icons_bucket.sql
+│       ├── 20260305000004_study_plan_tables.sql
+│       ├── 20260305000005_weekly_plan_entries.sql
+│       └── 20260305000006_subscription_tier.sql
+│
+├── src/
+│   ├── app/               Next.js App Router pages (all client-rendered).
+│   │   ├── globals.css    Global CSS; Nunito font, Tailwind base, calm class.
+│   │   ├── layout.tsx     Root layout: NavBar, OfflineBanner, ErrorBoundary.
+│   │   ├── providers.tsx  QueryClient + IDB persister + SyncManager.
+│   │   ├── page.tsx       Kid home — 5-tile grid navigation hub.
+│   │   ├── debug-env/     Dev helper page showing env var status.
+│   │   ├── login/         Parent auth (sign in + create account).
+│   │   ├── onboarding/    5-step child profile setup wizard.
+│   │   ├── settings/      App settings (calm mode, grid size, sound).
+│   │   ├── parent/        Parent dashboard and management pages.
+│   │   │   ├── page.tsx               Parent dashboard.
+│   │   │   ├── study/page.tsx         Study planner.
+│   │   │   ├── study/progress/        Progress analytics.
+│   │   │   └── subscription/          Subscription management.
+│   │   └── kid/           All kid-facing pages.
+│   │       ├── break/     Calm break page with prompts + timer.
+│   │       ├── rewards/   Stars, streak, badges.
+│   │       ├── schedule/  Visual daily routine.
+│   │       ├── talk/      AAC board (always free).
+│   │       └── study/     Study curriculum entry point.
+│   │           ├── page.tsx                   Today's study plan.
+│   │           ├── subject/[subjectId]/        Subject modules list.
+│   │           ├── module/[moduleId]/          Module lessons list.
+│   │           └── lesson/[lessonId]/          Interactive activity runner.
+│   │
+│   ├── components/        Shared React components.
+│   │   ├── ErrorBoundary.tsx
+│   │   ├── IconPicker.tsx
+│   │   ├── NavBar.tsx
+│   │   ├── OfflineBanner.tsx
+│   │   ├── ParentGate.tsx
+│   │   ├── UpgradeBanner.tsx
+│   │   ├── activities/    Interactive gameplay components.
+│   │   ├── kid/           Kid-specific layout and button primitives.
+│   │   ├── study/         Study-system UI cards and indicators.
+│   │   └── ui/            shadcn/ui primitives (button, card, input, etc.).
+│   │
+│   ├── hooks/
+│   │   └── useAuth.ts     Supabase auth state + redirect helper.
+│   │
+│   └── lib/               Business logic, DB helpers, utilities.
+│       ├── activityGameplayData.ts
+│       ├── analytics.ts
+│       ├── db.ts
+│       ├── env.ts
+│       ├── profileStore.ts
+│       ├── queryPersistence.ts
+│       ├── settingsHooks.ts
+│       ├── speak.ts
+│       ├── storage.ts
+│       ├── studyDb.ts
+│       ├── studySeedData.ts
+│       ├── studyTypes.ts
+│       ├── supabaseClient.ts
+│       ├── subscriptionHooks.ts
+│       ├── syncQueue.ts
+│       ├── tts.ts
+│       ├── types.ts
+│       └── utils.ts
+│
+├── android/               Capacitor Android project (auto-generated).
+└── ios/                   Capacitor iOS project (auto-generated).
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 2 — PAGE ROUTES
+════════════════════════════════════════════════════════════════════════════════
+
+All routes are statically exported (no SSR). Every page is a "use client"
+component that fetches data client-side via Supabase JS + React Query.
+
+/
+  Kid home page. Shows a 5-tile grid for: Study (📖), Talk (💬),
+  Schedule (📋), Rewards (⭐), Break (🌿). Contains a subtle
+  "Parent / Caregiver Sign In →" link at the bottom.
+  File: src/app/page.tsx
+
+/login
+  Parent/caregiver authentication page. Supports two modes via tab toggle:
+  "Sign In" (signInWithPassword) and "Create Account" (signUp). On success:
+  — If user has no profiles → redirects to /onboarding.
+  — If user has profiles → redirects to /parent.
+  File: src/app/login/page.tsx
+
+/onboarding
+  5-step child profile setup wizard (requires auth). Steps:
+  1. Child name (text input).
+  2. Class level (grid of buttons from SEED_CLASS_LEVELS).
+  3. Focus subjects (multi-select grid from SEED_SUBJECT_AREAS).
+  4. Session length (5 / 10 / 15 / 20 min options).
+  5. Learning intensity (light / medium / focused).
+  On finish: creates profile row, learning plan, preferences; redirects to /parent.
+  File: src/app/onboarding/page.tsx
+
+/settings
+  App settings page. Controls: calm mode toggle, grid size (2/3/4),
+  sound enabled toggle, parent lock enabled toggle.
+  File: src/app/settings/page.tsx
+
+/parent
+  Parent dashboard (behind ParentGate — 3-second hold-to-unlock).
+  Sections: profile selector/creator, subscription status banner,
+  Cards Manager (add/edit/delete AAC & task cards with IconPicker),
+  Schedule Builder (create schedule, add/reorder items).
+  Quick-nav cards to: Study Planner, Progress Dashboard, Rewards, Settings.
+  File: src/app/parent/page.tsx
+
+/parent/study
+  Parent study planner. Shows: active learning plan (track, class level,
+  intensity, session length), subject focus manager, weekly day-by-day
+  schedule picker, study settings. All data stored in child_learning_plans
+  and weekly_plan_entries tables.
+  File: src/app/parent/study/page.tsx
+
+/parent/study/progress
+  Progress analytics dashboard. Shows per-subject completion stats, recent
+  activity log, and overall streak data sourced from child_progress table.
+  File: src/app/parent/study/progress/page.tsx
+
+/parent/subscription
+  Subscription management page (behind ParentGate). Shows current tier,
+  tier selector cards (Free £0 / Premium £4.99/mo), feature comparison
+  table, AAC-always-free reassurance panel.
+  Note: payment is NOT yet wired — tier is set directly in DB.
+  File: src/app/parent/subscription/page.tsx
+
+/kid/talk
+  AAC communication board. Fetches cards from DB (category="aac").
+  Tapping a card speaks the tts_text (or label) aloud using tts.ts.
+  Grid size configurable (2/3/4 columns). NO subscription gate — always free.
+  Tracks analytics event aac_card_tapped (category only, never label).
+  File: src/app/kid/talk/page.tsx
+
+/kid/schedule
+  Visual daily routine page. Loads first schedule for active profile.
+  Displays items in a BigTileButton grid. Tapping an item toggles
+  is_complete and awards 1 star via addRewardIfNew(). Optimistic UI.
+  Offline-aware mutations via syncQueue.
+  File: src/app/kid/schedule/page.tsx
+
+/kid/rewards
+  Rewards, streaks, and badges page. Shows:
+  — Total star count (sum of rewards.stars).
+  — Streak counter (computed from completed_at dates in child_progress).
+  — 7 badges with thresholds: 1/5/10/25/50 stars + 3/7-day streaks.
+  Triggers celebration animation (disabled in calm mode) when stars increase.
+  File: src/app/kid/rewards/page.tsx
+
+/kid/break
+  Break time page. Cycles through 8 calming prompts every 8 seconds.
+  Includes a start/pause/reset break timer. "I'm Ready!" button returns to /.
+  No auth required. Reads calm mode setting.
+  File: src/app/kid/break/page.tsx
+
+/kid/study
+  Study home — Today's Plan. Fetches learningPlan → weeklyEntries → filters
+  SEED_SUBJECT_AREAS to today's assigned subjects. Computes per-subject
+  progress percentage from child_progress. Shows StudyTile grid with
+  BreakCard inserted every 3 subjects. Completion triggers celebration banner.
+  File: src/app/kid/study/page.tsx
+
+/kid/study/subject/[subjectId]
+  Subject modules list. Premium gate: if !isPremium and subject.is_premium,
+  shows UpgradeBanner. Otherwise lists SEED_MODULES filtered by subject.
+  Each module shows completion percentage from child_progress.
+  File: src/app/kid/study/subject/[subjectId]/SubjectModulesClient.tsx
+
+/kid/study/module/[moduleId]
+  Module lessons list. Premium gate on premium modules. Lists SEED_LESSONS
+  filtered by module. Each shown as a LessonCard with completion status.
+  File: src/app/kid/study/module/[moduleId]/ModuleLessonsClient.tsx
+
+/kid/study/lesson/[lessonId]
+  Interactive activity runner. Loads lesson → activities from SEED_LESSONS/
+  SEED_ACTIVITIES. Sequentially presents each activity using the appropriate
+  gameplay component. On each completion: upsertChildProgress(), addRewardIfNew().
+  After all activities: shows lesson-complete celebration with earned stars.
+  File: src/app/kid/study/lesson/[lessonId]/LessonActivitiesClient.tsx
+
+/debug-env
+  Developer diagnostics page. Shows whether Supabase env vars are set.
+  File: src/app/debug-env/page.tsx
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 3 — COMPONENT INVENTORY
+════════════════════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────
+src/components/ (root-level shared components)
+──────────────────────────────────────────
+
+ErrorBoundary
+  Class component wrapping layout.tsx main content. Catches render errors and
+  shows kid-friendly "Something went wrong / Try Again" panel instead of stack
+  traces. Uses React.Component getDerivedStateFromError lifecycle.
+  File: src/components/ErrorBoundary.tsx
+
+IconPicker
+  Dual-mode image picker used in the parent Cards Manager.
+  Mode 1 "ARASAAC": searches api.arasaac.org, shows up to 20 pictogram results,
+  user clicks to select. Attribution shown inline (CC BY-NC-SA 4.0).
+  Mode 2 "Upload": user picks a local file which is uploaded to Supabase Storage
+  (card-icons bucket) via uploadCardIcon(). Accepted: png/jpg/jpeg/gif/webp.
+  Props: value (current URL), onChange (URL setter), userId (required for upload).
+  File: src/components/IconPicker.tsx
+
+NavBar
+  Sticky top navigation bar. Brand logo (🏡) links to /. Six nav links:
+  Talk (💬), Study (📖), Tasks (📋), Stars (⭐), Parent (👤), Settings (⚙️).
+  Active state applied to current pathname (prefix match). Reads calm_mode from
+  settings and syncs "calm" CSS class onto <html> element via useEffect.
+  File: src/components/NavBar.tsx
+
+OfflineBanner
+  Listens to window online/offline events. When offline, shows a gentle status
+  banner: "Offline mode — your progress is saved!". Disappears automatically
+  when back online. Mounted in layout.tsx between NavBar and main content.
+  File: src/components/OfflineBanner.tsx
+
+ParentGate
+  Hold-to-unlock security gate for parent-only pages. User must press and hold
+  a large button for 3 seconds. Progress shown as a fill animation on the button.
+  Releasing early resets. Unlocked state stored in localStorage for 10 minutes
+  (STORAGE_KEY: routinenest_parent_unlocked_until). Syncs lock state across tabs
+  via StorageEvent.
+  File: src/components/ParentGate.tsx
+
+UpgradeBanner
+  Shown on premium-gated study pages when user is on free tier. Explains the
+  Premium benefit, reassures that AAC is always free, and provides a link to
+  /parent/subscription. Props: heading, description, calm, className.
+  IMPORTANT: Never wrap AAC components with this — AAC is always free.
+  File: src/components/UpgradeBanner.tsx
+
+──────────────────────────────────────────
+src/components/kid/ (kid interface primitives)
+──────────────────────────────────────────
+
+KidShell
+  Shared layout wrapper for all kid-facing pages. Renders a large h1 heading
+  (with optional emoji prefix and optional trailing element), then children.
+  Provides consistent vertical gap spacing. Props: title, emoji, trailing,
+  className, children.
+  File: src/components/kid/KidShell.tsx
+
+BigTileButton
+  Large accessible tap button. Min height 130px, min width 44px. Shows an
+  image (if imageUrl provided) or emoji fallback, with a bold text label.
+  States: default, active (green border/bg), pressed (scale 95 + darker bg).
+  Calm mode disables hover/active transforms. aria-label and aria-pressed
+  supported for accessibility. Used on AAC board, schedule, and elsewhere.
+  File: src/components/kid/BigTileButton.tsx
+
+EmptyState
+  Friendly empty-state panel for kid pages. Large emoji (7xl), bold heading,
+  muted description. Prevents blank white pages. Props: emoji, emojiLabel,
+  title, description.
+  File: src/components/kid/EmptyState.tsx
+
+──────────────────────────────────────────
+src/components/study/ (study system UI)
+──────────────────────────────────────────
+
+StudyTile
+  Large colorful tile for subject areas on the study home page. Min 140px tall.
+  Shows emoji icon, title, optional description, optional ProgressBar. Locked
+  state shows 🔒 overlay and grays the tile (disabled, cursor-not-allowed).
+  Alternating pastel accent colors keyed by index prop.
+  File: src/components/study/StudyTile.tsx
+
+LessonCard
+  Horizontal card listing an individual lesson. Shows icon, title, description,
+  duration, reward_points (⭐ N), and completion/locked state. Min 72px tall.
+  Used in /kid/study/module/[moduleId].
+  File: src/components/study/LessonCard.tsx
+
+BreakCard
+  Wide tappable card inserted into study plans every 3 subjects. Shows 🌿
+  emoji, "Take a Break" label, and encouraging subtitle. Links semantically
+  to the /kid/break route via the onTakeBreak callback.
+  File: src/components/study/BreakCard.tsx
+
+ProgressBar
+  ARIA-accessible horizontal progress bar. role="progressbar" with
+  aria-valuenow/min/max. Sizes: sm (h-2), md (h-3), lg (h-4). Optional
+  text label and numeric percentage display. Color: bg-primary fill on bg-muted.
+  File: src/components/study/ProgressBar.tsx
+
+RewardStars
+  Row of star indicators. Shows ⭐ for earned and ☆ for unearned up to `total`.
+  Sizes: sm/md/lg. Accessible: role="img" with aria-label "X of Y stars earned".
+  File: src/components/study/RewardStars.tsx
+
+SubjectBadge
+  Compact pill-shaped badge for subject area display or filtering. Renders as
+  <button> if onClick provided, otherwise <span>. Toggle state (selected/unselected)
+  changes bg color: primary vs muted. aria-pressed when interactive.
+  File: src/components/study/SubjectBadge.tsx
+
+──────────────────────────────────────────
+src/components/activities/ (interactive gameplay)
+──────────────────────────────────────────
+
+TapCorrectActivity
+  "Tap the correct answer" game. Props: instructions, choices[], calm, onComplete.
+  First element in choices is always the correct answer; displayed positions are
+  shuffled once on mount. Correct tap: shows ✅ and calls onComplete after 400ms
+  (calm) or 1000ms. Wrong tap: shows "Try again!" and resets selection after 800ms.
+  Grid of 2×2 buttons (min 100px height each).
+  File: src/components/activities/TapCorrectActivity.tsx
+
+VisualMatchingActivity
+  Two-column matching game. Props: instructions, pairs[], calm, onComplete.
+  Left column shows sources; right column shows shuffled targets. Child taps
+  a left item then the corresponding right item. Correct pair: both fade to
+  green. Wrong pair: target flashes red for 600ms. All matched calls onComplete.
+  File: src/components/activities/VisualMatchingActivity.tsx
+
+SequencingActivity
+  Step-ordering game. Props: instructions, steps[], calm, onComplete.
+  Steps are shuffled on mount. Child must tap them in the correct original order.
+  Correct tap: step moves to "completed" zone. Wrong tap: flashes red for 600ms.
+  Progress indicator shows "Step N of M". All steps correct calls onComplete.
+  File: src/components/activities/SequencingActivity.tsx
+
+index.ts
+  Re-exports all three activity components as named exports.
+  File: src/components/activities/index.ts
+
+──────────────────────────────────────────
+src/components/ui/ (shadcn/ui primitives)
+──────────────────────────────────────────
+
+button.tsx   Button with variants: default, outline, ghost, secondary, destructive.
+card.tsx     Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter.
+input.tsx    Styled text input with focus ring.
+label.tsx    Form label with htmlFor support.
+switch.tsx   Toggle switch (Radix UI primitive, styled with Tailwind).
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 4 — HOOKS
+════════════════════════════════════════════════════════════════════════════════
+
+useAuth  (src/hooks/useAuth.ts)
+  Manages Supabase auth session state. Subscribes to onAuthStateChange on mount;
+  unsubscribes on unmount. Returns { user: User | null, loading: boolean, logout }.
+  When supabase client is null (env vars missing), loading is immediately false.
+  logout() calls supabase.auth.signOut().
+
+useRequireAuth  (src/hooks/useAuth.ts)
+  Wraps useAuth and adds a redirect: if !loading && !user, calls router.replace("/login").
+  Returns the same { user, loading, logout } shape.
+  Used on all kid and parent pages to enforce authentication.
+
+useSettings  (src/lib/settingsHooks.ts)
+  React Query wrapper for fetching settings row from DB.
+  queryKey: ["settings", profileId]. Returns Settings | null.
+  Only fetches when profileId is non-null.
+
+useUpdateSettings  (src/lib/settingsHooks.ts)
+  Optimistic mutation for patching settings. Uses onMutate to update cache
+  immediately, then reverts on error. Calls upsertSettings(profileId, patch).
+  Invalidates settings query on settle.
+
+useSubscription  (src/lib/subscriptionHooks.ts)
+  Fetches subscription tier ("free" | "premium") from profiles table via getProfile().
+  queryKey: ["subscription", userId]. Defaults to "free" when no profile found.
+  staleTime: 60 seconds. Only enabled when userId is non-null.
+
+useIsPremium  (src/lib/subscriptionHooks.ts)
+  Convenience wrapper around useSubscription. Returns boolean (data === "premium").
+  Note: returns false while loading, so premium-gated pages should also check
+  isLoading to avoid flash of upgrade banner.
+
+useUpdateSubscription  (src/lib/subscriptionHooks.ts)
+  Mutation to update subscription tier. On success: invalidates
+  ["subscription", userId] and ["profiles"] queries so all dependent UI refreshes.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 5 — LIBRARY MODULES
+════════════════════════════════════════════════════════════════════════════════
+
+env.ts
+  Exports SUPABASE_URL and SUPABASE_ANON_KEY from process.env.
+  Does NOT throw if vars are absent — allows builds without secrets.
+  During static export / prerendering, both values are undefined.
+
+supabaseClient.ts
+  Creates and exports the singleton Supabase client.
+  Returns null if SUPABASE_URL or SUPABASE_ANON_KEY are absent.
+  Type: SupabaseClient | null.
+  Every consumer must check for null before use.
+
+db.ts
+  Typed Supabase helpers for the core tables (profiles, cards, schedules,
+  schedule_items, rewards, settings). All write helpers (upsert/update/delete)
+  go through withOfflineQueue() which:
+  — If browser is offline: enqueues a QueuedMutation in IDB and returns an
+    optimistic fallback value.
+  — If online: attempts the Supabase call; on network error: falls back to queue.
+  Key functions:
+    getProfiles(), getProfile(userId), createProfile(name)
+    updateSubscriptionTier(userId, tier)
+    getSettings(profileId), upsertSettings(profileId, patch)
+    getCards(profileId, category?), upsertCard(card), softDeleteCard(cardId)
+    getSchedules(profileId), createSchedule(profileId, title)
+    getScheduleItems(scheduleId), upsertScheduleItem(item), deleteScheduleItem(id)
+    updateScheduleItemDone(itemId, done)
+    getRewards(profileId), addRewardIfNew(profileId, stars, reason)
+
+studyDb.ts
+  Typed Supabase helpers for study plan tables. Same withOfflineQueue pattern.
+  Key functions:
+    getChildLearningPlan(profileId), upsertChildLearningPlan(plan)
+    getChildProgress(profileId), upsertChildProgress(progress)
+    getChildPreferences(profileId), upsertChildPreferences(profileId, patch)
+    getWeeklyPlanEntries(learningPlanId), replaceWeeklyPlanEntries(planId, entries)
+
+studySeedData.ts
+  Large static TypeScript file (~67 KB) containing all curriculum data.
+  Exports:
+    SEED_YEAR_CATEGORIES — 5 age groups (3–5, 5–7, 7–9, 9–11, 11–13).
+    SEED_CLASS_LEVELS    — 8 levels (Pre-K through Grade 6).
+    SEED_SUBJECT_AREAS   — 7 subjects (Communication, Reading/Language, Math,
+                           Daily Living Skills, Social Skills, Fine Motor/Cognitive,
+                           Creative/Calm Activities). Some flagged is_premium.
+    SEED_MODULES         — Study modules per subject × class level.
+    SEED_LESSONS         — Lessons within each module.
+    SEED_ACTIVITIES      — Activities within each lesson (with activity_type).
+  The app reads from these arrays client-side; no DB roundtrip for content.
+  Note: curriculum data in the DB tables (subject_areas, lessons, etc.) mirrors
+  this seed data but the app currently uses the in-memory constants directly.
+
+studyTypes.ts
+  All TypeScript types for the study system:
+    ActivityType enum (9 types: visual_matching, tap_correct, sequencing,
+                       listen_choose, speak_tap_aac, trace, routine_checkoff,
+                       parent_guided, printable)
+    StudyIntensity: "light" | "medium" | "focused"
+    DayOfWeek: "monday" ... "sunday"
+    Interfaces: YearCategory, ClassLevel, SubjectArea, StudyModule, Lesson,
+                Activity, WeeklyPlanEntry, ChildLearningPlan, ChildProgress,
+                ChildPreferences
+    Insert/patch helper types for all of the above.
+    Constants: YEAR_CATEGORIES, CLASS_LEVELS, SUBJECT_AREAS arrays.
+
+types.ts
+  TypeScript types for core tables:
+    SubscriptionTier: "free" | "premium"
+    Profile, Card, Schedule, ScheduleItem, Reward, Settings interfaces.
+    CardInsert, ScheduleItemInsert, SettingsPatch, ProfilePatch helper types.
+
+activityGameplayData.ts
+  Returns interactive content data for a given activity ID + type.
+  Internal tables:
+    TAP_CORRECT_DATA    — per-activity choice arrays (6 activities defined).
+    VISUAL_MATCHING_DATA — per-activity pair arrays (5 activities defined).
+    SEQUENCING_DATA     — per-activity step arrays (3 activities defined).
+  getActivityGameplayData(activityId, activityType) → ActivityGameplayData:
+    { type: "tap_correct", choices: [...] }
+    { type: "visual_matching", pairs: [...] }
+    { type: "sequencing", steps: [...] }
+    { type: "simple" }  ← fallback for unrecognised IDs or unimplemented types.
+
+syncQueue.ts
+  Offline mutation queue using idb-keyval (IndexedDB).
+  Storage key: "routinenest_sync_queue".
+  QueuedMutation interface: id, timestamp, table, operation, payload,
+    onConflict?, matchColumn, matchValue, duplicateCheckColumns?, retries.
+  Operations: "upsert" | "update" | "delete" | "insert_if_not_exists".
+  MAX_RETRIES = 5. Mutations that fail 5 times are dropped.
+  Key functions:
+    isOnline() — SSR-safe navigator.onLine check.
+    isNetworkError(err) — heuristic for fetch/network error detection.
+    enqueue(mutation) — appends to queue in IDB.
+    replayQueue() — processes queue FIFO against Supabase.
+      Last-write-wins check: if server row updated_at > mutation timestamp, skip.
+      Conflict resolution: last-write-wins only (no merge).
+      _busy flag prevents concurrent replay runs.
+    getQueueLength() — diagnostic count.
+
+queryPersistence.ts
+  Creates a TanStack Query IndexedDB persister.
+  Storage key: "routinenest_query_cache".
+  Implements Persister interface: persistClient, restoreClient, removeClient.
+  Used in providers.tsx with PersistQueryClientProvider to cache all query
+  results in IDB for offline read access.
+
+profileStore.ts
+  Thin localStorage wrapper for the active profile ID.
+  Key: "routinenest_active_profile_id".
+  Functions: getActiveProfileId(), setActiveProfileId(id), clearActiveProfileId().
+  SSR-safe (returns null during server-side evaluation).
+
+settingsHooks.ts
+  React Query hooks for settings CRUD. See STEP 4 — HOOKS.
+
+subscriptionHooks.ts
+  React Query hooks for subscription tier. See STEP 4 — HOOKS.
+
+analytics.ts
+  PostHog integration. Only initialises in production when NEXT_PUBLIC_POSTHOG_KEY
+  is set. Session replay is ALWAYS disabled (disable_session_recording: true).
+  Opt-out preference stored in localStorage (key: routinenest_analytics_enabled).
+  Tracked events:
+    screen_viewed          { screen: string }
+    schedule_item_completed { item_id: string }
+    aac_card_tapped        { category: string }  ← category only; never label/tts_text
+  Functions: initAnalytics(), getAnalyticsEnabled(), setAnalyticsEnabled(bool),
+    trackScreen(screen), trackScheduleItemCompleted(itemId), trackAACCardTapped(cat).
+
+tts.ts
+  Cross-platform text-to-speech service. Function: speak(text, soundEnabled, opts?).
+  — If soundEnabled is false or text is empty: no-op.
+  — On Capacitor native: dynamic imports @capacitor-community/text-to-speech.
+  — On web: uses window.speechSynthesis (cancels prior utterance first).
+  — If neither available: silently does nothing.
+  Also exports stop() to cancel TTS on all platforms.
+  Options: rate, pitch, volume (0–1), lang (BCP-47).
+
+speak.ts
+  LEGACY stub file. Exports a speak(text) function that only console.logs.
+  This is the OLD stub; tts.ts is the current implementation.
+  The kid/talk page imports from tts.ts. speak.ts appears unused but still exists.
+  TODO marker present: "Replace with Web Speech API / Capacitor TTS plugin".
+  This is dead code — a leftover from an earlier version.
+
+storage.ts
+  Supabase Storage helper. Bucket: "card-icons".
+  uploadCardIcon(file, userId) → Promise<string> (public URL).
+  Path format: {userId}/{timestamp}-{rand6hex}.{ext}.
+  Allowed types: png, jpg, jpeg, gif, webp.
+  Throws if Supabase not configured, no userId, disallowed type, or upload fails.
+
+env.ts
+  Exports SUPABASE_URL and SUPABASE_ANON_KEY. No throw on missing vars.
+
+utils.ts
+  Single helper: cn(...inputs) — merges Tailwind classes using clsx + twMerge.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 6 — DATABASE SCHEMA
+════════════════════════════════════════════════════════════════════════════════
+
+All tables enable Row Level Security (RLS). A set_updated_at() trigger function
+(using plpgsql) automatically updates updated_at on every UPDATE.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+CORE TABLES (migration 000000)
+━━━━━━━━━━━━━━━━━━━━━━━
+
+profiles
+  id          uuid PK — references auth.users(id) ON DELETE CASCADE
+  display_name text NOT NULL DEFAULT ''
+  created_at  timestamptz
+  updated_at  timestamptz
+  RLS: User can only SELECT/INSERT/UPDATE/DELETE their own row (id = auth.uid()).
+  Later extended by migrations 000006 to add subscription_tier column.
+
+cards
+  id          uuid PK (gen_random_uuid)
+  profile_id  uuid FK → profiles(id) CASCADE
+  label       text NOT NULL
+  image_url   text (nullable)
+  category    text NOT NULL DEFAULT '' (values seen in code: "aac", "task")
+  position    integer (added by migration 000002)
+  tts_text    text (nullable; added by migration 000002)
+  created_at  timestamptz
+  updated_at  timestamptz
+  deleted_at  timestamptz (nullable; soft-delete pattern)
+  RLS: SELECT/INSERT/UPDATE/DELETE where profile_id = auth.uid().
+  Indexes: profile_id, updated_at.
+
+schedules
+  id          uuid PK
+  profile_id  uuid FK → profiles(id) CASCADE
+  title       text NOT NULL
+  created_at  timestamptz
+  updated_at  timestamptz
+  deleted_at  timestamptz (nullable; soft-delete)
+  RLS: same profile_id = auth.uid() pattern.
+
+schedule_items
+  id          uuid PK
+  schedule_id uuid FK → schedules(id) CASCADE
+  card_id     uuid FK → cards(id) CASCADE
+  position    integer NOT NULL DEFAULT 0
+  is_complete boolean NOT NULL DEFAULT false
+  created_at  timestamptz
+  updated_at  timestamptz
+  RLS: Access granted if the parent schedule.profile_id = auth.uid()
+       (join-based RLS policy, not direct column check).
+
+rewards
+  id          uuid PK
+  profile_id  uuid FK → profiles(id) CASCADE
+  stars       integer NOT NULL DEFAULT 0
+  reason      text NOT NULL DEFAULT '' (e.g. "schedule_item:{itemId}")
+  created_at  timestamptz
+  updated_at  timestamptz
+  RLS: profile_id = auth.uid().
+
+settings
+  id                  uuid PK
+  profile_id          uuid UNIQUE FK → profiles(id) CASCADE
+  calm_mode           boolean NOT NULL DEFAULT false
+  big_button_mode     boolean NOT NULL DEFAULT false
+  parent_lock_enabled boolean NOT NULL DEFAULT true
+  grid_size           integer (added by migration 000001; default 3)
+  sound_enabled       boolean (added by migration 000001; default true)
+  created_at          timestamptz
+  updated_at          timestamptz
+  RLS: profile_id = auth.uid().
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STUDY / CURRICULUM TABLES (migration 000004)
+━━━━━━━━━━━━━━━━━━━━━━━
+
+year_categories
+  id, title, description, icon, order, age_min, age_max, timestamps.
+  RLS: Authenticated users can SELECT (read-only).
+
+class_levels
+  id, year_category_id FK → year_categories CASCADE, title, description,
+  icon, order, timestamps.
+  RLS: Authenticated users can SELECT.
+
+subject_areas
+  id, title, description, icon, order, is_premium boolean, timestamps.
+  RLS: Authenticated users can SELECT.
+
+study_modules
+  id, subject_area_id FK → subject_areas CASCADE,
+  class_level_id FK → class_levels CASCADE,
+  title, description, icon, order, difficulty, is_premium boolean, timestamps.
+  RLS: Authenticated users can SELECT.
+
+lessons
+  id, module_id FK → study_modules CASCADE,
+  title, description, icon, order, difficulty, duration_minutes, reward_points,
+  is_premium boolean, calm_mode_safe boolean, requires_parent_help boolean,
+  timestamps.
+  RLS: Authenticated users can SELECT.
+
+activities
+  id, lesson_id FK → lessons CASCADE,
+  title, description, icon, order, difficulty, duration_minutes, reward_points,
+  activity_type text, instructions text, audio_cue text, aac_support boolean,
+  is_premium boolean, calm_mode_safe boolean, requires_parent_help boolean,
+  timestamps.
+  RLS: Authenticated users can SELECT.
+
+child_learning_plans
+  id, profile_id FK → profiles CASCADE,
+  class_level_id FK → class_levels CASCADE,
+  intensity text DEFAULT 'medium' (light|medium|focused),
+  session_length_minutes integer DEFAULT 10,
+  subject_area_ids text[] DEFAULT '{}',
+  is_active boolean DEFAULT true,
+  timestamps.
+  RLS: Full CRUD where profile_id = auth.uid().
+
+child_progress
+  id, profile_id FK → profiles CASCADE,
+  activity_id FK → activities CASCADE,
+  lesson_id FK → lessons CASCADE,
+  module_id FK → study_modules CASCADE,
+  completed boolean DEFAULT false,
+  score integer (nullable),
+  attempts integer DEFAULT 0,
+  last_attempted_at timestamptz (nullable),
+  completed_at timestamptz (nullable),
+  timestamps.
+  RLS: Full CRUD where profile_id = auth.uid().
+
+child_preferences
+  id, profile_id UNIQUE FK → profiles CASCADE,
+  preferred_difficulty integer DEFAULT 2,
+  favorite_subject_ids text[] DEFAULT '{}',
+  repeat_completed_lessons boolean DEFAULT true,
+  timestamps.
+  RLS: Full CRUD where profile_id = auth.uid().
+
+━━━━━━━━━━━━━━━━━━━━━━━
+WEEKLY PLAN TABLE (migration 000005)
+━━━━━━━━━━━━━━━━━━━━━━━
+
+weekly_plan_entries
+  id, learning_plan_id FK → child_learning_plans CASCADE,
+  day text (monday|...|sunday),
+  subject_area_id text (references subject area ID),
+  order integer,
+  timestamps.
+  RLS: Full CRUD where learning_plan_id refers to user's own plan.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+SUBSCRIPTION COLUMN (migration 000006)
+━━━━━━━━━━━━━━━━━━━━━━━
+
+ALTER TABLE profiles ADD COLUMN subscription_tier text NOT NULL DEFAULT 'free'
+  CHECK (subscription_tier IN ('free', 'premium'));
+
+━━━━━━━━━━━━━━━━━━━━━━━
+STORAGE BUCKET (migration 000003)
+━━━━━━━━━━━━━━━━━━━━━━━
+
+Bucket: card-icons (public)
+  Policy: authenticated users can upload to {userId}/* paths only.
+  Policy: authenticated users can read own files.
+
+━━━━━━━━━━━━━━━━━━━━━━━
+TABLE RELATIONSHIPS (summary)
+━━━━━━━━━━━━━━━━━━━━━━━
+
+auth.users (1) → (1) profiles
+profiles   (1) → (N) cards
+profiles   (1) → (N) schedules
+profiles   (1) → (1) settings
+profiles   (1) → (N) rewards
+profiles   (1) → (N) child_learning_plans
+profiles   (1) → (N) child_progress
+profiles   (1) → (1) child_preferences
+schedules  (1) → (N) schedule_items
+schedule_items → (1) cards (card_id FK)
+child_learning_plans (1) → (N) weekly_plan_entries
+year_categories (1) → (N) class_levels
+subject_areas (1) → (N) study_modules
+class_levels (1) → (N) study_modules
+study_modules (1) → (N) lessons
+lessons (1) → (N) activities
+activities (1) → (N) child_progress
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 7 — CURRICULUM CONTENT SYSTEM
+════════════════════════════════════════════════════════════════════════════════
+
+HIERARCHY:
+
+  Age Group (YearCategory)
+    └── Class Level (ClassLevel)   e.g. Pre-K, Grade 1, Grade 3
+         └── Subject Area          e.g. Communication, Math, Reading/Language
+              └── Module           e.g. "Basic Communication", "Emotions"
+                   └── Lesson      e.g. "Water & Basics", "Helping Others"
+                        └── Activity  e.g. "Tap the correct picture"
+
+AGE GROUPS (5 total):
+  Early Learners (3–5), Foundation Stage (5–7), Primary Stage (7–9),
+  Intermediate Stage (9–11), Advanced Primary (11–13).
+
+CLASS LEVELS (8 total):
+  Pre-K, Kindergarten, Grade 1, Grade 2, Grade 3, Grade 4, Grade 5, Grade 6.
+
+SUBJECT AREAS (7 total):
+  Communication        — AAC, expressing needs, social phrases.
+  Reading/Language     — Alphabet, phonics, sight words.
+  Math                 — Numbers, counting, shapes.
+  Daily Living Skills  — Hygiene, dressing, routines.
+  Social Skills        — Greetings, taking turns, emotions.
+  Fine Motor/Cognitive — Tracing, sorting, patterns.
+  Creative/Calm        — Art, relaxation, mindfulness activities.
+  Some subjects have is_premium = true (access requires Premium subscription).
+
+SEED DATA LOCATION:
+  src/lib/studySeedData.ts (~67 KB)
+  Exports: SEED_YEAR_CATEGORIES, SEED_CLASS_LEVELS, SEED_SUBJECT_AREAS,
+           SEED_MODULES, SEED_LESSONS, SEED_ACTIVITIES.
+  The app reads these arrays directly (no DB call for curriculum structure).
+  The DB tables (subject_areas, study_modules, lessons, activities) mirror this
+  seed data but are not used for reads in the current implementation.
+
+HOW ACTIVITIES ARE LOADED:
+  1. User navigates to /kid/study/lesson/[lessonId].
+  2. LessonActivitiesClient.tsx finds lesson = SEED_LESSONS.find(l => l.id === lessonId).
+  3. activities = SEED_ACTIVITIES.filter(a => a.lesson_id === lessonId).sort by order.
+  4. For each activity, getActivityGameplayData(activity.id, activity.activity_type)
+     is called to get the interactive content.
+  5. The ActivityGameplay renderer picks the correct component based on the returned type.
+  6. On completion, upsertChildProgress() and addRewardIfNew() are called.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 8 — ACTIVITY GAMEPLAY SYSTEM
+════════════════════════════════════════════════════════════════════════════════
+
+ACTIVITY TYPES (defined in studyTypes.ts ActivityType):
+
+  tap_correct       → TapCorrectActivity      — INTERACTIVE ✅
+  visual_matching   → VisualMatchingActivity  — INTERACTIVE ✅
+  sequencing        → SequencingActivity      — INTERACTIVE ✅
+  listen_choose     → (fallback: simple Done) — NOT YET IMPLEMENTED ❌
+  speak_tap_aac     → (fallback: simple Done) — NOT YET IMPLEMENTED ❌
+  trace             → (fallback: simple Done) — NOT YET IMPLEMENTED ❌
+  routine_checkoff  → (fallback: simple Done) — NOT YET IMPLEMENTED ❌
+  parent_guided     → (fallback: simple Done) — NOT YET IMPLEMENTED ❌
+  printable         → (fallback: simple Done) — NOT YET IMPLEMENTED ❌
+
+HOW THE ROUTER WORKS (LessonActivitiesClient.tsx):
+  1. getActivityGameplayData(activity.id, activity.activity_type) is called.
+  2. Returns { type: "tap_correct" | "visual_matching" | "sequencing" | "simple", ...data }.
+  3. If type is "simple" (includes all unimplemented types), a plain instruction
+     card is shown with a big "Done!" button. Tapping Done marks it complete.
+  4. Interactive activities render their component and pass onComplete callback.
+
+FALLBACK BEHAVIOUR:
+  — If activity_type is unrecognised or type is "simple":
+    Show: instructions text + big tappable "Done! ⭐" button.
+    The child can mark any activity complete regardless of interaction type.
+  — tap_correct activities with no entry in TAP_CORRECT_DATA:
+    Fall back to generic 3-choice Yes/No/Maybe options.
+
+COMPLETION FLOW:
+  1. Activity component calls onComplete().
+  2. LessonActivitiesClient.tsx runs:
+       upsertChildProgress({ profile_id, activity_id, lesson_id, module_id,
+                             completed: true, attempts: prev+1, completed_at })
+       addRewardIfNew(profileId, activity.reward_points, "activity:{activityId}")
+  3. showCelebration state triggers a brief celebration UI.
+  4. After a break (every 3rd activity), showBreak state is set.
+  5. currentIndex advances to the next activity.
+  6. When all activities complete: lessonComplete state shows lesson-done screen.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 9 — OFFLINE SYSTEM
+════════════════════════════════════════════════════════════════════════════════
+
+TWO LAYERS OF OFFLINE SUPPORT:
+
+── Layer 1: Read Cache (TanStack Query + IndexedDB) ──
+
+  Configuration (providers.tsx):
+    — QueryClient with gcTime: 24 hours (keeps cached data for a full day).
+    — PersistQueryClientProvider wrapping the app.
+    — createIdbPersister() (queryPersistence.ts) uses idb-keyval to store the
+      entire dehydrated query cache under key "routinenest_query_cache".
+    — On app start, the persisted cache is restored from IDB immediately, so
+      all previously fetched data (cards, schedule, study progress, etc.) is
+      available offline before any network requests complete.
+
+── Layer 2: Write Queue (syncQueue.ts) ──
+
+  When a mutation is attempted while offline (or a network error occurs):
+    1. The withOfflineQueue() helper in db.ts / studyDb.ts enqueues the
+       mutation as a QueuedMutation in IDB (key: "routinenest_sync_queue").
+    2. An optimistic fallback value is returned immediately so the UI updates.
+    3. On next app launch or when the browser comes back online, SyncManager
+       (providers.tsx) calls replayQueue().
+
+  replayQueue() processes mutations FIFO:
+    — For each mutation: fetches server row's updated_at timestamp.
+    — LAST-WRITE-WINS: if server row is newer than mutation.timestamp, skip it.
+    — Otherwise applies the mutation to Supabase.
+    — On success: removes from queue.
+    — On failure: increments retries counter. Dropped after 5 failures.
+    — Stops mid-run if browser goes offline again.
+    — After replay completes with n > 0 replayed: invalidates all queries
+      so UI picks up authoritative server state.
+
+  Supported offline operations: upsert, update, delete, insert_if_not_exists.
+  insert_if_not_exists includes a duplicate check (used for rewards).
+
+  CONFLICT RESOLUTION:
+    Simple last-write-wins: if the server has a newer updated_at, the
+    queued mutation is discarded. No field-level merging. No CRDTs.
+    This is appropriate for low-conflict single-user data.
+
+  OFFLINE INDICATOR:
+    OfflineBanner component listens to window online/offline events and
+    shows a gentle status bar when navigator.onLine is false.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 10 — SUBSCRIPTION SYSTEM
+════════════════════════════════════════════════════════════════════════════════
+
+TIER MODEL:
+  profiles.subscription_tier TEXT NOT NULL DEFAULT 'free'
+    CHECK (subscription_tier IN ('free', 'premium'))
+  SubscriptionTier type: "free" | "premium"
+
+FREE TIER INCLUDES:
+  — Visual daily schedule
+  — AAC Talk Board (tap-to-speak) — ALWAYS FREE, hard-coded in code
+  — Star rewards and streak tracking
+  — Basic routines
+  — Custom cards and icons
+  — Calm mode and accessibility settings
+  — Offline mode
+
+PREMIUM TIER ADDS:
+  — Full study curriculum (all premium subjects)
+  — Advanced learning plans
+  — Weekly study planner
+  — Detailed progress analytics
+
+HOW AAC IS ALWAYS FREE:
+  The kid/talk/page.tsx has NO subscription check. There is no call to
+  useSubscription() or useIsPremium() on the talk page. AAC is structurally
+  never gated and UpgradeBanner is never rendered there.
+  UpgradeBanner explicitly states: "💬 Talk Board (AAC) is always free."
+
+HOW PREMIUM GATING WORKS:
+  On SubjectModulesClient, ModuleLessonsClient, LessonActivitiesClient:
+    const { data: subscriptionTier, isLoading: subscriptionLoading } = useSubscription(user?.id)
+    const isPremium = subscriptionTier === "premium"
+    if (!subscriptionLoading && !isPremium && content.is_premium) {
+      return <UpgradeBanner />
+    }
+  The isLoading guard prevents a flash of the upgrade banner during initial load.
+
+SUBSCRIPTION HOOKS:
+  useSubscription(userId)       → query for tier string
+  useIsPremium(userId)          → boolean convenience wrapper
+  useUpdateSubscription(userId) → mutation to change tier
+
+DB HELPERS:
+  getProfile(userId) — reads profiles table
+  updateSubscriptionTier(userId, tier) — updates profiles.subscription_tier
+  Both are offline-aware (withOfflineQueue pattern).
+
+PAYMENT STATUS:
+  Stripe is NOT integrated. Tier is changed directly in the DB via
+  the subscription page UI. The /parent/subscription page shows
+  "Secure payment processing coming soon" with a contact email.
+  Price shown: £4.99/month for Premium.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 11 — DEPENDENCY ANALYSIS
+════════════════════════════════════════════════════════════════════════════════
+
+FRAMEWORK:
+  next@16.1.6
+    Next.js App Router. output:"export" for static deployment.
+    No API routes. No SSR. Pages are all "use client".
+  react@19.2.3 + react-dom@19.2.3
+    Latest React with concurrent features. Hooks-based throughout.
+  typescript@^5
+    Strict TypeScript. Path alias @/ → src/. Types in studyTypes.ts + types.ts.
+
+UI:
+  tailwindcss@^4
+    Utility-first CSS. Tailwind v4 (PostCSS plugin). Custom theme in globals.css.
+    CSS variable–based color tokens (--primary, --secondary, --muted, etc.).
+  @radix-ui/react-slot@^1.2.4
+    Radix Slot primitive used by shadcn/ui button for the asChild pattern.
+  @radix-ui/react-switch@^1.2.6
+    Radix Switch primitive used by shadcn/ui switch component.
+  class-variance-authority@^0.7.1
+    Type-safe variant utility used by shadcn/ui button component.
+  clsx@^2.1.1 + tailwind-merge@^3.5.0
+    Combined in cn() utility for conditional class merging without conflicts.
+
+STATE MANAGEMENT:
+  @tanstack/react-query@^5.90.21
+    Server state management. All Supabase data fetched via useQuery/useMutation.
+    QueryClient configured with staleTime:60s, gcTime:24h.
+  @tanstack/react-query-persist-client@^5.90.24
+    PersistQueryClientProvider + Persister interface for IDB cache persistence.
+  idb-keyval@^6.2.2
+    Minimal IndexedDB key-value library. Used for:
+    1. Persisting TanStack Query cache (queryPersistence.ts).
+    2. Persisting offline mutation queue (syncQueue.ts).
+
+BACKEND:
+  @supabase/supabase-js@^2.98.0
+    Supabase JS SDK v2. Used for: auth (signUp, signInWithPassword,
+    onAuthStateChange), database queries (.from().select()/insert()/update()),
+    storage (.from(bucket).upload()), realtime (not yet used).
+
+ANALYTICS:
+  posthog-js@^1.358.1
+    PostHog event tracking. Only in production. Session replay disabled.
+    Opt-out via localStorage. Events: screen_viewed, schedule_item_completed,
+    aac_card_tapped (category only).
+
+PWA:
+  @ducanh2912/next-pwa@^10.2.9
+    Next.js PWA plugin wrapping next.config.ts. Generates service worker.
+    Disabled in development. Outputs to public/ directory.
+    Enables: offline caching, home screen install, background sync signals.
+
+MOBILE:
+  @capacitor/core@^8.1.0
+    Capacitor v8 runtime. Bridges web app to native Android/iOS capabilities.
+  @capacitor/android@^8.1.0
+    Android platform layer for Capacitor.
+  @capacitor/ios@^8.1.0
+    iOS platform layer for Capacitor.
+  @capacitor-community/text-to-speech@^8.0.0
+    Native TTS plugin. Used in tts.ts on Capacitor.isNativePlatform() === true.
+    Falls back to SpeechSynthesis API on web.
+
+DEV TOOLS:
+  eslint@^9 + eslint-config-next@16.1.6
+    Linting. React hooks rules enforced. Notable rule: setState must not be
+    called directly in useEffect body — use setTimeout(..., 0) workaround.
+  @tailwindcss/postcss@^4
+    PostCSS plugin for Tailwind v4.
+  @capacitor/cli@^8.1.0
+    Capacitor CLI for cap:build, cap:sync, cap:open:android, cap:open:ios.
+
+BUILD COMMANDS:
+  npm run build        → next build --webpack  (static export to ./out/)
+  npm run dev          → next dev
+  npm run lint         → eslint
+  npm run cap:build    → next build --webpack && npx cap copy
+  npm run cap:open:android → npx cap open android
+  npm run cap:run:android  → npx cap run android
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 12 — UNFINISHED FEATURES
+════════════════════════════════════════════════════════════════════════════════
+
+1. STRIPE PAYMENT INTEGRATION
+   Status: NOT STARTED
+   What exists:
+   — Subscription page (/parent/subscription) with Free/Premium tier cards.
+   — useUpdateSubscription() mutation that writes directly to DB.
+   — Price displayed: £4.99/month.
+   — "Payment processing coming soon" notice in the UI.
+   What is missing:
+   — Stripe Checkout session creation.
+   — Stripe webhook to update subscription_tier on payment events.
+   — Customer portal link for managing billing.
+   — Stripe product/price IDs in .env.
+   — Server-side webhook handler (note: static export means this CANNOT be a
+     Next.js API route — must be a separate service or Supabase Edge Function).
+
+2. ADDITIONAL ACTIVITY GAMEPLAY TYPES
+   Status: PARTIALLY DONE (3 of 9 types implemented)
+   What exists:
+   — TapCorrectActivity (tap_correct) — complete.
+   — VisualMatchingActivity (visual_matching) — complete.
+   — SequencingActivity (sequencing) — complete.
+   What is missing (all fall back to simple "Done" button):
+   — listen_choose: audio prompt, child selects correct image.
+   — speak_tap_aac: child speaks via AAC board to answer.
+   — trace: finger-tracing on screen.
+   — routine_checkoff: multi-step checklist.
+   — parent_guided: parent-led activity with instructions.
+   — printable: link to a printable worksheet PDF.
+   Missing: gameplay components for the above 6 types.
+   Missing: audio files referenced by audio_cue field in activities.
+
+3. WEEKLY PLANNER UI (PARENT SIDE)
+   Status: DB and hooks ready, UI PARTIALLY BUILT
+   What exists:
+   — weekly_plan_entries DB table (migration 000005).
+   — getWeeklyPlanEntries(), replaceWeeklyPlanEntries() in studyDb.ts.
+   — kid/study/page.tsx reads weeklyEntries to filter today's subjects.
+   — parent/study/page.tsx has a "Weekly Plan" section (partially built).
+   What is missing:
+   — Full 7-day grid UI where parents drag/assign subjects per day.
+   — Visual feedback of today's plan vs. rest-day plan.
+
+4. ARASAAC OFFLINE FALLBACK
+   Status: TODO comment in code
+   What exists: IconPicker.tsx searches ARASAAC live API.
+   Missing: Local placeholder adapter for when ARASAAC API is unreachable
+            (CORS issues, network offline, API down).
+   TODO comment: "If ARASAAC API is unavailable (CORS / network), implement a
+                  local placeholder adapter that returns bundled sample pictograms."
+
+5. SPEAK.TS CLEANUP
+   Status: DEAD CODE
+   speak.ts is a legacy stub (console.log only). The app now uses tts.ts.
+   speak.ts should be deleted, but is still present.
+
+6. ANALYTICS EVENTS
+   Status: MINIMAL
+   Only 3 events tracked. Missing: onboarding completion, study lesson started,
+   lesson completed, parent dashboard viewed, settings changed.
+
+7. MULTI-PROFILE / THERAPIST PORTAL
+   Status: NOT STARTED
+   Current model: one auth.users account → one profiles row.
+   No multi-child support. No therapist/educator access role.
+
+8. CONFLICT RESOLUTION
+   Status: BASIC (last-write-wins only)
+   No per-field merge. No CRDT. Adequate for single-user data but would need
+   improvement for multi-device or multi-user scenarios.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 13 — CODE QUALITY CHECK
+════════════════════════════════════════════════════════════════════════════════
+
+DEAD CODE:
+  src/lib/speak.ts
+    Legacy TTS stub (console.log). Superseded by src/lib/tts.ts.
+    No active imports found. Safe to delete.
+
+DUPLICATE LOGIC:
+  withOfflineQueue() function
+    Defined identically in both db.ts and studyDb.ts. Could be extracted
+    into a shared utility. Currently copy-pasted with the same logic.
+  generateUUID() function
+    Defined identically in both db.ts and studyDb.ts. Same extraction candidate.
+  shuffle() function
+    Defined in TapCorrectActivity.tsx, VisualMatchingActivity.tsx, and
+    SequencingActivity.tsx separately. Could be extracted to utils.ts.
+
+UNFINISHED UI COMPONENTS:
+  parent/study/page.tsx weekly plan section
+    Partially built — has data fetching but the 7-day editor grid is incomplete.
+  parent/study/progress/page.tsx
+    Progress analytics page exists but depth of visualizations may be limited.
+
+INCONSISTENT NAMING:
+  "cards" table vs. CardType in TypeScript (aliased due to React's Card import conflict).
+  speak.ts (stub) vs. tts.ts (implementation) — function names don't match:
+    speak.ts exports speak(text: string) taking only a string,
+    tts.ts exports speak(text, soundEnabled, opts?) with different signature.
+  cards vs. communication_cards: The REPO_SNAPSHOT.md calls it "communication_cards"
+    but the actual DB table name is "cards". This inconsistency exists in docs only.
+
+KNOWN LINT CONSIDERATION:
+  React 19 + eslint-config-next enforces that setState cannot be called directly
+  inside a useEffect body. Workaround used: wrap in setTimeout(..., 0).
+  Examples seen in OfflineBanner.tsx and ParentGate.tsx.
+
+HARDCODED VALUES:
+  Subscription price "£4.99 / month" is hardcoded in subscription/page.tsx.
+  Should be driven by Stripe price data once payment is integrated.
+  Parent gate hold time (3000ms) and session timeout (10 min) are constants
+  in ParentGate.tsx — acceptable but could be configurable.
+
+NO TESTS:
+  There is no test infrastructure (no jest, vitest, playwright, etc.).
+  The repo has zero test files. This is a known gap.
+
+
+════════════════════════════════════════════════════════════════════════════════
+STEP 14 — FINAL PROJECT STATE SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+
+COMPLETENESS:
+  The project is approximately 75–80% complete for its core MVP feature set.
+  
+  FULLY IMPLEMENTED:
+  ✅ Supabase auth (sign up, sign in, session persistence, redirect logic)
+  ✅ 5-step onboarding wizard (profile + learning plan + preferences)
+  ✅ Kid home hub (5-tile navigation grid)
+  ✅ AAC Talk Board (always free, TTS, configurable grid, ARASAAC icons)
+  ✅ Visual schedule (read from DB, tap-to-complete, star reward on completion)
+  ✅ Break page (rotating calm prompts, break timer)
+  ✅ Rewards page (star count, streak calculation, 7 earnable badges)
+  ✅ Study curriculum (seed data, subject → module → lesson → activity hierarchy)
+  ✅ Interactive activity gameplay (3 of 9 types: tap_correct, visual_matching, sequencing)
+  ✅ Premium subscription gating on study content (UpgradeBanner)
+  ✅ Parent dashboard with Cards Manager and Schedule Builder
+  ✅ Subscription management page (UI ready, Stripe not wired)
+  ✅ Offline read cache (TanStack Query + IDB persistence)
+  ✅ Offline write queue (syncQueue.ts, last-write-wins replay)
+  ✅ Offline banner indicator
+  ✅ Calm mode (CSS class on <html>, disables animations)
+  ✅ PostHog analytics (opt-out, no PII, no session replay)
+  ✅ Capacitor mobile wrapper (Android + iOS ready, TTS native plugin)
+  ✅ PWA manifest and service worker
+  ✅ ErrorBoundary (kid-friendly error screen)
+  ✅ ParentGate (3-second hold-to-unlock, 10-min session, cross-tab sync)
+  ✅ Theme system (calm mode toggled via CSS class)
+  
+  NOT STARTED / INCOMPLETE:
+  ❌ Stripe payment integration (subscription tier is manually set)
+  ❌ 6 of 9 activity gameplay types (fall back to "Done" button)
+  ❌ Weekly planner UI (data layer ready, UI incomplete)
+  ❌ Multi-child or therapist portal
+  ❌ ARASAAC offline fallback
+  ❌ Test infrastructure
+
+BIGGEST MISSING SYSTEMS:
+  1. Stripe payment — the subscription model is complete architecturally but
+     revenue collection is entirely absent. The subscription page warns users.
+  2. Activity gameplay types — 6 types degrade to a single "Done" button,
+     significantly reducing the interactive value of the study system.
+  3. Payment webhook handler — static export constraint means a separate
+     service (Supabase Edge Function or external server) is required.
+
+PRODUCTION READINESS:
+  READY FOR SOFT LAUNCH (with caveats):
+  — Core kid experience (AAC + schedule + rewards) is fully functional.
+  — Auth, offline, and data persistence are production-quality.
+  — Build passes cleanly (npm run build succeeds without secrets).
+  — Static export deploys to Vercel or CDN without configuration.
+  — Capacitor wrapping is ready for Android Studio / Xcode.
+  
+  NOT READY FOR PAID LAUNCH:
+  — Stripe integration absent means premium tier cannot generate revenue.
+  — Only 3/9 activity types are interactive.
+  — No automated tests — regressions risk is elevated.
+  — No error monitoring service (only console.error in ErrorBoundary).
+
+ARCHITECTURE QUALITY:
+  Strong: Offline-first design is well-engineered. TypeScript types are thorough.
+  Supabase RLS is comprehensive. The static export + Capacitor pattern is solid.
+  Component library is accessible (ARIA attributes, min touch targets ≥ 44–130px,
+  focus-visible rings). Calm mode is a first-class design consideration.
+  
+  Weak: No tests. Some code duplication. speak.ts dead code. Stripe absent.
+  Curriculum data hardcoded in studySeedData.ts (not fetched from DB).
+
+================================================================================
+END OF PROJECT_PARSE.txt
+================================================================================
