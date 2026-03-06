@@ -1,5 +1,13 @@
 # Copilot Rules (MUST FOLLOW)
 
+All AI coding agents must read the following files before implementing changes:
+
+1. AI_CONTEXT.md
+2. PROJECT_CONTEXT.md
+3. REPO_SNAPSHOT.md
+4. LLM_RULES.md
+5. CONTRIBUTING.md
+
 You are working inside this GitHub repo.
 
 Hard rules:

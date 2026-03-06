@@ -10,6 +10,7 @@ This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & str
 
 ```
 /
+├── AI_CONTEXT.md
 ├── PROJECT_CONTEXT.md
 ├── LLM_RULES.md
 ├── REPO_SNAPSHOT.md
