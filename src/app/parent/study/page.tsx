@@ -21,13 +21,15 @@ import {
   upsertChildLearningPlan,
   getChildPreferences,
   upsertChildPreferences,
+  getWeeklyPlanEntries,
+  replaceWeeklyPlanEntries,
 } from "@/lib/studyDb";
 import {
   SEED_YEAR_CATEGORIES,
   SEED_CLASS_LEVELS,
   SEED_SUBJECT_AREAS,
 } from "@/lib/studySeedData";
-import type { StudyIntensity } from "@/lib/studyTypes";
+import type { StudyIntensity, DayOfWeek } from "@/lib/studyTypes";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -45,6 +47,16 @@ const SESSION_PRESETS = [5, 10, 15] as const;
 
 const DEFAULT_SUBJECT_IDS = ["sa-communication", "sa-daily-living"];
 
+const DAYS_OF_WEEK: { value: DayOfWeek; label: string; short: string }[] = [
+  { value: "monday", label: "Monday", short: "Mon" },
+  { value: "tuesday", label: "Tuesday", short: "Tue" },
+  { value: "wednesday", label: "Wednesday", short: "Wed" },
+  { value: "thursday", label: "Thursday", short: "Thu" },
+  { value: "friday", label: "Friday", short: "Fri" },
+  { value: "saturday", label: "Saturday", short: "Sat" },
+  { value: "sunday", label: "Sunday", short: "Sun" },
+];
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ParentStudyPlannerPage() {
@@ -60,6 +72,16 @@ export default function ParentStudyPlannerPage() {
   const [sessionLength, setSessionLength] = useState<number>(10);
   const [repeatCompleted, setRepeatCompleted] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  // Weekly plan state: map of day → subject area IDs
+  const [weeklyPlan, setWeeklyPlan] = useState<Record<DayOfWeek, string[]>>({
+    monday: [],
+    tuesday: [],
+    wednesday: [],
+    thursday: [],
+    friday: [],
+    saturday: [],
+    sunday: [],
+  });
 
   // ── Queries ──────────────────────────────────────────────────────────────
   const { data: existingPlan, isLoading: planLoading } = useQuery({
@@ -72,6 +94,12 @@ export default function ParentStudyPlannerPage() {
     queryKey: ["childPreferences", profileId],
     queryFn: () => getChildPreferences(profileId!),
     enabled: !!profileId,
+  });
+
+  const { data: existingWeeklyEntries } = useQuery({
+    queryKey: ["weeklyPlanEntries", existingPlan?.id],
+    queryFn: () => getWeeklyPlanEntries(existingPlan!.id),
+    enabled: !!existingPlan?.id,
   });
 
   // ── Hydrate form from existing data ──────────────────────────────────────
@@ -104,6 +132,25 @@ export default function ParentStudyPlannerPage() {
     }
   }, [preferences]);
 
+  // Hydrate weekly plan from existing entries
+  useEffect(() => {
+    if (existingWeeklyEntries && existingWeeklyEntries.length > 0) {
+      setTimeout(() => {
+        const plan: Record<DayOfWeek, string[]> = {
+          monday: [], tuesday: [], wednesday: [], thursday: [],
+          friday: [], saturday: [], sunday: [],
+        };
+        for (const entry of existingWeeklyEntries) {
+          const day = entry.day as DayOfWeek;
+          if (plan[day]) {
+            plan[day].push(entry.subject_area_id);
+          }
+        }
+        setWeeklyPlan(plan);
+      }, 0);
+    }
+  }, [existingWeeklyEntries]);
+
   // ── Derived data ─────────────────────────────────────────────────────────
   const classLevelsForCategory = useMemo(
     () => SEED_CLASS_LEVELS.filter((cl) => cl.year_category_id === selectedYearCategory),
@@ -119,7 +166,7 @@ export default function ParentStudyPlannerPage() {
   const savePlanMutation = useMutation({
     mutationFn: async () => {
       if (!profileId) throw new Error("No active profile");
-      await upsertChildLearningPlan({
+      const savedPlan = await upsertChildLearningPlan({
         profile_id: profileId,
         class_level_id: selectedClassLevel,
         intensity,
@@ -130,10 +177,20 @@ export default function ParentStudyPlannerPage() {
       await upsertChildPreferences(profileId, {
         repeat_completed_lessons: repeatCompleted,
       });
+      // Save weekly plan entries
+      const entries: { day: DayOfWeek; subject_area_id: string; order: number }[] = [];
+      for (const day of DAYS_OF_WEEK) {
+        const subjects = weeklyPlan[day.value];
+        subjects.forEach((subjectId, idx) => {
+          entries.push({ day: day.value, subject_area_id: subjectId, order: idx });
+        });
+      }
+      await replaceWeeklyPlanEntries(savedPlan.id, entries);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["childLearningPlan", profileId] });
       queryClient.invalidateQueries({ queryKey: ["childPreferences", profileId] });
+      queryClient.invalidateQueries({ queryKey: ["weeklyPlanEntries"] });
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     },
@@ -158,6 +215,17 @@ export default function ParentStudyPlannerPage() {
         ? prev.filter((id) => id !== subjectId)
         : [...prev, subjectId],
     );
+  }
+
+  function toggleWeeklySubject(day: DayOfWeek, subjectId: string) {
+    setSaveSuccess(false);
+    setWeeklyPlan((prev) => {
+      const daySubjects = prev[day];
+      const updated = daySubjects.includes(subjectId)
+        ? daySubjects.filter((id) => id !== subjectId)
+        : [...daySubjects, subjectId];
+      return { ...prev, [day]: updated };
+    });
   }
 
   const canSave =
@@ -292,6 +360,48 @@ export default function ParentStudyPlannerPage() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Section 2b — Weekly Plan */}
+      {selectedSubjects.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Weekly Plan</CardTitle>
+            <CardDescription>
+              Assign subjects to days of the week. Tap a subject badge under each day to toggle it.
+              If no days are configured, all selected subjects show every day.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {DAYS_OF_WEEK.map((day) => {
+              const daySubjects = weeklyPlan[day.value];
+              const availableSubjects = SEED_SUBJECT_AREAS.filter((sa) =>
+                selectedSubjects.includes(sa.id),
+              );
+              return (
+                <div key={day.value} className="space-y-1.5">
+                  <Label className="text-sm font-bold">{day.label}</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {availableSubjects.map((sa) => (
+                      <SubjectBadge
+                        key={sa.id}
+                        title={sa.title}
+                        icon={sa.icon}
+                        selected={daySubjects.includes(sa.id)}
+                        onClick={() => toggleWeeklySubject(day.value, sa.id)}
+                      />
+                    ))}
+                  </div>
+                  {daySubjects.length === 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      No subjects — all selected subjects will appear
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Section 3 — Study Settings */}
       <Card>
