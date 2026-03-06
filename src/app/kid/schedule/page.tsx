@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
@@ -16,7 +16,6 @@ import type { ScheduleItem, Card as CardType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { trackScreen, trackScheduleItemCompleted } from "@/lib/analytics";
 import { KidShell } from "@/components/kid/KidShell";
-import { BigTileButton } from "@/components/kid/BigTileButton";
 import { EmptyState } from "@/components/kid/EmptyState";
 
 export default function SchedulePage() {
@@ -118,8 +117,13 @@ export default function SchedulePage() {
 
   // Derive settings (defaults when no row exists)
   const calmMode = settings?.calm_mode ?? false;
-  const gridSize = settings?.grid_size ?? 3;
   const bigButtonMode = settings?.big_button_mode ?? false;
+
+  // Find the first incomplete item index for "Happening Now" highlight
+  const firstIncompleteIdx = useMemo(
+    () => items?.findIndex((i) => !i.is_complete) ?? -1,
+    [items],
+  );
 
   // --- Render states ---
 
@@ -165,67 +169,114 @@ export default function SchedulePage() {
     );
   }
 
-  // Grid column count.
-  // big_button_mode caps the grid at 2 columns for easier tapping.
-  const effectiveGridSize = bigButtonMode ? Math.min(gridSize, 2) : gridSize;
-  const gridCols =
-    effectiveGridSize === 2
-      ? "grid-cols-2"
-      : effectiveGridSize === 4
-        ? "grid-cols-4"
-        : "grid-cols-3";
-
   const doneCount = items.filter((i) => i.is_complete).length;
   const totalCount = items.length;
 
   return (
-    <KidShell
-      title={schedules[0].title}
-      emoji="📋"
-      trailing={
-        <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
-          {doneCount}/{totalCount} done
-        </span>
-      }
-    >
-      {/* Progress bar */}
-      <div
-        className="h-3 w-full overflow-hidden rounded-full bg-muted"
-        role="progressbar"
-        aria-valuenow={doneCount}
-        aria-valuemin={0}
-        aria-valuemax={totalCount}
-        aria-label={`${doneCount} of ${totalCount} tasks complete`}
-      >
+    <KidShell title={schedules[0].title} emoji="📋">
+      {/* Progress card */}
+      <div className="rounded-xl bg-white p-4 shadow">
+        <div className="flex items-center justify-between pb-2">
+          <span className="text-sm font-semibold text-foreground">Daily Progress</span>
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+            {doneCount} of {totalCount} done
+          </span>
+        </div>
         <div
-          className="h-full rounded-full bg-success transition-all duration-300"
-          style={{ width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%` }}
-        />
+          className="h-3 w-full overflow-hidden rounded-full bg-muted"
+          role="progressbar"
+          aria-valuenow={doneCount}
+          aria-valuemin={0}
+          aria-valuemax={totalCount}
+          aria-label={`${doneCount} of ${totalCount} tasks complete`}
+        >
+          <div
+            className="h-full rounded-full bg-success transition-all duration-300"
+            style={{ width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%` }}
+          />
+        </div>
       </div>
 
-      <div className={cn("grid gap-4", gridCols)}>
-        {items.map((item) => {
+      {/* Vertical task list */}
+      <div className="flex flex-col gap-3">
+        {items.map((item, idx) => {
           const card = cardMap.get(item.card_id);
+          const label = card?.label ?? "Task";
+          const isCurrent = idx === firstIncompleteIdx;
+          const isDone = item.is_complete;
+
           return (
-            <BigTileButton
+            <button
               key={item.id}
-              label={card?.label ?? "Task"}
-              imageUrl={card?.image_url}
-              fallbackEmoji={item.is_complete ? "✅" : "⭐"}
-              active={item.is_complete}
-              activeLabel="Done! ⭐"
-              calm={calmMode}
-              bigButtonMode={bigButtonMode}
-              ariaLabel={`${card?.label ?? "Task"}, ${item.is_complete ? "done" : "not done"}`}
-              ariaPressed={item.is_complete}
+              type="button"
               onClick={() =>
                 toggleDone({
                   itemId: item.id,
-                  done: !item.is_complete,
-                  awardStar: !item.is_complete,
+                  done: !isDone,
+                  awardStar: !isDone,
                 })
               }
-            />
+              className={cn(
+                "flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm",
+                !calmMode && "transition-all active:scale-[0.98]",
+                isDone && "opacity-60",
+                isCurrent && "border-2 border-primary shadow-lg",
+                bigButtonMode && "min-h-[72px] p-5",
+              )}
+              aria-label={`${label}, ${isDone ? "done" : "not done"}`}
+              aria-pressed={isDone}
+            >
+              {/* Icon area */}
+              <div
+                className={cn(
+                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-lg",
+                  isDone ? "bg-success/20" : "bg-primary/10",
+                  bigButtonMode && "h-14 w-14",
+                )}
+              >
+                {card?.image_url ? (
+                  <img
+                    src={card.image_url}
+                    alt=""
+                    className={cn("h-8 w-8 rounded object-cover", bigButtonMode && "h-10 w-10")}
+                  />
+                ) : (
+                  <span className={cn("text-2xl", bigButtonMode && "text-3xl")}>
+                    {isDone ? "✅" : "⭐"}
+                  </span>
+                )}
+              </div>
+
+              {/* Text content */}
+              <div className="flex flex-1 flex-col items-start gap-0.5">
+                <span
+                  className={cn(
+                    "text-base font-semibold text-foreground",
+                    isDone && "line-through",
+                    bigButtonMode && "text-lg",
+                  )}
+                >
+                  {label}
+                </span>
+                {isCurrent && (
+                  <span className="text-xs font-medium text-primary">Happening Now</span>
+                )}
+              </div>
+
+              {/* Toggle checkbox */}
+              <div
+                className={cn(
+                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2",
+                  isDone
+                    ? "border-success bg-success text-white"
+                    : "border-muted-foreground/30 bg-transparent",
+                )}
+              >
+                {isDone && (
+                  <span className="material-symbols-outlined text-lg">check</span>
+                )}
+              </div>
+            </button>
           );
         })}
       </div>
