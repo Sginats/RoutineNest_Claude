@@ -43,7 +43,6 @@ const SIZE_MAP = {
  * Earned badges have a coloured glow and filled icon.
  */
 export function RewardBadge({
-  id,
   icon,
   label,
   earned = false,

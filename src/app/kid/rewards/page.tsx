@@ -136,12 +136,19 @@ export default function RewardsPage() {
 
   useEffect(() => {
     if (totalStars > prevStars && !calmMode) {
-      setShowCelebration(true);
-      setPrevStars(totalStars);
+      // Show celebration animation after a microtask to avoid synchronous setState
+      const showTimer = setTimeout(() => {
+        setShowCelebration(true);
+        setPrevStars(totalStars);
+      }, 0);
       const hideTimer = setTimeout(() => setShowCelebration(false), 2000);
-      return () => clearTimeout(hideTimer);
+      return () => {
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+      };
     }
-    setPrevStars(totalStars);
+    const syncTimer = setTimeout(() => setPrevStars(totalStars), 0);
+    return () => clearTimeout(syncTimer);
   }, [totalStars, prevStars, calmMode]);
 
   if (authLoading || !user) {

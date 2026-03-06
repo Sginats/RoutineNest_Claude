@@ -132,3 +132,26 @@ body {
   animation-duration: 0s !important;
   transition-duration: 0.05s !important;
 }
+
+/* ── Utility classes ──────────────────────────────────────────── */
+
+/* Hide scrollbar on horizontal-scroll containers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe area padding for mobile (Capacitor / PWA) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Parent-facing font override */
+.font-parent {
+  font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+}
