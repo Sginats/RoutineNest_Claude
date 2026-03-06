@@ -7,11 +7,46 @@ import { useSettings } from "@/lib/settingsHooks";
 import { cn } from "@/lib/utils";
 
 const TILES = [
-  { href: "/kid/study", emoji: "📖", label: "Study", bg: "bg-accent text-accent-foreground" },
-  { href: "/kid/talk", emoji: "💬", label: "Talk", bg: "bg-primary text-primary-foreground" },
-  { href: "/kid/schedule", emoji: "📋", label: "Schedule", bg: "bg-secondary text-secondary-foreground" },
-  { href: "/kid/rewards", emoji: "⭐", label: "Rewards", bg: "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-200" },
-  { href: "/kid/break", emoji: "🌿", label: "Break", bg: "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/30 dark:text-emerald-200" },
+  {
+    href: "/kid/study",
+    icon: "school",
+    label: "Study",
+    bg: "bg-kid-teal",
+    shadow: "shadow-kid-teal/20",
+    text: "text-white",
+  },
+  {
+    href: "/kid/talk",
+    icon: "chat_bubble",
+    label: "Talk",
+    bg: "bg-kid-coral",
+    shadow: "shadow-kid-coral/20",
+    text: "text-white",
+  },
+  {
+    href: "/kid/schedule",
+    icon: "calendar_month",
+    label: "Schedule",
+    bg: "bg-kid-yellow",
+    shadow: "shadow-kid-yellow/20",
+    text: "text-slate-800",
+  },
+  {
+    href: "/kid/rewards",
+    icon: "stars",
+    label: "Rewards",
+    bg: "bg-kid-blue",
+    shadow: "shadow-kid-blue/20",
+    text: "text-white",
+  },
+  {
+    href: "/kid/break",
+    icon: "potted_plant",
+    label: "Break",
+    bg: "bg-kid-mint",
+    shadow: "shadow-kid-mint/20",
+    text: "text-white",
+  },
 ] as const;
 
 export default function Home() {
@@ -22,27 +57,42 @@ export default function Home() {
   const calmMode = settings?.calm_mode ?? false;
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-8 px-4 text-center">
-      <span className="text-6xl" role="img" aria-label="Nest">
-        🏡
-      </span>
-      <h1 className="text-4xl font-extrabold tracking-tight text-primary">
-        RoutineNest
-      </h1>
-      <p className="max-w-md text-lg text-muted-foreground">
-        Routines + communication for children — designed with care.
-      </p>
+    <div className="flex min-h-[80vh] flex-col gap-6">
+      {/* Header */}
+      <header className="flex items-center justify-between">
+        <h1 className="text-2xl font-extrabold tracking-tight text-primary">
+          🏡 RoutineNest
+        </h1>
+        <Link
+          href="/login"
+          className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-full bg-muted",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            calmMode ? "" : "transition-colors hover:bg-muted/80",
+          )}
+          aria-label="Parent / Caregiver Sign In"
+        >
+          <span className="material-symbols-outlined text-xl text-muted-foreground" aria-hidden="true">
+            lock
+          </span>
+        </Link>
+      </header>
 
-      {/* Navigation tiles
-          big_button_mode: switches to single column on mobile with larger tiles.
-          calm_mode: removes hover/active scale transitions.
-      */}
+      {/* Welcome message */}
+      <div>
+        <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
+          Hi there! 👋
+        </h2>
+        <p className="mt-1 text-lg text-muted-foreground">
+          What do you want to do today?
+        </p>
+      </div>
+
+      {/* Navigation tiles */}
       <div
         className={cn(
-          "grid gap-4 w-full max-w-md",
-          bigButtonMode
-            ? "grid-cols-1 sm:grid-cols-2"
-            : "grid-cols-2 sm:grid-cols-3",
+          "grid w-full gap-4",
+          bigButtonMode ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2",
         )}
       >
         {TILES.map((tile) => (
@@ -50,34 +100,85 @@ export default function Home() {
             key={tile.href}
             href={tile.href}
             className={cn(
-              "inline-flex flex-col items-center justify-center gap-3 rounded-2xl px-4 font-bold shadow-md",
+              "group flex flex-col items-center justify-center gap-4 rounded-xl p-6 shadow-lg",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              // Big-button mode: taller tiles, larger text
-              bigButtonMode
-                ? "min-h-[150px] py-6 text-xl"
-                : "min-h-[120px] py-5 text-lg",
-              // Calm mode: no scale animations
-              calmMode ? "" : "transition-transform hover:scale-105 active:scale-95",
+              bigButtonMode ? "min-h-[200px]" : "min-h-[160px]",
+              calmMode ? "" : "transition-transform active:scale-95",
               tile.bg,
+              tile.shadow,
             )}
           >
-            <span
-              className={cn(bigButtonMode ? "text-5xl" : "text-4xl")}
-              aria-hidden="true"
+            <div
+              className={cn(
+                "flex items-center justify-center rounded-full bg-white/20",
+                bigButtonMode ? "h-24 w-24" : "h-20 w-20",
+                tile.text,
+              )}
             >
-              {tile.emoji}
+              <span
+                className={cn(
+                  "material-symbols-outlined",
+                  bigButtonMode ? "text-7xl" : "text-6xl",
+                )}
+                aria-hidden="true"
+              >
+                {tile.icon}
+              </span>
+            </div>
+            <span className={cn("text-2xl font-extrabold", tile.text)}>
+              {tile.label}
             </span>
-            <span>{tile.label}</span>
           </Link>
         ))}
+
+        {/* Placeholder add tile */}
+        <div
+          className={cn(
+            "flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-muted-foreground/30 p-6",
+            bigButtonMode ? "min-h-[200px]" : "min-h-[160px]",
+          )}
+        >
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+            <span className="material-symbols-outlined text-4xl text-muted-foreground" aria-hidden="true">
+              add
+            </span>
+          </div>
+          <span className="text-lg font-bold text-muted-foreground">
+            Coming soon
+          </span>
+        </div>
       </div>
 
-      <Link
-        href="/login"
-        className="mt-4 text-sm font-medium text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+      {/* Bottom nav bar */}
+      <nav
+        className="mt-auto flex items-center justify-around rounded-2xl bg-card py-3 shadow-md"
+        aria-label="Bottom navigation"
       >
-        Parent / Caregiver Sign In →
-      </Link>
+        {[
+          { href: "/", icon: "home", label: "Home", active: true },
+          { href: "/kid/study", icon: "handyman", label: "Tools", active: false },
+          { href: "/kid/rewards", icon: "person", label: "Me", active: false },
+        ].map((item) => (
+          <Link
+            key={item.label}
+            href={item.href}
+            className={cn(
+              "flex flex-col items-center gap-0.5 rounded-xl px-4 py-1",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              item.active
+                ? "text-primary"
+                : "text-muted-foreground",
+              calmMode ? "" : "transition-colors",
+            )}
+            aria-current={item.active ? "page" : undefined}
+          >
+            <span className="material-symbols-outlined text-2xl" aria-hidden="true">
+              {item.icon}
+            </span>
+            <span className="text-xs font-semibold">{item.label}</span>
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }
