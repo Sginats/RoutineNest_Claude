@@ -4,16 +4,18 @@ Last updated: 2026-03-06
 
 ## Current State
 
-This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & streaks, and kid home UX improvements.
+Completed through STEP 17 — Activity gameplay, onboarding, rewards & streaks, and kid home UX improvements.
 
 ## Directory Structure
 
 ```
 /
-├── PROJECT_CONTEXT.md
-├── LLM_RULES.md
+├── AI_CONTEXT.md
+├── PROJECT_SUMMARY.md
 ├── REPO_SNAPSHOT.md
 ├── CONTRIBUTING.md
+├── PRIVACY.md
+├── TERMS.md
 ├── supabase/
 │   └── migrations/
 │       ├── 20260305000000_initial_schema.sql
@@ -32,7 +34,7 @@ This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & str
     │   ├── page.tsx                            (5-tile kid home: Study, Talk, Schedule, Rewards, Break)
     │   ├── debug-env/page.tsx
     │   ├── login/page.tsx                      (+ first-time user → onboarding redirect)
-    │   ├── onboarding/page.tsx                 ← STEP 17 (5-step wizard)
+    │   ├── onboarding/page.tsx                 (5-step wizard)
     │   ├── settings/page.tsx
     │   ├── parent/
     │   │   ├── page.tsx                        (+ subscription status banner)
@@ -40,7 +42,7 @@ This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & str
     │   │   ├── study/progress/page.tsx
     │   │   └── subscription/page.tsx
     │   └── kid/
-    │       ├── break/page.tsx                  ← STEP 17 (calm prompts + timer)
+    │       ├── break/page.tsx                  (calm prompts + timer)
     │       ├── schedule/page.tsx
     │       ├── talk/page.tsx
     │       ├── rewards/page.tsx                (+ streaks, badges)
@@ -57,7 +59,7 @@ This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & str
     │   ├── ParentGate.tsx
     │   ├── ThemeProvider.tsx
     │   ├── UpgradeBanner.tsx
-    │   ├── activities/                         ← STEP 17
+    │   ├── activities/
     │   │   ├── TapCorrectActivity.tsx
     │   │   ├── VisualMatchingActivity.tsx
     │   │   ├── SequencingActivity.tsx
@@ -68,7 +70,7 @@ This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & str
     ├── hooks/
     │   └── useAuth.ts
     └── lib/
-        ├── activityGameplayData.ts             ← STEP 17
+        ├── activityGameplayData.ts
         ├── analytics.ts
         ├── db.ts
         ├── env.ts                              (safe for prerender — no throw)
@@ -88,23 +90,32 @@ This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & str
         └── utils.ts
 ```
 
-## Stack
+## Implemented Systems
 
-| Layer        | Technology                              |
-| ------------ | --------------------------------------- |
-| Framework    | Next.js (App Router) + TypeScript       |
-| Styling      | Tailwind CSS + shadcn/ui               |
-| Backend      | Supabase (Auth, Postgres, Storage)      |
-| Data         | TanStack Query                          |
-| Offline      | PWA + query cache persistence           |
-| TTS          | Capacitor plugin + Web Speech API       |
-| Mobile       | Capacitor (Android / iOS)               |
-| Analytics    | PostHog (opt-out, no session replay)    |
-| Package mgr  | npm                                     |
+| System | Status |
+| --- | --- |
+| Auth + login | ✅ Complete |
+| Onboarding wizard | ✅ Complete |
+| Kid home hub (5-tile grid) | ✅ Complete |
+| Visual schedule | ✅ Complete |
+| AAC Talk Board (always free) | ✅ Complete |
+| Study curriculum + seed data | ✅ Complete |
+| Activity gameplay (3 types) | ✅ Complete |
+| Rewards + streaks + badges | ✅ Complete |
+| Break page | ✅ Complete |
+| Parent dashboard | ✅ Complete |
+| Subscription model (free/premium) | ✅ Complete |
+| Offline sync (PWA + IDB) | ✅ Complete |
+| Capacitor mobile wrapper | ✅ Complete |
+| PostHog analytics | ✅ Complete |
+| Theme system (Playful + Calm) | ✅ Complete |
+| Stripe payment integration | ❌ Not started |
+| Additional activity types | ❌ Not started |
+| Weekly planner UI | ❌ Not started |
 
 ## Completed Steps
 
-- [x] STEP 0 — Add grounding files (PROJECT_CONTEXT, LLM_RULES, REPO_SNAPSHOT, CONTRIBUTING)
+- [x] STEP 0 — Grounding files
 - [x] STEP 1 — Scaffold Next.js app with TypeScript and Tailwind
 - [x] STEP 7 — DB schema, auth, RLS
 - [x] STEP 9 — Settings page (calm mode, grid size, sound)
@@ -112,47 +123,76 @@ This repo has completed STEP 17 — Activity gameplay, onboarding, rewards & str
 - [x] STEP 12 — Kid Schedule MVP (read + tap done)
 - [x] STEP 15 — Parent MVP editors (Cards manager + Schedule builder)
 - [x] STEP 16 — Subscription/paywall system
-  - DB migration: `subscription_tier` column on profiles ('free' | 'premium')
-  - `subscriptionHooks.ts`: `useSubscription`, `useIsPremium`, `useUpdateSubscription`
-  - `db.ts`: `getProfile`, `updateSubscriptionTier` (offline-aware)
-  - `types.ts`: `SubscriptionTier`, `ProfilePatch`
-  - `/parent/subscription` page: tier selector, feature comparison, AAC-is-free reassurance
-  - `UpgradeBanner` component: shown in kid study when premium content accessed
-  - Parent dashboard: subscription status banner + Upgrade/Manage button
-  - Premium gating in kid study pages: subject, module, and lesson pages show UpgradeBanner instead of content for free users
-  - AAC Talk Board: never gated (always free)
 - [x] STEP 17 — Activity gameplay, onboarding, rewards & kid home improvements
-  - Build fix: `env.ts` no longer throws during prerender; `supabaseClient.ts` returns null without env vars
-  - Kid home: 5-tile grid layout (Study, Talk, Schedule, Rewards, Break)
-  - Break page: calm prompts, break timer, "I'm Ready" return
-  - Onboarding wizard: 5-step flow (name → class level → subjects → session length → intensity)
-  - Login: first-time users redirected to `/onboarding` when no profiles exist
-  - Activity gameplay: 3 interactive types (TapCorrect, VisualMatching, Sequencing)
-  - `activityGameplayData.ts`: pre-built gameplay data for seed activities
-  - Rewards page: streak counter, 7 earnable badges (star + streak thresholds)
+
+## Database Migrations
+
+| File | Description |
+| --- | --- |
+| `20260305000000_initial_schema.sql` | Core tables, triggers, RLS |
+| `20260305000001_add_grid_size_sound.sql` | `grid_size` + `sound_enabled` columns |
+| `20260305000002_add_card_tts_position.sql` | `tts_text` + `position` columns |
+| `20260305000003_card_icons_bucket.sql` | `card-icons` storage bucket + policies |
+| `20260305000004_study_plan_tables.sql` | Study plan tables |
+| `20260305000005_weekly_plan_entries.sql` | Weekly plan entries table |
+| `20260305000006_subscription_tier.sql` | `subscription_tier` column on profiles |
 
 ## Architecture Notes
 
 ### Subscription Model
-- Tier stored on `profiles.subscription_tier` (linked to `auth.users.id`)
-- Free: basic routines, AAC talk board, visual schedule, rewards
-- Premium: full study curriculum (premium subjects/modules/lessons), advanced learning plans, progress analytics
-- AAC is **always free** — enforced in code (TalkPage has no subscription check)
+
+- Tier stored on `profiles.subscription_tier` (linked to `auth.users.id`).
+- Free: basic routines, AAC talk board, visual schedule, rewards.
+- Premium: full study curriculum, advanced learning plans, progress analytics.
+- AAC is **always free** — enforced in code (TalkPage has no subscription check).
 
 ### Activity System
-- Activity types: `tap_correct`, `visual_matching`, `sequencing`, `listen_choose`, `speak_tap_aac`, `trace`, `parent_guided`, `routine_checkoff`, `printable`
-- Interactive gameplay implemented for: `tap_correct`, `visual_matching`, `sequencing`
-- Other types fall back to a simple "Done" button with instructions
-- Gameplay data defined in `activityGameplayData.ts` keyed by activity ID
-- Components in `src/components/activities/`
+
+- Activity types: `tap_correct`, `visual_matching`, `sequencing`, `listen_choose`, `speak_tap_aac`, `trace`, `parent_guided`, `routine_checkoff`, `printable`.
+- Interactive gameplay implemented for: `tap_correct`, `visual_matching`, `sequencing`.
+- Other types fall back to a simple "Done" button with instructions.
+- Gameplay data defined in `activityGameplayData.ts` keyed by activity ID.
+- Components in `src/components/activities/`.
 
 ### Build
-- `env.ts` exports env vars without throwing — safe for static export / prerendering
-- `supabaseClient.ts` returns `null` when env vars are missing — all consumers handle null
+
+- `env.ts` exports env vars without throwing — safe for static export / prerendering.
+- `supabaseClient.ts` returns `null` when env vars are missing — all consumers handle null.
+- Build command: `npm run build` (uses `--webpack` flag for PWA plugin compatibility).
+
+## Deployment Readiness
+
+### Web (Vercel)
+
+Ready to deploy. Static export via `output: "export"`. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in Vercel project settings.
+
+### Android / iOS (Capacitor)
+
+Ready. Run `npm run cap:build`, then open in Android Studio / Xcode. Signing config and version bumps required before store submission.
+
+### Pre-Release Checklist
+
+- Verify RLS policies enabled on all tables.
+- Confirm PostHog analytics opt-out works (localStorage key `routinenest_analytics_enabled`).
+- Confirm no PII in analytics events.
+- Confirm session replay disabled.
+- Confirm `card-icons` bucket access is scoped to owning user.
+- Grep for secrets — none should be in committed files.
+- Test offline: schedule, AAC, study all load from cache; mutations queue and replay.
+- Test accessibility: touch targets ≥ 48 px, focus order, screen reader labels, calm mode.
+- Test parent lock: 3-second hold gate, no route bypass.
+
+## Known Limitations
+
+- Stripe payment not yet integrated — subscription tier set manually.
+- Only 3 of 9 activity types have interactive gameplay.
+- Weekly planner UI not yet built.
+- No multi-parent invites or therapist portal.
+- Conflict resolution is last-write-wins only.
 
 ## Next Steps
 
-- [ ] STEP 18 — Payment integration (Stripe)
-- [ ] STEP 19 — Additional activity gameplay types (listen_choose, trace)
-- [ ] STEP 20 — Weekly planner UI for parents
-- [ ] STEP 21 — A/B testing with PostHog feature flags
+- [ ] Stripe payment integration (checkout, webhook, billing portal, subscription sync)
+- [ ] Additional activity gameplay types (listen_choose, trace)
+- [ ] Weekly planner UI for parents
+- [ ] A/B testing with PostHog feature flags
