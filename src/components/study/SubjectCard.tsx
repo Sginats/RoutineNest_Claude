@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { ProgressRing } from "@/components/kid/ProgressRing";
 
 interface SubjectCardProps {
   /** Subject title */
@@ -19,14 +20,10 @@ interface SubjectCardProps {
   bigButtonMode?: boolean;
 }
 
-const RING_SIZE = 48;
-const STROKE_WIDTH = 5;
-const RADIUS = (RING_SIZE - STROKE_WIDTH) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-
 /**
  * Study subject card with a circular SVG progress ring.
  * Shows an icon, title, subtitle, progress indicator, and a start button.
+ * Uses the shared ProgressRing component for visual consistency.
  */
 export function SubjectCard({
   title,
@@ -37,9 +34,6 @@ export function SubjectCard({
   onStart,
   bigButtonMode = false,
 }: SubjectCardProps) {
-  const clampedProgress = Math.max(0, Math.min(100, progress));
-  const offset = CIRCUMFERENCE - (clampedProgress / 100) * CIRCUMFERENCE;
-
   return (
     <div
       className={cn(
@@ -84,36 +78,7 @@ export function SubjectCard({
         </div>
 
         {/* Circular progress ring */}
-        <div className="shrink-0" aria-label={`${clampedProgress}% complete`}>
-          <svg
-            width={RING_SIZE}
-            height={RING_SIZE}
-            className="-rotate-90"
-            aria-hidden="true"
-          >
-            {/* Background track */}
-            <circle
-              cx={RING_SIZE / 2}
-              cy={RING_SIZE / 2}
-              r={RADIUS}
-              fill="none"
-              stroke="hsl(var(--border))"
-              strokeWidth={STROKE_WIDTH}
-            />
-            {/* Progress arc */}
-            <circle
-              cx={RING_SIZE / 2}
-              cy={RING_SIZE / 2}
-              r={RADIUS}
-              fill="none"
-              stroke="hsl(var(--primary))"
-              strokeWidth={STROKE_WIDTH}
-              strokeDasharray={CIRCUMFERENCE}
-              strokeDashoffset={offset}
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
+        <ProgressRing value={progress} size={48} strokeWidth={5} showPercent={false} />
       </div>
 
       {/* Start button */}

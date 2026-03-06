@@ -12,11 +12,12 @@ import {
   updateScheduleItemDone,
   addRewardIfNew,
 } from "@/lib/db";
-import type { ScheduleItem, Card as CardType } from "@/lib/types";
+import type { ScheduleItem as ScheduleItemType, Card as CardType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { trackScreen, trackScheduleItemCompleted } from "@/lib/analytics";
 import { KidShell } from "@/components/kid/KidShell";
 import { EmptyState } from "@/components/kid/EmptyState";
+import { ProgressBar } from "@/components/study/ProgressBar";
 
 export default function SchedulePage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -24,17 +25,21 @@ export default function SchedulePage() {
 
   const { data: settings } = useSettings(profileId);
 
-  // Fetch schedules for the active profile
+  // Fetch all schedules for the active profile
   const { data: schedules, isLoading: schedulesLoading } = useQuery({
     queryKey: ["schedules", profileId],
     queryFn: () => getSchedules(profileId!),
     enabled: !!profileId && !!user,
   });
 
-  // Pick the first schedule (MVP)
-  const scheduleId = schedules?.[0]?.id ?? null;
+  // Allow switching between schedules (default to first)
+  const [activeScheduleIndex, setActiveScheduleIndex] = useState(0);
 
-  // Fetch schedule items for the first schedule
+  // Reset index if schedules change and index is out of bounds
+  const scheduleId = schedules?.[activeScheduleIndex]?.id ?? schedules?.[0]?.id ?? null;
+  const activeSchedule = schedules?.[activeScheduleIndex] ?? schedules?.[0] ?? null;
+
+  // Fetch schedule items for the active schedule
   const { data: items, isLoading: itemsLoading } = useQuery({
     queryKey: ["scheduleItems", scheduleId],
     queryFn: () => getScheduleItems(scheduleId!),
@@ -49,8 +54,11 @@ export default function SchedulePage() {
   });
 
   // Build a lookup map: card id → card
-  const cardMap = new Map<string, CardType>();
-  cards?.forEach((c) => cardMap.set(c.id, c));
+  const cardMap = useMemo(() => {
+    const map = new Map<string, CardType>();
+    cards?.forEach((c) => map.set(c.id, c));
+    return map;
+  }, [cards]);
 
   // Track screen view once user and profile are ready
   useEffect(() => {
@@ -84,11 +92,11 @@ export default function SchedulePage() {
       await queryClient.cancelQueries({
         queryKey: ["scheduleItems", scheduleId],
       });
-      const previous = queryClient.getQueryData<ScheduleItem[]>([
+      const previous = queryClient.getQueryData<ScheduleItemType[]>([
         "scheduleItems",
         scheduleId,
       ]);
-      queryClient.setQueryData<ScheduleItem[]>(
+      queryClient.setQueryData<ScheduleItemType[]>(
         ["scheduleItems", scheduleId],
         (old) =>
           old?.map((item) =>
@@ -158,7 +166,7 @@ export default function SchedulePage() {
   }
 
   // No schedule or no items yet
-  if (!schedules?.length || !items?.length) {
+  if (!schedules?.length) {
     return (
       <EmptyState
         emoji="📋"
@@ -169,118 +177,152 @@ export default function SchedulePage() {
     );
   }
 
-  const doneCount = items.filter((i) => i.is_complete).length;
-  const totalCount = items.length;
+  const doneCount = items?.filter((i) => i.is_complete).length ?? 0;
+  const totalCount = items?.length ?? 0;
+  const progressPercent = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
   return (
-    <KidShell title={schedules[0].title} emoji="📋">
-      {/* Progress card */}
-      <div className="rounded-xl bg-white p-4 shadow">
+    <KidShell title={activeSchedule?.title ?? "My Schedule"} emoji="📋">
+      {/* Schedule tabs — shown when more than one schedule exists */}
+      {schedules.length > 1 && (
+        <div
+          className="flex gap-2 overflow-x-auto pb-2 no-scrollbar"
+          role="tablist"
+          aria-label="Schedules"
+        >
+          {schedules.map((sched, idx) => (
+            <button
+              key={sched.id}
+              type="button"
+              role="tab"
+              aria-selected={idx === activeScheduleIndex}
+              onClick={() => setActiveScheduleIndex(idx)}
+              className={cn(
+                "shrink-0 rounded-full px-4 py-2 text-sm font-bold",
+                "min-h-[44px] min-w-[44px]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                calmMode ? "" : "transition-colors",
+                idx === activeScheduleIndex
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-card text-muted-foreground border border-border hover:bg-muted",
+              )}
+            >
+              {sched.title}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Progress card — using shared ProgressBar */}
+      <div className="rounded-2xl bg-card p-4 shadow-sm border border-border">
         <div className="flex items-center justify-between pb-2">
           <span className="text-sm font-semibold text-foreground">Daily Progress</span>
           <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
             {doneCount} of {totalCount} done
           </span>
         </div>
-        <div
-          className="h-3 w-full overflow-hidden rounded-full bg-muted"
-          role="progressbar"
-          aria-valuenow={doneCount}
-          aria-valuemin={0}
-          aria-valuemax={totalCount}
-          aria-label={`${doneCount} of ${totalCount} tasks complete`}
-        >
-          <div
-            className="h-full rounded-full bg-success transition-all duration-300"
-            style={{ width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%` }}
-          />
-        </div>
+        <ProgressBar value={progressPercent} size="md" />
       </div>
+
+      {/* Empty items state */}
+      {(!items || items.length === 0) && (
+        <EmptyState
+          emoji="📝"
+          emojiLabel="Note"
+          title="No tasks in this schedule"
+          description="Ask a parent to add some tasks."
+        />
+      )}
 
       {/* Vertical task list */}
-      <div className="flex flex-col gap-3">
-        {items.map((item, idx) => {
-          const card = cardMap.get(item.card_id);
-          const label = card?.label ?? "Task";
-          const isCurrent = idx === firstIncompleteIdx;
-          const isDone = item.is_complete;
+      {items && items.length > 0 && (
+        <div className={cn("flex flex-col gap-3", bigButtonMode ? "gap-4" : "")}>
+          {items.map((item, idx) => {
+            const card = cardMap.get(item.card_id);
+            const label = card?.label ?? "Task";
+            const isCurrent = idx === firstIncompleteIdx;
+            const isDone = item.is_complete;
 
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() =>
-                toggleDone({
-                  itemId: item.id,
-                  done: !isDone,
-                  awardStar: !isDone,
-                })
-              }
-              className={cn(
-                "flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm",
-                !calmMode && "transition-all active:scale-[0.98]",
-                isDone && "opacity-60",
-                isCurrent && "border-2 border-primary shadow-lg",
-                bigButtonMode && "min-h-[72px] p-5",
-              )}
-              aria-label={`${label}, ${isDone ? "done" : "not done"}`}
-              aria-pressed={isDone}
-            >
-              {/* Icon area */}
-              <div
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() =>
+                  toggleDone({
+                    itemId: item.id,
+                    done: !isDone,
+                    awardStar: !isDone,
+                  })
+                }
                 className={cn(
-                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-lg",
-                  isDone ? "bg-success/20" : "bg-primary/10",
-                  bigButtonMode && "h-14 w-14",
+                  "flex items-center gap-4 rounded-2xl bg-card p-4 shadow-sm border",
+                  !calmMode && "transition-all active:scale-[0.98]",
+                  isDone && "opacity-60",
+                  isCurrent
+                    ? "border-2 border-primary shadow-md"
+                    : "border-border",
+                  bigButtonMode && "min-h-[72px] p-5",
                 )}
+                aria-label={`${label}, ${isDone ? "done" : "not done"}`}
+                aria-pressed={isDone}
               >
-                {card?.image_url ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={card.image_url}
-                    alt=""
-                    className={cn("h-8 w-8 rounded object-cover", bigButtonMode && "h-10 w-10")}
-                  />
-                ) : (
-                  <span className={cn("text-2xl", bigButtonMode && "text-3xl")}>
-                    {isDone ? "✅" : "⭐"}
-                  </span>
-                )}
-              </div>
-
-              {/* Text content */}
-              <div className="flex flex-1 flex-col items-start gap-0.5">
-                <span
+                {/* Icon area */}
+                <div
                   className={cn(
-                    "text-base font-semibold text-foreground",
-                    isDone && "line-through",
-                    bigButtonMode && "text-lg",
+                    "flex shrink-0 items-center justify-center rounded-xl",
+                    isDone ? "bg-success/20" : "bg-primary/10",
+                    bigButtonMode ? "h-14 w-14" : "h-12 w-12",
                   )}
                 >
-                  {label}
-                </span>
-                {isCurrent && (
-                  <span className="text-xs font-medium text-primary">Happening Now</span>
-                )}
-              </div>
+                  {card?.image_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={card.image_url}
+                      alt=""
+                      className={cn("rounded object-cover", bigButtonMode ? "h-10 w-10" : "h-8 w-8")}
+                    />
+                  ) : (
+                    <span className={cn(bigButtonMode ? "text-3xl" : "text-2xl")}>
+                      {isDone ? "✅" : "⭐"}
+                    </span>
+                  )}
+                </div>
 
-              {/* Toggle checkbox */}
-              <div
-                className={cn(
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2",
-                  isDone
-                    ? "border-success bg-success text-white"
-                    : "border-muted-foreground/30 bg-transparent",
-                )}
-              >
-                {isDone && (
-                  <span className="material-symbols-outlined text-lg">check</span>
-                )}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+                {/* Text content */}
+                <div className="flex flex-1 flex-col items-start gap-0.5">
+                  <span
+                    className={cn(
+                      "font-bold text-foreground",
+                      isDone && "line-through",
+                      bigButtonMode ? "text-lg" : "text-base",
+                    )}
+                  >
+                    {label}
+                  </span>
+                  {isCurrent && (
+                    <span className="text-xs font-semibold text-primary">Happening Now</span>
+                  )}
+                </div>
+
+                {/* Toggle checkbox */}
+                <div
+                  className={cn(
+                    "flex shrink-0 items-center justify-center rounded-full border-2",
+                    bigButtonMode ? "h-10 w-10" : "h-8 w-8",
+                    isDone
+                      ? "border-success bg-success text-white"
+                      : "border-muted-foreground/30 bg-transparent",
+                  )}
+                >
+                  {isDone && (
+                    <span className="material-symbols-outlined text-lg" aria-hidden="true">check</span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </KidShell>
   );
 }
