@@ -28,7 +28,7 @@ import type { StudyIntensity } from "@/lib/studyTypes";
 // ---------------------------------------------------------------------------
 // Step definitions
 // ---------------------------------------------------------------------------
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 7;
 
 const INTENSITY_OPTIONS: { value: StudyIntensity; label: string; desc: string; emoji: string }[] = [
   { value: "light", label: "Light", desc: "2 activities per day", emoji: "🌱" },
@@ -41,6 +41,23 @@ const SESSION_OPTIONS = [
   { value: 10, label: "10 min", emoji: "⏱️" },
   { value: 15, label: "15 min", emoji: "🕐" },
   { value: 20, label: "20 min", emoji: "📚" },
+];
+
+const ROUTINE_PRESETS = [
+  { id: "morning", label: "Morning Routine", emoji: "☀️", desc: "Wake up, brush teeth, breakfast" },
+  { id: "school", label: "School Day", emoji: "🎒", desc: "Pack bag, go to school, homework" },
+  { id: "evening", label: "Evening Wind Down", emoji: "🌙", desc: "Dinner, bath time, story time" },
+];
+
+const STARTER_AAC_CARDS = [
+  { label: "Yes", emoji: "👍" },
+  { label: "No", emoji: "👎" },
+  { label: "Help", emoji: "❓" },
+  { label: "Eat", emoji: "🍽️" },
+  { label: "Drink", emoji: "🥤" },
+  { label: "Toilet", emoji: "🚽" },
+  { label: "Play", emoji: "🎮" },
+  { label: "More", emoji: "➕" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -60,6 +77,7 @@ export default function OnboardingPage() {
   );
   const [sessionLength, setSessionLength] = useState(10);
   const [intensity, setIntensity] = useState<StudyIntensity>("light");
+  const [selectedRoutine, setSelectedRoutine] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -118,15 +136,19 @@ export default function OnboardingPage() {
 
   // Navigation helpers
   const canNext = () => {
-    if (step === 1) return childName.trim().length > 0;
-    if (step === 2) return !!classLevel;
-    if (step === 3) return selectedSubjects.size > 0;
+    if (step === 1) return true; // Welcome
+    if (step === 2) return childName.trim().length > 0; // Create Profile
+    if (step === 3) return !!classLevel && selectedSubjects.size > 0; // Learning Focus
+    if (step === 4) return true; // Study Settings (defaults are fine)
+    if (step === 5) return true; // First Routine (optional)
+    if (step === 6) return true; // Starter AAC Cards (informational)
+    if (step === 7) return true; // Setup Complete
     return true;
   };
 
   const goNext = () => {
     if (step < TOTAL_STEPS) setStep(step + 1);
-    else finishOnboarding();
+    else finishOnboarding(); // step 7 → finish
   };
 
   const goBack = () => {
@@ -150,15 +172,31 @@ export default function OnboardingPage() {
           <div
             key={i}
             className={cn(
-              "h-2 w-10 rounded-full",
-              i + 1 <= step ? "bg-primary" : "bg-muted",
+              "h-2.5 rounded-full transition-all duration-300",
+              i + 1 <= step ? "bg-primary w-10" : "bg-muted w-6",
             )}
           />
         ))}
       </div>
 
-      {/* ── Step 1: Child Name ─────────────────────────────────────── */}
+      {/* ── Step 1: Welcome ───────────────────────────────────────── */}
       {step === 1 && (
+        <Card className="w-full border-0 bg-gradient-to-b from-primary/10 to-background shadow-none">
+          <CardHeader className="flex flex-col items-center gap-3 pt-10 text-center">
+            <span className="text-7xl" role="img" aria-hidden="true">🏡</span>
+            <CardTitle className="text-3xl font-bold tracking-tight">
+              Welcome to RoutineNest!
+            </CardTitle>
+            <CardDescription className="text-base text-muted-foreground">
+              Build a calm, structured world for your child.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pb-10" />
+        </Card>
+      )}
+
+      {/* ── Step 2: Create Profile (Child Name) ───────────────────── */}
+      {step === 2 && (
         <Card className="w-full">
           <CardHeader className="text-center">
             <span className="text-5xl" role="img" aria-hidden="true">👶</span>
@@ -183,150 +221,221 @@ export default function OnboardingPage() {
         </Card>
       )}
 
-      {/* ── Step 2: Class Level ────────────────────────────────────── */}
-      {step === 2 && (
-        <Card className="w-full">
-          <CardHeader className="text-center">
-            <span className="text-5xl" role="img" aria-hidden="true">🎓</span>
-            <CardTitle className="text-2xl">Choose a class level</CardTitle>
-            <CardDescription>
-              This helps us suggest the right activities for {childName || "your child"}.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              {SEED_CLASS_LEVELS.map((cl) => (
-                <button
-                  key={cl.id}
-                  type="button"
-                  onClick={() => setClassLevel(cl.id)}
-                  className={cn(
-                    "rounded-xl border-2 px-4 py-4 text-center font-semibold",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    "transition-colors",
-                    classLevel === cl.id
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card hover:border-primary/40",
-                  )}
-                >
-                  <span className="text-2xl" aria-hidden="true">{cl.icon}</span>
-                  <p className="mt-1 text-sm">{cl.title}</p>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* ── Step 3: Focus Subjects ─────────────────────────────────── */}
+      {/* ── Step 3: Learning Focus (Class Level + Subjects) ────────── */}
       {step === 3 && (
         <Card className="w-full">
           <CardHeader className="text-center">
             <span className="text-5xl" role="img" aria-hidden="true">📚</span>
-            <CardTitle className="text-2xl">Pick focus subjects</CardTitle>
+            <CardTitle className="text-2xl">Learning focus</CardTitle>
             <CardDescription>
-              Select one or more subjects for {childName || "your child"} to work on.
+              Choose a class level and subjects for {childName || "your child"}.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              {SEED_SUBJECT_AREAS.map((sa) => {
-                const selected = selectedSubjects.has(sa.id);
-                return (
+          <CardContent className="space-y-6">
+            {/* Class Level */}
+            <div>
+              <p className="mb-2 text-sm font-medium text-muted-foreground">Class Level</p>
+              <div className="grid grid-cols-2 gap-3">
+                {SEED_CLASS_LEVELS.map((cl) => (
                   <button
-                    key={sa.id}
+                    key={cl.id}
                     type="button"
-                    onClick={() => toggleSubject(sa.id)}
+                    onClick={() => setClassLevel(cl.id)}
                     className={cn(
-                      "rounded-xl border-2 px-4 py-4 text-center font-semibold",
+                      "rounded-xl border-2 px-4 py-3 text-center font-semibold",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                       "transition-colors",
-                      selected
+                      classLevel === cl.id
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border bg-card hover:border-primary/40",
                     )}
                   >
-                    <span className="text-2xl" aria-hidden="true">{sa.icon}</span>
-                    <p className="mt-1 text-sm">{sa.title}</p>
-                    {selected && <span className="text-xs text-primary">✓</span>}
+                    <span className="text-2xl" aria-hidden="true">{cl.icon}</span>
+                    <p className="mt-1 text-sm">{cl.title}</p>
                   </button>
-                );
-              })}
+                ))}
+              </div>
+            </div>
+
+            {/* Subjects */}
+            <div>
+              <p className="mb-2 text-sm font-medium text-muted-foreground">Focus Subjects</p>
+              <div className="grid grid-cols-2 gap-3">
+                {SEED_SUBJECT_AREAS.map((sa) => {
+                  const selected = selectedSubjects.has(sa.id);
+                  return (
+                    <button
+                      key={sa.id}
+                      type="button"
+                      onClick={() => toggleSubject(sa.id)}
+                      className={cn(
+                        "rounded-xl border-2 px-4 py-3 text-center font-semibold",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                        "transition-colors",
+                        selected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-card hover:border-primary/40",
+                      )}
+                    >
+                      <span className="text-2xl" aria-hidden="true">{sa.icon}</span>
+                      <p className="mt-1 text-sm">{sa.title}</p>
+                      {selected && <span className="text-xs text-primary">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* ── Step 4: Session Duration ───────────────────────────────── */}
+      {/* ── Step 4: Study Settings (Session Length + Intensity) ────── */}
       {step === 4 && (
         <Card className="w-full">
           <CardHeader className="text-center">
-            <span className="text-5xl" role="img" aria-hidden="true">⏱️</span>
-            <CardTitle className="text-2xl">Session length</CardTitle>
+            <span className="text-5xl" role="img" aria-hidden="true">⚙️</span>
+            <CardTitle className="text-2xl">Study settings</CardTitle>
             <CardDescription>
-              How long should each study session be?
+              Set session length and learning pace.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              {SESSION_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setSessionLength(opt.value)}
-                  className={cn(
-                    "rounded-xl border-2 px-4 py-5 text-center font-semibold",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    "transition-colors",
-                    sessionLength === opt.value
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card hover:border-primary/40",
-                  )}
-                >
-                  <span className="text-2xl" aria-hidden="true">{opt.emoji}</span>
-                  <p className="mt-1">{opt.label}</p>
-                </button>
-              ))}
+          <CardContent className="space-y-6">
+            {/* Session Length */}
+            <div>
+              <p className="mb-2 text-sm font-medium text-muted-foreground">Session Length</p>
+              <div className="grid grid-cols-2 gap-3">
+                {SESSION_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setSessionLength(opt.value)}
+                    className={cn(
+                      "rounded-xl border-2 px-4 py-4 text-center font-semibold",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "transition-colors",
+                      sessionLength === opt.value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card hover:border-primary/40",
+                    )}
+                  >
+                    <span className="text-2xl" aria-hidden="true">{opt.emoji}</span>
+                    <p className="mt-1">{opt.label}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Intensity */}
+            <div>
+              <p className="mb-2 text-sm font-medium text-muted-foreground">Learning Intensity</p>
+              <div className="flex flex-col gap-3">
+                {INTENSITY_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setIntensity(opt.value)}
+                    className={cn(
+                      "rounded-xl border-2 px-5 py-4 text-left font-semibold",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "transition-colors flex items-center gap-4",
+                      intensity === opt.value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-card hover:border-primary/40",
+                    )}
+                  >
+                    <span className="text-3xl" aria-hidden="true">{opt.emoji}</span>
+                    <div>
+                      <p className="text-lg">{opt.label}</p>
+                      <p className="text-sm font-normal text-muted-foreground">{opt.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* ── Step 5: Learning Intensity ─────────────────────────────── */}
+      {/* ── Step 5: First Routine ──────────────────────────────────── */}
       {step === 5 && (
         <Card className="w-full">
           <CardHeader className="text-center">
-            <span className="text-5xl" role="img" aria-hidden="true">🌱</span>
-            <CardTitle className="text-2xl">Learning intensity</CardTitle>
+            <span className="text-5xl" role="img" aria-hidden="true">📋</span>
+            <CardTitle className="text-2xl">Pick a first routine</CardTitle>
             <CardDescription>
-              Start easy and increase later if you want.
+              Start with a preset routine — you can customise it later.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-3">
-              {INTENSITY_OPTIONS.map((opt) => (
+              {ROUTINE_PRESETS.map((preset) => (
                 <button
-                  key={opt.value}
+                  key={preset.id}
                   type="button"
-                  onClick={() => setIntensity(opt.value)}
+                  onClick={() => setSelectedRoutine(preset.id)}
                   className={cn(
                     "rounded-xl border-2 px-5 py-5 text-left font-semibold",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     "transition-colors flex items-center gap-4",
-                    intensity === opt.value
+                    selectedRoutine === preset.id
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border bg-card hover:border-primary/40",
                   )}
                 >
-                  <span className="text-3xl" aria-hidden="true">{opt.emoji}</span>
+                  <span className="text-3xl" aria-hidden="true">{preset.emoji}</span>
                   <div>
-                    <p className="text-lg">{opt.label}</p>
-                    <p className="text-sm font-normal text-muted-foreground">{opt.desc}</p>
+                    <p className="text-lg">{preset.label}</p>
+                    <p className="text-sm font-normal text-muted-foreground">{preset.desc}</p>
                   </div>
                 </button>
               ))}
             </div>
           </CardContent>
+        </Card>
+      )}
+
+      {/* ── Step 6: Starter AAC Cards ──────────────────────────────── */}
+      {step === 6 && (
+        <Card className="w-full">
+          <CardHeader className="text-center">
+            <span className="text-5xl" role="img" aria-hidden="true">💬</span>
+            <CardTitle className="text-2xl">Starter AAC cards</CardTitle>
+            <CardDescription>
+              {childName || "Your child"} will get these essential communication cards right away.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-4 gap-3">
+              {STARTER_AAC_CARDS.map((card) => (
+                <div
+                  key={card.label}
+                  className="flex flex-col items-center gap-1 rounded-xl border-2 border-border bg-card px-2 py-4"
+                >
+                  <span className="text-3xl" aria-hidden="true">{card.emoji}</span>
+                  <p className="text-xs font-medium">{card.label}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* ── Step 7: Setup Complete ─────────────────────────────────── */}
+      {step === 7 && (
+        <Card className="w-full border-0 bg-gradient-to-b from-primary/10 to-background shadow-none">
+          <CardHeader className="flex flex-col items-center gap-2 pt-10 text-center">
+            <span className="text-7xl" role="img" aria-hidden="true">🎉</span>
+            <CardTitle className="text-3xl font-bold tracking-tight">
+              All Set!
+            </CardTitle>
+            <CardDescription className="text-base">
+              ⭐ {childName || "Your child"}&apos;s profile is ready ⭐
+            </CardDescription>
+            <p className="mt-2 text-sm text-muted-foreground">
+              You can always change settings from the parent dashboard.
+            </p>
+          </CardHeader>
+          <CardContent className="pb-10" />
         </Card>
       )}
 
@@ -350,12 +459,15 @@ export default function OnboardingPage() {
         <Button
           onClick={goNext}
           disabled={!canNext() || saving}
+          className={cn(step === 1 && "px-8 text-base", step === 7 && "px-8 text-base")}
         >
           {saving
             ? "Saving…"
-            : step === TOTAL_STEPS
-              ? "Finish Setup ✨"
-              : "Next →"}
+            : step === 1
+              ? "Let&apos;s Get Started 🚀"
+              : step === 7
+                ? "Go to Dashboard 🎉"
+                : "Next →"}
         </Button>
       </div>
 

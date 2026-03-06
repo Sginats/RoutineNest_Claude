@@ -47,14 +47,26 @@ function computeStreak(dates: string[]): number {
 // ---------------------------------------------------------------------------
 
 const BADGES = [
-  { id: "first-star", emoji: "🌟", label: "First Star", threshold: 1 },
-  { id: "five-stars", emoji: "✨", label: "Rising Star", threshold: 5 },
-  { id: "ten-stars", emoji: "💫", label: "Super Star", threshold: 10 },
-  { id: "twenty-five-stars", emoji: "🏅", label: "Star Collector", threshold: 25 },
-  { id: "fifty-stars", emoji: "🏆", label: "Champion", threshold: 50 },
-  { id: "streak-3", emoji: "🔥", label: "3 Day Streak", threshold: -3 },
-  { id: "streak-7", emoji: "⚡", label: "7 Day Streak", threshold: -7 },
+  { id: "first-star", icon: "stars", label: "First Star", threshold: 1, color: "amber" },
+  { id: "five-stars", icon: "auto_awesome", label: "Rising Star", threshold: 5, color: "purple" },
+  { id: "ten-stars", icon: "star", label: "Super Star", threshold: 10, color: "blue" },
+  { id: "twenty-five-stars", icon: "military_tech", label: "Star Collector", threshold: 25, color: "orange" },
+  { id: "fifty-stars", icon: "emoji_events", label: "Champion", threshold: 50, color: "green" },
+  { id: "streak-3", icon: "local_fire_department", label: "3 Day Streak", threshold: -3, color: "red" },
+  { id: "streak-7", icon: "bolt", label: "7 Day Streak", threshold: -7, color: "indigo" },
 ] as const;
+
+const BADGE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  amber:  { bg: "bg-amber-100 dark:bg-amber-900/30", border: "border-amber-200 dark:border-amber-800", text: "text-amber-500" },
+  purple: { bg: "bg-purple-100 dark:bg-purple-900/30", border: "border-purple-200 dark:border-purple-800", text: "text-purple-500" },
+  blue:   { bg: "bg-blue-100 dark:bg-blue-900/30", border: "border-blue-200 dark:border-blue-800", text: "text-blue-500" },
+  orange: { bg: "bg-orange-100 dark:bg-orange-900/30", border: "border-orange-200 dark:border-orange-800", text: "text-orange-500" },
+  green:  { bg: "bg-green-100 dark:bg-green-900/30", border: "border-green-200 dark:border-green-800", text: "text-green-500" },
+  red:    { bg: "bg-red-100 dark:bg-red-900/30", border: "border-red-200 dark:border-red-800", text: "text-red-500" },
+  indigo: { bg: "bg-indigo-100 dark:bg-indigo-900/30", border: "border-indigo-200 dark:border-indigo-800", text: "text-indigo-500" },
+};
+
+const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
 export default function RewardsPage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -93,6 +105,38 @@ export default function RewardsPage() {
       return totalStars >= b.threshold;
     });
   }, [totalStars, streak]);
+
+  // Stars earned today
+  const todayStars = useMemo(() => {
+    const today = toLocalDateStr(new Date().toISOString());
+    return (rewards ?? [])
+      .filter((r) => toLocalDateStr(r.created_at) === today)
+      .reduce((sum, r) => sum + r.stars, 0);
+  }, [rewards]);
+
+  // Which weekdays (0=Mon..4=Fri) had completed activity this week
+  const streakDays = useMemo(() => {
+    const now = new Date();
+    const jsDay = now.getDay(); // 0=Sun
+    const mondayOffset = jsDay === 0 ? -6 : 1 - jsDay;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + mondayOffset);
+    monday.setHours(0, 0, 0, 0);
+
+    const activeDates = new Set(
+      (progress ?? [])
+        .filter((p) => p.completed && p.completed_at)
+        .map((p) => toLocalDateStr(p.completed_at!)),
+    );
+
+    const days = new Set<number>();
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      if (activeDates.has(toLocalDateStr(d.toISOString()))) days.add(i);
+    }
+    return days;
+  }, [progress]);
 
   // Track previous star count for celebration
   const [prevStars, setPrevStars] = useState(totalStars);
@@ -142,66 +186,124 @@ export default function RewardsPage() {
   }
 
   return (
-    <KidShell title="My Stars" emoji="⭐">
+    <KidShell title="My Rewards" emoji="⭐">
       <div className="flex flex-col items-center gap-6">
-        {/* Star count card */}
-        <div className="relative flex flex-col items-center gap-4 rounded-3xl border-2 border-border bg-card p-8 shadow-sm w-full max-w-sm">
+        {/* Central Star Counter */}
+        <div className="flex flex-col items-center justify-center py-4">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 bg-star-yellow/20 blur-3xl rounded-full" />
+            <span
+              className="material-symbols-outlined text-star-yellow text-[120px] drop-shadow-lg"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+              aria-hidden="true"
+            >
+              stars
+            </span>
+          </div>
+
           {showCelebration && (
             <div
-              className="absolute inset-0 flex items-center justify-center rounded-3xl bg-success/10 animate-pulse"
+              className="absolute inset-0 flex items-center justify-center animate-pulse"
               aria-live="polite"
             >
               <span className="text-5xl">🎉</span>
             </div>
           )}
 
-          <p className="text-7xl" role="img" aria-label={`${totalStars} stars`}>
-            ⭐
+          <p
+            className="mt-4 text-5xl font-extrabold tracking-tight text-foreground"
+            aria-label={`${totalStars} stars`}
+          >
+            {totalStars}
           </p>
-          <p className="text-5xl font-extrabold text-primary">{totalStars}</p>
-          <p className="text-lg font-semibold text-muted-foreground text-center">
-            {totalStars === 0
-              ? "Finish your tasks to earn your first star!"
-              : `You earned ${totalStars} star${totalStars === 1 ? "" : "s"}! Great job!`}
+          <p className="text-lg font-bold text-muted-foreground uppercase tracking-widest">
+            Total Stars
           </p>
+
+          {todayStars > 0 && (
+            <div className="mt-2 inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full font-bold text-sm">
+              <span className="material-symbols-outlined text-sm" aria-hidden="true">
+                trending_up
+              </span>
+              <span>+{todayStars} today</span>
+            </div>
+          )}
         </div>
 
-        {/* Streak display */}
-        <div className="flex flex-col items-center gap-2 rounded-2xl border-2 border-border bg-card p-6 shadow-sm w-full max-w-sm">
-          <span className="text-4xl" role="img" aria-hidden="true">
-            {streak >= 3 ? "🔥" : "📅"}
-          </span>
-          <p className="text-3xl font-extrabold text-primary">{streak}</p>
-          <p className="text-base font-semibold text-muted-foreground">
-            {streak === 0
-              ? "Start learning today for a streak!"
-              : `${streak} day streak — keep going!`}
-          </p>
-        </div>
-
-        {/* Badges */}
+        {/* Daily Streak */}
         <div className="w-full max-w-sm">
-          <h2 className="text-xl font-extrabold text-center mb-3">My Badges</h2>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-extrabold">Daily Streak</h3>
+            <span className="text-star-yellow font-bold">
+              {streak > 0
+                ? `${streak} Day${streak === 1 ? "" : "s"}! 🔥`
+                : "Start today!"}
+            </span>
+          </div>
+          <div className="flex justify-between gap-2 bg-white/60 dark:bg-card/60 backdrop-blur-sm p-4 rounded-xl border-2 border-white dark:border-border shadow-sm">
+            {WEEK_DAYS.map((day, i) => {
+              const active = streakDays.has(i);
+              return (
+                <div key={day} className="flex flex-col items-center gap-2">
+                  <span className="text-xs font-bold text-muted-foreground">
+                    {day}
+                  </span>
+                  <div
+                    className={cn(
+                      "size-10 rounded-full flex items-center justify-center",
+                      active
+                        ? "bg-star-yellow"
+                        : "bg-muted/40 border-2 border-border",
+                    )}
+                  >
+                    {active && (
+                      <span className="material-symbols-outlined text-white font-bold" aria-hidden="true">
+                        check
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* My Badges — horizontal scroll */}
+        <div className="w-full">
+          <h3 className="text-xl font-extrabold px-1 mb-4">My Badges</h3>
+          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
             {BADGES.map((badge) => {
               const earned = earnedBadges.some((b) => b.id === badge.id);
+              const palette = BADGE_COLORS[badge.color];
               return (
                 <div
                   key={badge.id}
                   className={cn(
-                    "flex flex-col items-center gap-1 rounded-xl border-2 p-3 text-center",
-                    earned
-                      ? "border-primary bg-primary/10"
-                      : "border-border bg-muted/30 opacity-40",
+                    "flex flex-col items-center gap-2 min-w-[100px]",
+                    !earned && "opacity-40",
                   )}
                 >
-                  <span className="text-3xl" aria-hidden="true">
-                    {badge.emoji}
-                  </span>
-                  <span className="text-xs font-bold">{badge.label}</span>
-                  {earned && (
-                    <span className="text-xs text-primary">✓ Earned</span>
-                  )}
+                  <div
+                    className={cn(
+                      "size-20 rounded-full flex items-center justify-center border-4 shadow-sm",
+                      earned
+                        ? `${palette.bg} ${palette.border}`
+                        : "bg-muted dark:bg-muted/30 border-border",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "material-symbols-outlined text-4xl",
+                        earned ? palette.text : "text-muted-foreground",
+                      )}
+                      aria-hidden="true"
+                    >
+                      {earned ? badge.icon : "lock"}
+                    </span>
+                  </div>
+                  <p className="text-xs font-extrabold text-center">
+                    {earned ? badge.label : "???"}
+                  </p>
                 </div>
               );
             })}

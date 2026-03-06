@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
@@ -14,10 +14,16 @@ import { KidShell } from "@/components/kid/KidShell";
 import { BigTileButton } from "@/components/kid/BigTileButton";
 import { EmptyState } from "@/components/kid/EmptyState";
 
+interface SentenceWord {
+  label: string;
+  icon?: string;
+}
+
 export default function TalkPage() {
   const { user, loading: authLoading } = useRequireAuth();
   const [profileId] = useState(() => getActiveProfileId());
   const [pressedId, setPressedId] = useState<string | null>(null);
+  const [sentence, setSentence] = useState<SentenceWord[]>([]);
 
   const { data: settings } = useSettings(profileId);
 
@@ -44,12 +50,29 @@ export default function TalkPage() {
   function handleTap(card: CardType) {
     setPressedId(card.id);
     const text = card.tts_text?.trim() || card.label;
+    // Speak the individual word
     speak(text, soundEnabled);
+    // Add word to sentence bar
+    setSentence((prev) => [...prev, { label: card.label, icon: card.image_url ?? undefined }]);
     // Track category only — never label or tts_text
     trackAACCardTapped(card.category);
     // Clear pressed state after a short delay
     setTimeout(() => setPressedId(null), 300);
   }
+
+  const handleBackspace = useCallback(() => {
+    setSentence((prev) => prev.slice(0, -1));
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setSentence([]);
+  }, []);
+
+  const handleSpeak = useCallback(() => {
+    if (sentence.length === 0) return;
+    const fullText = sentence.map((w) => w.label).join(" ");
+    speak(fullText, soundEnabled);
+  }, [sentence, soundEnabled]);
 
   // --- Render states ---
 
@@ -95,10 +118,7 @@ export default function TalkPage() {
     );
   }
 
-  // Grid column count.
-  // Precedence: big_button_mode reduces to max 2 columns for easier tapping,
-  // unless gridSize is explicitly set to 2 (in which case it stays at 2).
-  // If gridSize is set to 4, big_button_mode caps it at 2 columns.
+  // Grid column count: 3-col default, big_button_mode caps at 2
   const effectiveGridSize = bigButtonMode ? Math.min(gridSize, 2) : gridSize;
   const gridCols =
     effectiveGridSize === 2
@@ -109,6 +129,47 @@ export default function TalkPage() {
 
   return (
     <KidShell title="Talk Board" emoji="💬">
+      {/* Sentence bar */}
+      <div className="flex items-center gap-2 rounded-xl bg-white p-3 shadow">
+        <div className="flex flex-1 items-center gap-2 overflow-x-auto">
+          {sentence.length === 0 ? (
+            <span className="text-sm text-muted-foreground">Tap cards to build a sentence…</span>
+          ) : (
+            sentence.map((word, i) => (
+              <span
+                key={i}
+                className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
+              >
+                {word.icon && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={word.icon} alt="" className="h-5 w-5 rounded" />
+                )}
+                {word.label}
+              </span>
+            ))
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={handleBackspace}
+          disabled={sentence.length === 0}
+          className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-muted disabled:opacity-30"
+          aria-label="Remove last word"
+        >
+          <span className="material-symbols-outlined text-xl">backspace</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleClear}
+          disabled={sentence.length === 0}
+          className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-muted disabled:opacity-30"
+          aria-label="Clear sentence"
+        >
+          <span className="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+
+      {/* Card grid */}
       <div className={cn("grid gap-4", gridCols)}>
         {cards.map((card) => (
           <BigTileButton
@@ -124,6 +185,22 @@ export default function TalkPage() {
           />
         ))}
       </div>
+
+      {/* Speak button */}
+      <button
+        type="button"
+        onClick={handleSpeak}
+        disabled={sentence.length === 0}
+        className={cn(
+          "flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 text-lg font-bold text-primary-foreground shadow-md",
+          "disabled:opacity-40",
+          !calmMode && "transition-transform active:scale-[0.98]",
+        )}
+        aria-label="Speak sentence"
+      >
+        <span className="material-symbols-outlined text-2xl">volume_up</span>
+        Speak
+      </button>
 
       {/* ARASAAC attribution */}
       <p className="text-xs text-muted-foreground text-center pt-4">

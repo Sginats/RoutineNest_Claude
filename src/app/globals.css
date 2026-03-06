@@ -29,6 +29,20 @@
   --color-ring: hsl(var(--ring));
   --color-success: hsl(var(--success));
   --color-success-foreground: hsl(var(--success-foreground));
+
+  /* Kid-specific palette */
+  --color-kid-teal: hsl(var(--kid-teal));
+  --color-kid-coral: hsl(var(--kid-coral));
+  --color-kid-yellow: hsl(var(--kid-yellow));
+  --color-kid-blue: hsl(var(--kid-blue));
+  --color-kid-mint: hsl(var(--kid-mint));
+
+  /* Calm mode palette */
+  --color-calm-blue: hsl(var(--calm-blue));
+  --color-calm-sage: hsl(var(--calm-sage));
+
+  /* Reward / star color */
+  --color-star-yellow: hsl(var(--star-yellow));
 }
 
 /* ── Kid-friendly Playful palette ─────────────────────────────── */
@@ -54,6 +68,20 @@
   --ring: 174 56% 34%;
   --success: 145 60% 42%;
   --success-foreground: 0 0% 100%;
+
+  /* Kid-specific palette */
+  --kid-teal: 174 36% 51%;
+  --kid-coral: 14 100% 70%;
+  --kid-yellow: 46 100% 66%;
+  --kid-blue: 207 90% 68%;
+  --kid-mint: 123 29% 65%;
+
+  /* Calm mode palette */
+  --calm-blue: 204 16% 55%;
+  --calm-sage: 153 11% 60%;
+
+  /* Reward / star color */
+  --star-yellow: 51 100% 50%;
 }
 
 .dark {
