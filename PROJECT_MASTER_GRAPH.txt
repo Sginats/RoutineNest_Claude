@@ -1,0 +1,1736 @@
+===============================================================================
+PROJECT_MASTER_GRAPH.txt
+RoutineNest — Full Architecture Knowledge Graph
+Generated: 2026-03-06
+Source: Direct analysis of repository source code and migrations
+Note: This document supersedes all existing documentation.
+===============================================================================
+
+
+===============================================================================
+STEP 1 — REPOSITORY FILE STRUCTURE
+===============================================================================
+
+ROOT CONFIG FILES
+  package.json
+  next.config.ts
+  tsconfig.json
+  postcss.config.mjs
+  eslint.config.mjs
+  components.json
+  capacitor.config.ts
+  .env.local.example
+  .gitignore
+
+SOURCE FILES — PAGES (src/app/)
+  src/app/layout.tsx
+  src/app/page.tsx
+  src/app/providers.tsx
+  src/app/globals.css
+  src/app/favicon.ico
+  src/app/login/page.tsx
+  src/app/onboarding/page.tsx
+  src/app/settings/page.tsx
+  src/app/debug-env/page.tsx
+  src/app/kid/talk/page.tsx
+  src/app/kid/schedule/page.tsx
+  src/app/kid/rewards/page.tsx
+  src/app/kid/break/page.tsx
+  src/app/kid/study/page.tsx
+  src/app/kid/study/subject/[subjectId]/page.tsx
+  src/app/kid/study/subject/[subjectId]/SubjectModulesClient.tsx
+  src/app/kid/study/module/[moduleId]/page.tsx
+  src/app/kid/study/module/[moduleId]/ModuleLessonsClient.tsx
+  src/app/kid/study/lesson/[lessonId]/page.tsx
+  src/app/kid/study/lesson/[lessonId]/LessonActivitiesClient.tsx
+  src/app/parent/page.tsx
+  src/app/parent/study/page.tsx
+  src/app/parent/study/progress/page.tsx
+  src/app/parent/subscription/page.tsx
+
+COMPONENTS
+  src/components/NavBar.tsx
+  src/components/ParentGate.tsx
+  src/components/UpgradeBanner.tsx
+  src/components/OfflineBanner.tsx
+  src/components/ErrorBoundary.tsx
+  src/components/IconPicker.tsx
+  src/components/kid/KidShell.tsx
+  src/components/kid/BigTileButton.tsx
+  src/components/kid/EmptyState.tsx
+  src/components/study/StudyTile.tsx
+  src/components/study/ProgressBar.tsx
+  src/components/study/BreakCard.tsx
+  src/components/study/LessonCard.tsx
+  src/components/study/RewardStars.tsx
+  src/components/study/SubjectBadge.tsx
+  src/components/activities/index.ts
+  src/components/activities/TapCorrectActivity.tsx
+  src/components/activities/VisualMatchingActivity.tsx
+  src/components/activities/SequencingActivity.tsx
+  src/components/ui/button.tsx
+  src/components/ui/card.tsx
+  src/components/ui/input.tsx
+  src/components/ui/label.tsx
+  src/components/ui/switch.tsx
+
+HOOKS
+  src/hooks/useAuth.ts
+
+LIBRARY MODULES
+  src/lib/types.ts
+  src/lib/db.ts
+  src/lib/studyDb.ts
+  src/lib/studyTypes.ts
+  src/lib/studySeedData.ts
+  src/lib/supabaseClient.ts
+  src/lib/env.ts
+  src/lib/syncQueue.ts
+  src/lib/queryPersistence.ts
+  src/lib/profileStore.ts
+  src/lib/subscriptionHooks.ts
+  src/lib/settingsHooks.ts
+  src/lib/analytics.ts
+  src/lib/storage.ts
+  src/lib/speak.ts
+  src/lib/tts.ts
+  src/lib/activityGameplayData.ts
+  src/lib/utils.ts
+
+SUPABASE MIGRATIONS
+  supabase/migrations/20260305000000_initial_schema.sql
+  supabase/migrations/20260305000001_add_grid_size_sound.sql
+  supabase/migrations/20260305000002_add_card_tts_position.sql
+  supabase/migrations/20260305000003_card_icons_bucket.sql
+  supabase/migrations/20260305000004_study_plan_tables.sql
+  supabase/migrations/20260305000005_weekly_plan_entries.sql
+  supabase/migrations/20260305000006_subscription_tier.sql
+  supabase/schema.sql
+
+PUBLIC ASSETS
+  public/manifest.json
+  public/file.svg
+  public/globe.svg
+  public/next.svg
+  public/vercel.svg
+  public/window.svg
+  public/icons/ (PWA icon set)
+
+DOCUMENTATION
+  AI_CONTEXT.md
+  PROJECT_SUMMARY.md
+  ARCHITECTURE_MAP.md
+  REPO_SNAPSHOT.md
+  CONTRIBUTING.md
+  CONTENT_SYSTEM.md
+  AGENT_TASKS.md
+  SYSTEM_PROMPT.md
+  PRIVACY.md
+  TERMS.md
+  KNOWLEDGE_GRAPH.txt
+  PROJECT_PARSE.txt
+  PROJECT_PARSE_V2.txt
+
+NATIVE SHELLS
+  android/ (Capacitor Android project)
+  ios/     (Capacitor iOS project)
+
+
+===============================================================================
+STEP 2 — FILE EXPORT MAP
+===============================================================================
+
+FILE src/lib/env.ts
+EXPORTS CONST SUPABASE_URL
+EXPORTS CONST SUPABASE_ANON_KEY
+
+FILE src/lib/supabaseClient.ts
+EXPORTS CONST supabase  (type: SupabaseClient | null)
+
+FILE src/lib/utils.ts
+EXPORTS FUNCTION cn  (Tailwind class merger using clsx + tailwind-merge)
+
+FILE src/lib/types.ts
+EXPORTS TYPE SubscriptionTier
+EXPORTS INTERFACE Profile
+EXPORTS INTERFACE Card
+EXPORTS INTERFACE Schedule
+EXPORTS INTERFACE ScheduleItem
+EXPORTS INTERFACE Reward
+EXPORTS INTERFACE Settings
+EXPORTS TYPE CardInsert
+EXPORTS TYPE ScheduleItemInsert
+EXPORTS TYPE SettingsPatch
+EXPORTS TYPE ProfilePatch
+
+FILE src/lib/db.ts
+EXPORTS FUNCTION getProfiles
+EXPORTS FUNCTION getProfile
+EXPORTS FUNCTION createProfile
+EXPORTS FUNCTION updateSubscriptionTier
+EXPORTS FUNCTION getSettings
+EXPORTS FUNCTION upsertSettings
+EXPORTS FUNCTION getCards
+EXPORTS FUNCTION upsertCard
+EXPORTS FUNCTION softDeleteCard
+EXPORTS FUNCTION getSchedules
+EXPORTS FUNCTION createSchedule
+EXPORTS FUNCTION getScheduleItems
+EXPORTS FUNCTION upsertScheduleItem
+EXPORTS FUNCTION deleteScheduleItem
+EXPORTS FUNCTION updateScheduleItemDone
+EXPORTS FUNCTION getRewards
+EXPORTS FUNCTION addRewardIfNew
+
+FILE src/lib/studyTypes.ts
+EXPORTS TYPE StudyIntensity
+EXPORTS TYPE DayOfWeek
+EXPORTS TYPE ActivityType
+EXPORTS INTERFACE YearCategory
+EXPORTS INTERFACE ClassLevel
+EXPORTS INTERFACE SubjectArea
+EXPORTS INTERFACE StudyModule
+EXPORTS INTERFACE Lesson
+EXPORTS INTERFACE Activity
+EXPORTS INTERFACE WeeklyPlanEntry
+EXPORTS INTERFACE ChildLearningPlan
+EXPORTS INTERFACE ChildProgress
+EXPORTS INTERFACE ChildPreferences
+EXPORTS TYPE YearCategoryInsert
+EXPORTS TYPE ClassLevelInsert
+EXPORTS TYPE SubjectAreaInsert
+EXPORTS TYPE StudyModuleInsert
+EXPORTS TYPE LessonInsert
+EXPORTS TYPE ActivityInsert
+EXPORTS TYPE WeeklyPlanEntryInsert
+EXPORTS TYPE ChildLearningPlanInsert
+EXPORTS TYPE ChildProgressInsert
+EXPORTS TYPE ChildPreferencesInsert
+EXPORTS TYPE YearCategoryPatch
+EXPORTS TYPE ClassLevelPatch
+EXPORTS TYPE SubjectAreaPatch
+EXPORTS TYPE StudyModulePatch
+EXPORTS TYPE LessonPatch
+EXPORTS TYPE ActivityPatch
+EXPORTS TYPE ChildLearningPlanPatch
+EXPORTS TYPE ChildProgressPatch
+EXPORTS TYPE ChildPreferencesPatch
+EXPORTS CONST YEAR_CATEGORIES
+EXPORTS CONST CLASS_LEVELS
+EXPORTS CONST SUBJECT_AREAS
+EXPORTS TYPE YearCategoryTitle
+EXPORTS TYPE ClassLevelTitle
+EXPORTS TYPE SubjectAreaTitle
+
+FILE src/lib/studyDb.ts
+EXPORTS FUNCTION getChildLearningPlan
+EXPORTS FUNCTION upsertChildLearningPlan
+EXPORTS FUNCTION getChildProgress
+EXPORTS FUNCTION upsertChildProgress
+EXPORTS FUNCTION getChildPreferences
+EXPORTS FUNCTION upsertChildPreferences
+EXPORTS FUNCTION getWeeklyPlanEntries
+EXPORTS FUNCTION replaceWeeklyPlanEntries
+
+FILE src/lib/studySeedData.ts
+EXPORTS CONST SEED_YEAR_CATEGORIES
+EXPORTS CONST SEED_CLASS_LEVELS
+EXPORTS CONST SEED_SUBJECT_AREAS
+EXPORTS CONST SEED_MODULES
+EXPORTS CONST SEED_LESSONS
+EXPORTS CONST SEED_ACTIVITIES
+
+FILE src/lib/syncQueue.ts
+EXPORTS INTERFACE QueuedMutation
+EXPORTS FUNCTION isOnline
+EXPORTS FUNCTION isNetworkError
+EXPORTS FUNCTION enqueue
+EXPORTS FUNCTION getQueueLength
+EXPORTS FUNCTION replayQueue
+
+FILE src/lib/queryPersistence.ts
+EXPORTS FUNCTION createIdbPersister
+
+FILE src/lib/profileStore.ts
+EXPORTS FUNCTION getActiveProfileId
+EXPORTS FUNCTION setActiveProfileId
+EXPORTS FUNCTION clearActiveProfileId
+
+FILE src/lib/subscriptionHooks.ts
+EXPORTS HOOK useSubscription
+EXPORTS HOOK useIsPremium
+EXPORTS HOOK useUpdateSubscription
+
+FILE src/lib/settingsHooks.ts
+EXPORTS HOOK useSettings
+EXPORTS HOOK useUpdateSettings
+
+FILE src/lib/analytics.ts
+EXPORTS FUNCTION getAnalyticsEnabled
+EXPORTS FUNCTION setAnalyticsEnabled
+EXPORTS FUNCTION initAnalytics
+EXPORTS FUNCTION trackScreen
+EXPORTS FUNCTION trackScheduleItemCompleted
+EXPORTS FUNCTION trackAACCardTapped
+
+FILE src/lib/storage.ts
+EXPORTS FUNCTION uploadCardIcon
+
+FILE src/lib/speak.ts
+EXPORTS FUNCTION speak  (stub — console.log only, deprecated)
+
+FILE src/lib/tts.ts
+EXPORTS INTERFACE TtsOptions
+EXPORTS FUNCTION speak  (cross-platform TTS: Capacitor native or Web SpeechSynthesis)
+EXPORTS FUNCTION stop   (stop current TTS)
+
+FILE src/lib/activityGameplayData.ts
+EXPORTS TYPE ActivityGameplayData
+EXPORTS FUNCTION getActivityGameplayData
+
+FILE src/hooks/useAuth.ts
+EXPORTS HOOK useAuth
+EXPORTS HOOK useRequireAuth
+
+FILE src/components/NavBar.tsx
+EXPORTS COMPONENT NavBar
+
+FILE src/components/ParentGate.tsx
+EXPORTS COMPONENT_DEFAULT ParentGate
+
+FILE src/components/UpgradeBanner.tsx
+EXPORTS COMPONENT UpgradeBanner
+
+FILE src/components/OfflineBanner.tsx
+EXPORTS COMPONENT OfflineBanner
+
+FILE src/components/ErrorBoundary.tsx
+EXPORTS COMPONENT ErrorBoundary  (class component)
+
+FILE src/components/IconPicker.tsx
+EXPORTS COMPONENT_DEFAULT IconPicker
+
+FILE src/components/kid/KidShell.tsx
+EXPORTS COMPONENT KidShell
+
+FILE src/components/kid/BigTileButton.tsx
+EXPORTS COMPONENT BigTileButton
+
+FILE src/components/kid/EmptyState.tsx
+EXPORTS COMPONENT EmptyState
+
+FILE src/components/study/StudyTile.tsx
+EXPORTS COMPONENT StudyTile
+
+FILE src/components/study/ProgressBar.tsx
+EXPORTS COMPONENT ProgressBar
+
+FILE src/components/study/BreakCard.tsx
+EXPORTS COMPONENT BreakCard
+
+FILE src/components/study/LessonCard.tsx
+EXPORTS COMPONENT LessonCard
+
+FILE src/components/study/RewardStars.tsx
+EXPORTS COMPONENT RewardStars
+
+FILE src/components/study/SubjectBadge.tsx
+EXPORTS COMPONENT SubjectBadge
+
+FILE src/components/activities/index.ts
+EXPORTS COMPONENT TapCorrectActivity  (re-export)
+EXPORTS COMPONENT VisualMatchingActivity  (re-export)
+EXPORTS COMPONENT SequencingActivity  (re-export)
+
+FILE src/components/activities/TapCorrectActivity.tsx
+EXPORTS COMPONENT TapCorrectActivity
+
+FILE src/components/activities/VisualMatchingActivity.tsx
+EXPORTS COMPONENT VisualMatchingActivity
+
+FILE src/components/activities/SequencingActivity.tsx
+EXPORTS COMPONENT SequencingActivity
+
+FILE src/components/ui/button.tsx
+EXPORTS COMPONENT Button
+
+FILE src/components/ui/card.tsx
+EXPORTS COMPONENT Card
+EXPORTS COMPONENT CardHeader
+EXPORTS COMPONENT CardTitle
+EXPORTS COMPONENT CardDescription
+EXPORTS COMPONENT CardContent
+
+FILE src/components/ui/input.tsx
+EXPORTS COMPONENT Input
+
+FILE src/components/ui/label.tsx
+EXPORTS COMPONENT Label
+
+FILE src/components/ui/switch.tsx
+EXPORTS COMPONENT Switch
+
+FILE src/app/layout.tsx
+EXPORTS COMPONENT_DEFAULT RootLayout
+EXPORTS CONST metadata
+EXPORTS CONST viewport
+
+FILE src/app/page.tsx
+EXPORTS COMPONENT_DEFAULT Home
+
+FILE src/app/providers.tsx
+EXPORTS COMPONENT_DEFAULT Providers
+
+FILE src/app/login/page.tsx
+EXPORTS COMPONENT_DEFAULT LoginPage
+
+FILE src/app/onboarding/page.tsx
+EXPORTS COMPONENT_DEFAULT OnboardingPage
+
+FILE src/app/settings/page.tsx
+EXPORTS COMPONENT_DEFAULT SettingsPage
+
+FILE src/app/debug-env/page.tsx
+EXPORTS COMPONENT_DEFAULT DebugEnv
+
+FILE src/app/kid/talk/page.tsx
+EXPORTS COMPONENT_DEFAULT TalkPage
+
+FILE src/app/kid/schedule/page.tsx
+EXPORTS COMPONENT_DEFAULT SchedulePage
+
+FILE src/app/kid/rewards/page.tsx
+EXPORTS COMPONENT_DEFAULT RewardsPage
+
+FILE src/app/kid/break/page.tsx
+EXPORTS COMPONENT_DEFAULT BreakPage
+
+FILE src/app/kid/study/page.tsx
+EXPORTS COMPONENT_DEFAULT StudyHomePage
+
+FILE src/app/kid/study/subject/[subjectId]/page.tsx
+EXPORTS FUNCTION generateStaticParams
+EXPORTS COMPONENT_DEFAULT SubjectModulesPage
+
+FILE src/app/kid/study/subject/[subjectId]/SubjectModulesClient.tsx
+EXPORTS COMPONENT_DEFAULT SubjectModulesClient
+
+FILE src/app/kid/study/module/[moduleId]/page.tsx
+EXPORTS FUNCTION generateStaticParams
+EXPORTS COMPONENT_DEFAULT ModuleLessonsPage
+
+FILE src/app/kid/study/module/[moduleId]/ModuleLessonsClient.tsx
+EXPORTS COMPONENT_DEFAULT ModuleLessonsClient
+
+FILE src/app/kid/study/lesson/[lessonId]/page.tsx
+EXPORTS FUNCTION generateStaticParams
+EXPORTS COMPONENT_DEFAULT LessonActivitiesPage
+
+FILE src/app/kid/study/lesson/[lessonId]/LessonActivitiesClient.tsx
+EXPORTS COMPONENT_DEFAULT LessonActivitiesClient
+
+FILE src/app/parent/page.tsx
+EXPORTS COMPONENT_DEFAULT ParentDashboard
+
+FILE src/app/parent/study/page.tsx
+EXPORTS COMPONENT_DEFAULT ParentStudyPage
+
+FILE src/app/parent/study/progress/page.tsx
+EXPORTS COMPONENT_DEFAULT ProgressDashboardPage
+
+FILE src/app/parent/subscription/page.tsx
+EXPORTS COMPONENT_DEFAULT SubscriptionPage
+
+
+===============================================================================
+STEP 3 — ROUTE MODEL
+===============================================================================
+
+PAGE "/"
+FILE src/app/page.tsx
+AUTH_REQUIRED false
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS NavBar OfflineBanner ErrorBoundary
+DESCRIPTION Home screen with 5 large tile nav buttons: Study, Talk, Schedule, Rewards, Break + Parent login link
+
+PAGE "/login"
+FILE src/app/login/page.tsx
+AUTH_REQUIRED false
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS Card Button Input Label
+DESCRIPTION Supabase auth page. Tabs for Sign In / Create Account. On success redirects to /onboarding (no profiles) or /parent.
+
+PAGE "/onboarding"
+FILE src/app/onboarding/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS Card Button Input Label
+DESCRIPTION 5-step wizard: child name → class level → subject selection → session length → intensity. Creates profile + learning plan + preferences.
+
+PAGE "/settings"
+FILE src/app/settings/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED true
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS ParentGate Card Switch Label Button
+DESCRIPTION Accessibility settings: calm mode, big button mode, parent lock, grid size, sound toggle, analytics opt-out.
+
+PAGE "/debug-env"
+FILE src/app/debug-env/page.tsx
+AUTH_REQUIRED false
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS none
+DESCRIPTION Debug page showing whether Supabase env vars are set. Development utility only.
+
+PAGE "/kid/talk"
+FILE src/app/kid/talk/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS KidShell BigTileButton EmptyState
+DESCRIPTION AAC Talk Board. Displays tap-to-speak cards from 'aac' category. Grid size from settings. Plays TTS on tap. ALWAYS FREE.
+
+PAGE "/kid/schedule"
+FILE src/app/kid/schedule/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS KidShell BigTileButton EmptyState
+DESCRIPTION Visual schedule showing first schedule's items with completion toggle. Awards 1 star per completed item.
+
+PAGE "/kid/rewards"
+FILE src/app/kid/rewards/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS KidShell EmptyState
+DESCRIPTION Shows total stars, streak counter (from child_progress.completed_at dates), and 7 earnable badges.
+
+PAGE "/kid/break"
+FILE src/app/kid/break/page.tsx
+AUTH_REQUIRED false
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS KidShell
+DESCRIPTION Calming break page with rotating calm prompts (cycling every 8s) and a simple break timer.
+
+PAGE "/kid/study"
+FILE src/app/kid/study/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS KidShell StudyTile BreakCard EmptyState
+DESCRIPTION Study home showing today's subjects from weekly plan or learning plan. Progress bars per subject. Break cards every 3 subjects.
+
+PAGE "/kid/study/subject/[subjectId]"
+FILE src/app/kid/study/subject/[subjectId]/page.tsx + SubjectModulesClient.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED conditional (checks isPremium; shows UpgradeBanner for locked subjects)
+PRIMARY_COMPONENTS KidShell SubjectModulesClient UpgradeBanner
+DESCRIPTION Lists study modules for a subject area. Premium check gates locked modules.
+
+PAGE "/kid/study/module/[moduleId]"
+FILE src/app/kid/study/module/[moduleId]/page.tsx + ModuleLessonsClient.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED conditional
+PRIMARY_COMPONENTS KidShell LessonCard ModuleLessonsClient UpgradeBanner
+DESCRIPTION Lists lessons within a module. Premium check gates locked lessons.
+
+PAGE "/kid/study/lesson/[lessonId]"
+FILE src/app/kid/study/lesson/[lessonId]/page.tsx + LessonActivitiesClient.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED false
+PREMIUM_REQUIRED conditional
+PRIMARY_COMPONENTS KidShell LessonActivitiesClient TapCorrectActivity VisualMatchingActivity SequencingActivity UpgradeBanner
+DESCRIPTION Interactive activity runner for a lesson. Routes activity type to correct component. Awards stars on completion. Tracks progress in child_progress.
+
+PAGE "/parent"
+FILE src/app/parent/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED true
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS ParentGate Card Button Input IconPicker
+DESCRIPTION Full parent dashboard: profile management, cards editor, schedule editor, quick-nav to study planner/progress/rewards/settings.
+
+PAGE "/parent/study"
+FILE src/app/parent/study/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED true
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS ParentGate Card Switch Label SubjectBadge
+DESCRIPTION Parent study planner: learning track (year category/class level), subject focus, weekly day assignments, study settings (session length, intensity, repeat lessons).
+
+PAGE "/parent/study/progress"
+FILE src/app/parent/study/progress/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED true
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS ParentGate Card ProgressBar RewardStars
+DESCRIPTION Progress analytics: per-subject progress bars, streak counter, total stars, completed activities count, recent activity list.
+
+PAGE "/parent/subscription"
+FILE src/app/parent/subscription/page.tsx
+AUTH_REQUIRED true
+PARENT_GATE_REQUIRED true
+PREMIUM_REQUIRED false
+PRIMARY_COMPONENTS ParentGate Card Button TierCard
+DESCRIPTION Subscription management. Shows Free vs Premium tier cards. Manual tier toggle (no Stripe integration yet). Feature comparison table.
+
+
+===============================================================================
+STEP 4 — COMPONENT HIERARCHY
+===============================================================================
+
+COMPONENT RootLayout  (src/app/layout.tsx)
+RENDERS
+  Providers
+  NavBar
+  OfflineBanner
+  ErrorBoundary → {children}
+
+COMPONENT Providers  (src/app/providers.tsx)
+RENDERS
+  PersistQueryClientProvider
+  SyncManager
+  {children}
+
+COMPONENT NavBar  (src/components/NavBar.tsx)
+RENDERS
+  Link (brand: / )
+  Link × 6 (Talk, Study, Tasks, Stars, Parent, Settings)
+
+COMPONENT Home  (src/app/page.tsx)
+RENDERS
+  Link × 5 (Study, Talk, Schedule, Rewards, Break tile buttons)
+  Link (Parent / Caregiver Sign In)
+
+COMPONENT TalkPage  (src/app/kid/talk/page.tsx)
+RENDERS
+  KidShell
+  BigTileButton × N  (one per AAC card)
+  EmptyState  (when no cards or no profile)
+
+COMPONENT SchedulePage  (src/app/kid/schedule/page.tsx)
+RENDERS
+  KidShell
+  BigTileButton × N  (one per schedule item)
+  EmptyState  (when no schedule)
+
+COMPONENT RewardsPage  (src/app/kid/rewards/page.tsx)
+RENDERS
+  KidShell
+  EmptyState  (when no profile)
+  star count card (inline)
+  streak card (inline)
+  badge grid (inline) × 7 badges
+
+COMPONENT BreakPage  (src/app/kid/break/page.tsx)
+RENDERS
+  KidShell
+  calm prompt card (inline)
+  break timer (inline)
+  Link (back to home)
+
+COMPONENT StudyHomePage  (src/app/kid/study/page.tsx)
+RENDERS
+  KidShell
+  StudyTile × N
+  BreakCard  (every 3 subjects)
+  EmptyState  (when no plan or no subjects)
+
+COMPONENT SubjectModulesClient  (src/app/kid/study/subject/[subjectId]/SubjectModulesClient.tsx)
+RENDERS
+  KidShell
+  StudyTile × N  (one per module)
+  UpgradeBanner  (when not premium and subject locked)
+  EmptyState
+
+COMPONENT ModuleLessonsClient  (src/app/kid/study/module/[moduleId]/ModuleLessonsClient.tsx)
+RENDERS
+  KidShell
+  LessonCard × N
+  UpgradeBanner  (when not premium and module locked)
+  ProgressBar
+  EmptyState
+
+COMPONENT LessonActivitiesClient  (src/app/kid/study/lesson/[lessonId]/LessonActivitiesClient.tsx)
+RENDERS
+  KidShell
+  TapCorrectActivity  (when activity_type = tap_correct)
+  VisualMatchingActivity  (when activity_type = visual_matching)
+  SequencingActivity  (when activity_type = sequencing)
+  simple done card  (for other activity types)
+  UpgradeBanner  (when not premium and lesson locked)
+  ProgressBar  (lesson progress)
+  RewardStars
+
+COMPONENT ParentDashboard  (src/app/parent/page.tsx)
+RENDERS
+  ParentGate
+  CardsEditor  (inline sub-component)
+  ScheduleEditor  (inline sub-component)
+  profile selector
+  quick-nav cards: Study Planner, Progress Dashboard, Rewards, Settings
+
+COMPONENT ParentGate  (src/components/ParentGate.tsx)
+RENDERS
+  hold-to-enter button (3s hold) when locked
+  {children} when unlocked (10 min session)
+
+COMPONENT UpgradeBanner  (src/components/UpgradeBanner.tsx)
+RENDERS
+  Link → /parent/subscription
+
+COMPONENT StudyTile  (src/components/study/StudyTile.tsx)
+RENDERS
+  ProgressBar  (optional)
+  lock overlay emoji  (when locked)
+
+COMPONENT LessonCard  (src/components/study/LessonCard.tsx)
+RENDERS
+  icon, title, duration, reward_points, completed/locked state
+
+COMPONENT ProgressBar  (src/components/study/ProgressBar.tsx)
+RENDERS
+  accessible div with role="progressbar"
+
+COMPONENT TapCorrectActivity  (src/components/activities/TapCorrectActivity.tsx)
+RENDERS
+  shuffled choice buttons × 3-4
+  correct/wrong feedback states
+
+COMPONENT VisualMatchingActivity  (src/components/activities/VisualMatchingActivity.tsx)
+RENDERS
+  source items (left column)
+  target items (right column, shuffled)
+  matched/wrong feedback states
+
+COMPONENT SequencingActivity  (src/components/activities/SequencingActivity.tsx)
+RENDERS
+  scrambled step buttons
+  completed steps highlighted in order
+
+
+===============================================================================
+STEP 5 — MODULE DEPENDENCY GRAPH
+===============================================================================
+
+MODULE env.ts
+IMPORTS DEPENDENCY process.env (Next.js inlined env)
+
+MODULE supabaseClient.ts
+IMPORTS MODULE env.ts
+IMPORTS DEPENDENCY @supabase/supabase-js
+
+MODULE db.ts
+IMPORTS MODULE supabaseClient.ts
+IMPORTS MODULE syncQueue.ts
+IMPORTS MODULE types.ts
+
+MODULE studyDb.ts
+IMPORTS MODULE supabaseClient.ts
+IMPORTS MODULE syncQueue.ts
+IMPORTS MODULE studyTypes.ts
+
+MODULE studySeedData.ts
+IMPORTS MODULE studyTypes.ts  (types only)
+
+MODULE syncQueue.ts
+IMPORTS MODULE supabaseClient.ts
+IMPORTS DEPENDENCY idb-keyval
+
+MODULE queryPersistence.ts
+IMPORTS DEPENDENCY idb-keyval
+IMPORTS DEPENDENCY @tanstack/react-query-persist-client
+
+MODULE profileStore.ts
+IMPORTS DEPENDENCY window.localStorage
+
+MODULE subscriptionHooks.ts
+IMPORTS MODULE db.ts
+IMPORTS MODULE types.ts
+IMPORTS DEPENDENCY @tanstack/react-query
+
+MODULE settingsHooks.ts
+IMPORTS MODULE db.ts
+IMPORTS MODULE types.ts
+IMPORTS DEPENDENCY @tanstack/react-query
+
+MODULE analytics.ts
+IMPORTS DEPENDENCY posthog-js
+IMPORTS DEPENDENCY process.env
+
+MODULE storage.ts
+IMPORTS MODULE supabaseClient.ts
+
+MODULE speak.ts
+IMPORTS nothing  (stub)
+
+MODULE tts.ts
+IMPORTS DEPENDENCY @capacitor/core
+IMPORTS DEPENDENCY @capacitor-community/text-to-speech  (dynamic import)
+
+MODULE activityGameplayData.ts
+IMPORTS MODULE studyTypes.ts  (ActivityType type)
+
+MODULE utils.ts
+IMPORTS DEPENDENCY clsx
+IMPORTS DEPENDENCY tailwind-merge
+
+MODULE hooks/useAuth.ts
+IMPORTS MODULE supabaseClient.ts
+IMPORTS DEPENDENCY next/navigation
+IMPORTS DEPENDENCY @supabase/supabase-js
+
+MODULE providers.tsx
+IMPORTS MODULE queryPersistence.ts
+IMPORTS MODULE syncQueue.ts
+IMPORTS MODULE analytics.ts
+IMPORTS DEPENDENCY @tanstack/react-query
+IMPORTS DEPENDENCY @tanstack/react-query-persist-client
+
+MODULE NavBar.tsx
+IMPORTS MODULE profileStore.ts
+IMPORTS MODULE settingsHooks.ts
+IMPORTS MODULE utils.ts
+IMPORTS DEPENDENCY next/link
+IMPORTS DEPENDENCY next/navigation
+
+MODULE ParentGate.tsx
+IMPORTS nothing external (uses window.localStorage, pointer events)
+
+MODULE UpgradeBanner.tsx
+IMPORTS MODULE utils.ts
+IMPORTS DEPENDENCY next/link
+
+MODULE OfflineBanner.tsx
+IMPORTS nothing (uses navigator.onLine, window events)
+
+MODULE ErrorBoundary.tsx
+IMPORTS DEPENDENCY react
+
+MODULE kid/KidShell.tsx
+IMPORTS MODULE utils.ts
+
+MODULE kid/BigTileButton.tsx
+IMPORTS MODULE utils.ts
+
+MODULE kid/EmptyState.tsx
+IMPORTS nothing
+
+MODULE study/StudyTile.tsx
+IMPORTS MODULE utils.ts
+IMPORTS COMPONENT study/ProgressBar.tsx
+
+MODULE study/ProgressBar.tsx
+IMPORTS MODULE utils.ts
+
+MODULE study/BreakCard.tsx
+IMPORTS MODULE utils.ts
+
+MODULE study/LessonCard.tsx
+IMPORTS MODULE utils.ts
+
+MODULE activities/TapCorrectActivity.tsx
+IMPORTS MODULE utils.ts
+
+MODULE activities/VisualMatchingActivity.tsx
+IMPORTS MODULE utils.ts
+
+MODULE activities/SequencingActivity.tsx
+IMPORTS MODULE utils.ts
+
+
+===============================================================================
+STEP 6 — FUNCTION GRAPH
+===============================================================================
+
+FUNCTION getProfiles
+LOCATION src/lib/db.ts
+PURPOSE fetch all profiles for the authenticated user (ordered by created_at)
+
+FUNCTION getProfile
+LOCATION src/lib/db.ts
+PURPOSE fetch a single profile by user ID (maybeSingle — null if not found)
+
+FUNCTION createProfile
+LOCATION src/lib/db.ts
+PURPOSE insert a new child profile with a display_name
+
+FUNCTION updateSubscriptionTier
+LOCATION src/lib/db.ts
+PURPOSE update subscription_tier column on profiles; offline-aware (queued if offline)
+
+FUNCTION getSettings
+LOCATION src/lib/db.ts
+PURPOSE fetch settings row for a profile (maybeSingle — null if not created yet)
+
+FUNCTION upsertSettings
+LOCATION src/lib/db.ts
+PURPOSE insert or update settings for a profile; offline-aware with optimistic fallback
+
+FUNCTION getCards
+LOCATION src/lib/db.ts
+PURPOSE fetch non-deleted cards for a profile; optionally filtered by category; ordered by position then created_at
+
+FUNCTION upsertCard
+LOCATION src/lib/db.ts
+PURPOSE insert or update an AAC/task card; offline-aware
+
+FUNCTION softDeleteCard
+LOCATION src/lib/db.ts
+PURPOSE set deleted_at timestamp on a card (soft delete); offline-aware
+
+FUNCTION getSchedules
+LOCATION src/lib/db.ts
+PURPOSE fetch non-deleted schedules for a profile
+
+FUNCTION createSchedule
+LOCATION src/lib/db.ts
+PURPOSE insert a new schedule; offline-aware
+
+FUNCTION getScheduleItems
+LOCATION src/lib/db.ts
+PURPOSE fetch all schedule items for a schedule ordered by position
+
+FUNCTION upsertScheduleItem
+LOCATION src/lib/db.ts
+PURPOSE insert or update a schedule item; offline-aware
+
+FUNCTION deleteScheduleItem
+LOCATION src/lib/db.ts
+PURPOSE hard-delete a schedule item; offline-aware
+
+FUNCTION updateScheduleItemDone
+LOCATION src/lib/db.ts
+PURPOSE toggle is_complete on a schedule item; offline-aware
+
+FUNCTION getRewards
+LOCATION src/lib/db.ts
+PURPOSE fetch all reward rows for a profile ordered by created_at
+
+FUNCTION addRewardIfNew
+LOCATION src/lib/db.ts
+PURPOSE insert a reward row only if no row with same reason exists (deduplication); offline-aware
+
+FUNCTION getChildLearningPlan
+LOCATION src/lib/studyDb.ts
+PURPOSE fetch the active child learning plan for a profile
+
+FUNCTION upsertChildLearningPlan
+LOCATION src/lib/studyDb.ts
+PURPOSE insert or update child learning plan; conflict on profile_id; offline-aware
+
+FUNCTION getChildProgress
+LOCATION src/lib/studyDb.ts
+PURPOSE fetch all progress records for a profile ordered by updated_at desc
+
+FUNCTION upsertChildProgress
+LOCATION src/lib/studyDb.ts
+PURPOSE insert or update a child progress record; offline-aware
+
+FUNCTION getChildPreferences
+LOCATION src/lib/studyDb.ts
+PURPOSE fetch child preferences for a profile
+
+FUNCTION upsertChildPreferences
+LOCATION src/lib/studyDb.ts
+PURPOSE insert or update child preferences; offline-aware
+
+FUNCTION getWeeklyPlanEntries
+LOCATION src/lib/studyDb.ts
+PURPOSE fetch all weekly plan entries for a learning plan
+
+FUNCTION replaceWeeklyPlanEntries
+LOCATION src/lib/studyDb.ts
+PURPOSE delete all existing weekly plan entries for a learning plan and insert new ones (atomic replace)
+
+FUNCTION useAuth
+LOCATION src/hooks/useAuth.ts
+PURPOSE manage Supabase auth state; returns {user, loading, logout}
+
+FUNCTION useRequireAuth
+LOCATION src/hooks/useAuth.ts
+PURPOSE like useAuth but redirects to /login when not authenticated
+
+FUNCTION useSubscription
+LOCATION src/lib/subscriptionHooks.ts
+PURPOSE TanStack Query hook returning current subscription tier for a user ID
+
+FUNCTION useIsPremium
+LOCATION src/lib/subscriptionHooks.ts
+PURPOSE returns boolean true when user has premium tier
+
+FUNCTION useUpdateSubscription
+LOCATION src/lib/subscriptionHooks.ts
+PURPOSE TanStack Query mutation to change subscription tier; invalidates subscription + profiles queries on success
+
+FUNCTION useSettings
+LOCATION src/lib/settingsHooks.ts
+PURPOSE TanStack Query hook returning settings row for a profile
+
+FUNCTION useUpdateSettings
+LOCATION src/lib/settingsHooks.ts
+PURPOSE TanStack Query mutation with optimistic update to patch settings; reverts on error
+
+FUNCTION isOnline
+LOCATION src/lib/syncQueue.ts
+PURPOSE browser-safe navigator.onLine check; returns true during SSR
+
+FUNCTION isNetworkError
+LOCATION src/lib/syncQueue.ts
+PURPOSE heuristic check for fetch/network errors by message string
+
+FUNCTION enqueue
+LOCATION src/lib/syncQueue.ts
+PURPOSE append a QueuedMutation to IndexedDB persistent queue
+
+FUNCTION getQueueLength
+LOCATION src/lib/syncQueue.ts
+PURPOSE return number of pending mutations in queue
+
+FUNCTION replayQueue
+LOCATION src/lib/syncQueue.ts
+PURPOSE FIFO replay of queued mutations against Supabase with last-write-wins (LWW) check; drops after 5 retries
+
+FUNCTION createIdbPersister
+LOCATION src/lib/queryPersistence.ts
+PURPOSE create a TanStack Query IndexedDB persister for offline cache
+
+FUNCTION getActiveProfileId
+LOCATION src/lib/profileStore.ts
+PURPOSE read active child profile ID from localStorage
+
+FUNCTION setActiveProfileId
+LOCATION src/lib/profileStore.ts
+PURPOSE write active child profile ID to localStorage
+
+FUNCTION clearActiveProfileId
+LOCATION src/lib/profileStore.ts
+PURPOSE remove active child profile ID from localStorage
+
+FUNCTION getAnalyticsEnabled
+LOCATION src/lib/analytics.ts
+PURPOSE read analytics opt-in/out from localStorage; returns true by default
+
+FUNCTION setAnalyticsEnabled
+LOCATION src/lib/analytics.ts
+PURPOSE write analytics preference to localStorage and call posthog opt_in/opt_out
+
+FUNCTION initAnalytics
+LOCATION src/lib/analytics.ts
+PURPOSE initialize PostHog with project key; no-op in development or without key
+
+FUNCTION trackScreen
+LOCATION src/lib/analytics.ts
+PURPOSE fire screen_viewed event with screen name
+
+FUNCTION trackScheduleItemCompleted
+LOCATION src/lib/analytics.ts
+PURPOSE fire schedule_item_completed event with item_id
+
+FUNCTION trackAACCardTapped
+LOCATION src/lib/analytics.ts
+PURPOSE fire aac_card_tapped event with category only (never label or tts_text — privacy)
+
+FUNCTION uploadCardIcon
+LOCATION src/lib/storage.ts
+PURPOSE upload image file to Supabase Storage bucket 'card-icons'; validates extension; returns public URL
+
+FUNCTION speak (tts.ts)
+LOCATION src/lib/tts.ts
+PURPOSE speak text via Capacitor TTS on native or Web SpeechSynthesis on web; no-op when soundEnabled=false
+
+FUNCTION stop (tts.ts)
+LOCATION src/lib/tts.ts
+PURPOSE stop current TTS playback on native or web
+
+FUNCTION getActivityGameplayData
+LOCATION src/lib/activityGameplayData.ts
+PURPOSE return interactive gameplay data (choices / pairs / steps) for a given activity ID and type; falls back to generic data when no specific data exists
+
+FUNCTION cn
+LOCATION src/lib/utils.ts
+PURPOSE merge Tailwind CSS classes safely using clsx + tailwind-merge
+
+
+===============================================================================
+STEP 7 — FUNCTION → DATABASE OPERATIONS
+===============================================================================
+
+FUNCTION getProfiles
+READS TABLE profiles
+
+FUNCTION getProfile
+READS TABLE profiles
+
+FUNCTION createProfile
+WRITES TABLE profiles  (insert)
+
+FUNCTION updateSubscriptionTier
+WRITES TABLE profiles  (update subscription_tier)
+
+FUNCTION getSettings
+READS TABLE settings
+
+FUNCTION upsertSettings
+WRITES TABLE settings  (upsert on profile_id)
+
+FUNCTION getCards
+READS TABLE cards  (where deleted_at IS NULL, optionally filtered by category)
+
+FUNCTION upsertCard
+WRITES TABLE cards  (upsert)
+
+FUNCTION softDeleteCard
+WRITES TABLE cards  (update deleted_at)
+
+FUNCTION getSchedules
+READS TABLE schedules  (where deleted_at IS NULL)
+
+FUNCTION createSchedule
+WRITES TABLE schedules  (insert/upsert)
+
+FUNCTION getScheduleItems
+READS TABLE schedule_items
+
+FUNCTION upsertScheduleItem
+WRITES TABLE schedule_items  (upsert)
+
+FUNCTION deleteScheduleItem
+WRITES TABLE schedule_items  (delete)
+
+FUNCTION updateScheduleItemDone
+WRITES TABLE schedule_items  (update is_complete)
+
+FUNCTION getRewards
+READS TABLE rewards
+
+FUNCTION addRewardIfNew
+READS TABLE rewards  (check for existing by profile_id + reason)
+WRITES TABLE rewards  (insert if not exists)
+
+FUNCTION getChildLearningPlan
+READS TABLE child_learning_plans
+
+FUNCTION upsertChildLearningPlan
+WRITES TABLE child_learning_plans  (upsert on profile_id)
+
+FUNCTION getChildProgress
+READS TABLE child_progress
+
+FUNCTION upsertChildProgress
+WRITES TABLE child_progress  (upsert)
+
+FUNCTION getChildPreferences
+READS TABLE child_preferences
+
+FUNCTION upsertChildPreferences
+WRITES TABLE child_preferences  (upsert on profile_id)
+
+FUNCTION getWeeklyPlanEntries
+READS TABLE weekly_plan_entries
+
+FUNCTION replaceWeeklyPlanEntries
+WRITES TABLE weekly_plan_entries  (delete where learning_plan_id, then insert batch)
+
+FUNCTION uploadCardIcon
+WRITES STORAGE card-icons bucket
+
+
+===============================================================================
+STEP 8 — DATABASE SCHEMA
+===============================================================================
+
+NOTE: Schema reconstructed from all 7 migrations in order.
+
+TABLE profiles
+  id                uuid primary key references auth.users(id) on delete cascade
+  display_name      text not null default ''
+  subscription_tier text not null default 'free' check (subscription_tier in ('free','premium'))
+  created_at        timestamptz not null default now()
+  updated_at        timestamptz not null default now()
+  RLS: enabled — owner-only (id = auth.uid())
+
+TABLE cards
+  id          uuid primary key default gen_random_uuid()
+  profile_id  uuid not null references public.profiles(id) on delete cascade
+  label       text not null
+  tts_text    text  (nullable — added migration 02)
+  image_url   text  (nullable)
+  category    text not null default ''
+  position    integer not null default 0  (added migration 02)
+  created_at  timestamptz not null default now()
+  updated_at  timestamptz not null default now()
+  deleted_at  timestamptz  (nullable — soft delete)
+  RLS: enabled — owner-only (profile_id = auth.uid())
+
+TABLE schedules
+  id          uuid primary key default gen_random_uuid()
+  profile_id  uuid not null references public.profiles(id) on delete cascade
+  title       text not null
+  created_at  timestamptz not null default now()
+  updated_at  timestamptz not null default now()
+  deleted_at  timestamptz  (nullable — soft delete)
+  RLS: enabled — owner-only (profile_id = auth.uid())
+
+TABLE schedule_items
+  id           uuid primary key default gen_random_uuid()
+  schedule_id  uuid not null references public.schedules(id) on delete cascade
+  card_id      uuid not null references public.cards(id) on delete cascade
+  position     integer not null default 0
+  is_complete  boolean not null default false
+  created_at   timestamptz not null default now()
+  updated_at   timestamptz not null default now()
+  RLS: enabled — via join to schedules (profile_id = auth.uid())
+
+TABLE rewards
+  id          uuid primary key default gen_random_uuid()
+  profile_id  uuid not null references public.profiles(id) on delete cascade
+  stars       integer not null default 0
+  reason      text not null default ''
+  created_at  timestamptz not null default now()
+  updated_at  timestamptz not null default now()
+  RLS: enabled — owner-only (profile_id = auth.uid())
+
+TABLE settings
+  id                  uuid primary key default gen_random_uuid()
+  profile_id          uuid not null unique references public.profiles(id) on delete cascade
+  calm_mode           boolean not null default false
+  big_button_mode     boolean not null default false
+  parent_lock_enabled boolean not null default true
+  grid_size           integer not null default 3 check (grid_size in (2,3,4))  (added migration 01)
+  sound_enabled       boolean not null default true  (added migration 01)
+  created_at          timestamptz not null default now()
+  updated_at          timestamptz not null default now()
+  RLS: enabled — owner-only (profile_id = auth.uid())
+
+TABLE year_categories
+  id          uuid primary key default gen_random_uuid()
+  title       text not null
+  description text
+  icon        text
+  "order"     integer not null default 0
+  age_min     integer
+  age_max     integer
+  created_at  timestamptz not null default now()
+  updated_at  timestamptz not null default now()
+  RLS: enabled — authenticated read-only
+
+TABLE class_levels
+  id               uuid primary key default gen_random_uuid()
+  year_category_id uuid not null references public.year_categories(id) on delete cascade
+  title            text not null
+  description      text
+  icon             text
+  "order"          integer not null default 0
+  created_at       timestamptz not null default now()
+  updated_at       timestamptz not null default now()
+  RLS: enabled — authenticated read-only
+
+TABLE subject_areas
+  id          uuid primary key default gen_random_uuid()
+  title       text not null
+  description text
+  icon        text
+  "order"     integer not null default 0
+  is_premium  boolean not null default false
+  created_at  timestamptz not null default now()
+  updated_at  timestamptz not null default now()
+  RLS: enabled — authenticated read-only
+
+TABLE study_modules
+  id              uuid primary key default gen_random_uuid()
+  subject_area_id uuid not null references public.subject_areas(id) on delete cascade
+  class_level_id  uuid not null references public.class_levels(id) on delete cascade
+  title           text not null
+  description     text
+  icon            text
+  "order"         integer not null default 0
+  difficulty      integer
+  is_premium      boolean not null default false
+  created_at      timestamptz not null default now()
+  updated_at      timestamptz not null default now()
+  RLS: enabled — authenticated read-only
+
+TABLE lessons
+  id                   uuid primary key default gen_random_uuid()
+  module_id            uuid not null references public.study_modules(id) on delete cascade
+  title                text not null
+  description          text
+  icon                 text
+  "order"              integer not null default 0
+  difficulty           integer
+  duration_minutes     integer
+  reward_points        integer
+  is_premium           boolean not null default false
+  calm_mode_safe       boolean not null default true
+  requires_parent_help boolean not null default false
+  created_at           timestamptz not null default now()
+  updated_at           timestamptz not null default now()
+  RLS: enabled — authenticated read-only
+
+TABLE activities
+  id                   uuid primary key default gen_random_uuid()
+  lesson_id            uuid not null references public.lessons(id) on delete cascade
+  title                text not null
+  description          text
+  icon                 text
+  "order"              integer not null default 0
+  difficulty           integer
+  duration_minutes     integer
+  reward_points        integer
+  activity_type        text
+  instructions         text
+  audio_cue            text
+  aac_support          boolean
+  is_premium           boolean not null default false
+  calm_mode_safe       boolean not null default true
+  requires_parent_help boolean not null default false
+  created_at           timestamptz not null default now()
+  updated_at           timestamptz not null default now()
+  RLS: enabled — authenticated read-only
+
+TABLE child_learning_plans
+  id                     uuid primary key default gen_random_uuid()
+  profile_id             uuid not null references public.profiles(id) on delete cascade
+  class_level_id         uuid not null references public.class_levels(id) on delete cascade
+  intensity              text not null default 'medium'
+  session_length_minutes integer not null default 10
+  subject_area_ids       text[] not null default '{}'
+  is_active              boolean not null default true
+  created_at             timestamptz not null default now()
+  updated_at             timestamptz not null default now()
+  RLS: enabled — owner-only (profile_id = auth.uid())
+
+TABLE child_progress
+  id                uuid primary key default gen_random_uuid()
+  profile_id        uuid not null references public.profiles(id) on delete cascade
+  activity_id       uuid not null references public.activities(id) on delete cascade
+  lesson_id         uuid not null references public.lessons(id) on delete cascade
+  module_id         uuid not null references public.study_modules(id) on delete cascade
+  completed         boolean not null default false
+  score             integer  (nullable)
+  attempts          integer not null default 0
+  last_attempted_at timestamptz  (nullable)
+  completed_at      timestamptz  (nullable)
+  created_at        timestamptz not null default now()
+  updated_at        timestamptz not null default now()
+  RLS: enabled — owner-only (profile_id = auth.uid())
+
+TABLE child_preferences
+  id                       uuid primary key default gen_random_uuid()
+  profile_id               uuid not null unique references public.profiles(id) on delete cascade
+  preferred_difficulty     integer not null default 2
+  favorite_subject_ids     text[] not null default '{}'
+  repeat_completed_lessons boolean not null default true
+  created_at               timestamptz not null default now()
+  updated_at               timestamptz not null default now()
+  RLS: enabled — owner-only (profile_id = auth.uid())
+
+TABLE weekly_plan_entries
+  id               uuid primary key default gen_random_uuid()
+  learning_plan_id uuid not null references public.child_learning_plans(id) on delete cascade
+  day              text not null  (DayOfWeek enum: monday–sunday)
+  subject_area_id  text not null  (references subject area by ID — no FK enforced)
+  "order"          integer not null default 0
+  created_at       timestamptz not null default now()
+  updated_at       timestamptz not null default now()
+  RLS: enabled — owner-only (via join to child_learning_plans → profiles)
+
+STORAGE BUCKET card-icons
+  Policies: public read, authenticated insert, owner update/delete (path prefix = auth.uid())
+
+
+===============================================================================
+STEP 9 — DATABASE RELATIONSHIPS
+===============================================================================
+
+profiles.id → auth.users(id)  [cascade delete]
+
+cards.profile_id → profiles.id  [cascade delete]
+schedules.profile_id → profiles.id  [cascade delete]
+rewards.profile_id → profiles.id  [cascade delete]
+settings.profile_id → profiles.id  [cascade delete, unique]
+child_learning_plans.profile_id → profiles.id  [cascade delete]
+child_progress.profile_id → profiles.id  [cascade delete]
+child_preferences.profile_id → profiles.id  [cascade delete, unique]
+
+schedule_items.schedule_id → schedules.id  [cascade delete]
+schedule_items.card_id → cards.id  [cascade delete]
+
+class_levels.year_category_id → year_categories.id  [cascade delete]
+
+study_modules.subject_area_id → subject_areas.id  [cascade delete]
+study_modules.class_level_id → class_levels.id  [cascade delete]
+
+lessons.module_id → study_modules.id  [cascade delete]
+
+activities.lesson_id → lessons.id  [cascade delete]
+
+child_learning_plans.class_level_id → class_levels.id  [cascade delete]
+
+child_progress.activity_id → activities.id  [cascade delete]
+child_progress.lesson_id → lessons.id  [cascade delete]
+child_progress.module_id → study_modules.id  [cascade delete]
+
+weekly_plan_entries.learning_plan_id → child_learning_plans.id  [cascade delete]
+weekly_plan_entries.subject_area_id → (logical reference to subject_areas.id — no enforced FK)
+
+
+===============================================================================
+STEP 10 — ACTIVITY SYSTEM GRAPH
+===============================================================================
+
+ActivityType values defined in studyTypes.ts:
+
+ACTIVITY tap_correct
+IMPLEMENTED_BY TapCorrectActivity (src/components/activities/TapCorrectActivity.tsx)
+DATA_SOURCE TAP_CORRECT_DATA in activityGameplayData.ts (keyed by activity ID)
+BEHAVIOR Shuffle 3-4 choices; first choice is always correct. Wrong tap resets. Correct tap calls onComplete after delay.
+STATUS complete
+
+ACTIVITY visual_matching
+IMPLEMENTED_BY VisualMatchingActivity (src/components/activities/VisualMatchingActivity.tsx)
+DATA_SOURCE VISUAL_MATCHING_DATA in activityGameplayData.ts (keyed by activity ID)
+BEHAVIOR Tap source item, then tap matching target. Wrong tap resets selection. All pairs matched calls onComplete.
+STATUS complete
+
+ACTIVITY sequencing
+IMPLEMENTED_BY SequencingActivity (src/components/activities/SequencingActivity.tsx)
+DATA_SOURCE SEQUENCING_DATA in activityGameplayData.ts (keyed by activity ID)
+BEHAVIOR Scrambled steps; tap in correct order. Wrong tap flashes warning. All in order calls onComplete.
+STATUS complete
+
+ACTIVITY listen_choose
+IMPLEMENTED_BY none
+STATUS not_implemented — falls back to simple "done" card in LessonActivitiesClient
+
+ACTIVITY speak_tap_aac
+IMPLEMENTED_BY none
+STATUS not_implemented — falls back to simple "done" card
+
+ACTIVITY trace
+IMPLEMENTED_BY none
+STATUS not_implemented — falls back to simple "done" card
+
+ACTIVITY routine_checkoff
+IMPLEMENTED_BY none
+STATUS not_implemented — falls back to simple "done" card
+
+ACTIVITY parent_guided
+IMPLEMENTED_BY none (simple "done" card is appropriate for this type)
+STATUS not_implemented — falls back to simple "done" card
+
+ACTIVITY printable
+IMPLEMENTED_BY none
+STATUS not_implemented — falls back to simple "done" card
+
+FALLBACK for unimplemented types
+A simple "Great job!" card with a confirm button that calls onComplete directly.
+Implemented inline in LessonActivitiesClient.tsx.
+
+
+===============================================================================
+STEP 11 — RUNTIME ARCHITECTURE RULES
+===============================================================================
+
+RULE output_mode
+Next.js static export (output:"export" in next.config.ts).
+No server-side rendering at runtime. All pages are pre-rendered to static HTML.
+Dynamic routes use generateStaticParams() seeded from SEED_* data.
+
+RULE no_api_routes
+No API routes exist. All backend access goes directly through the Supabase client.
+Supabase REST + Realtime is the only backend.
+
+RULE supabase_nullable
+Supabase client returns null when NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY are absent.
+This allows static export / CI builds without secrets.
+Every consumer checks for null before using the client.
+
+RULE offline_first
+TanStack Query + IndexedDB (idb-keyval) persist the entire query cache across sessions (gcTime: 24h).
+Writes are queued to IndexedDB when offline via syncQueue.ts and replayed on reconnect.
+Queue uses last-write-wins: if server row is newer than mutation timestamp, mutation is discarded.
+
+RULE offline_queue_max_retries
+Failed mutations are retried up to 5 times (MAX_RETRIES). After that they are dropped with a console warning.
+
+RULE parent_gate
+Parent-only areas are gated by ParentGate component (3-second hold-to-unlock button).
+Unlock session stored in localStorage with a 10-minute TTL.
+Lock state is synced across tabs via StorageEvent.
+
+RULE aac_always_free
+AAC Talk Board (/kid/talk) has NO subscription check.
+UpgradeBanner is NEVER shown on the talk page.
+This is an explicit design constraint enforced in code.
+
+RULE premium_gating_study
+Study curriculum pages (subject/module/lesson) check useIsPremium(user?.id).
+Free users see UpgradeBanner for is_premium content.
+UpgradeBanner always includes a note that AAC is permanently free.
+
+RULE kid_ui_no_paywall
+Kid-facing pages show UpgradeBanner (informational) but never full payment flows.
+Actual tier management is in /parent/subscription (behind ParentGate).
+
+RULE analytics_privacy
+PostHog analytics track: screen_viewed, schedule_item_completed, aac_card_tapped(category only).
+AAC card labels and tts_text are NEVER sent to analytics.
+Analytics are opt-out (default on). Preference in localStorage.
+PostHog session recording is explicitly disabled (disable_session_recording: true).
+
+RULE pwa
+next-pwa (@ducanh2912/next-pwa) generates service worker and manifest.
+PWA disabled in development (disable: NODE_ENV === 'development').
+manifest.json in /public defines app name, theme color, icons.
+
+RULE capacitor_native
+Capacitor wraps the static export for Android and iOS.
+Native TTS uses @capacitor-community/text-to-speech (dynamic import to avoid SSR issues).
+Web TTS uses window.speechSynthesis as fallback.
+
+RULE calm_mode
+When calm_mode is true: transition-transform classes are suppressed on interactive elements.
+Celebration animations are suppressed on rewards page.
+NavBar applies 'calm' class to <html> element.
+Break card, rewards, and all BigTileButtons respect calm prop.
+
+RULE static_curriculum
+Study curriculum data (year categories, class levels, subjects, modules, lessons, activities) is stored as static seed data in studySeedData.ts.
+It is NOT fetched from the database at runtime (no study curriculum queries against DB tables).
+DB tables (year_categories, class_levels, etc.) exist for future seeding/admin use.
+child_progress DOES write to DB (activity completion is persisted).
+
+
+===============================================================================
+STEP 12 — SYSTEM COMPLETENESS MATRIX
+===============================================================================
+
+SYSTEM Authentication
+STATUS complete
+NOTES Supabase Auth with email/password. Sign in + sign up. Redirects to onboarding on first login.
+
+SYSTEM Profile Management
+STATUS complete
+NOTES Create profiles, set active profile via localStorage. Multiple child profiles per account supported.
+
+SYSTEM AAC Communication (Talk Board)
+STATUS complete
+NOTES Tap-to-speak grid. Custom cards with image upload. Category filter (aac). TTS on tap. Grid size configurable. Always free.
+
+SYSTEM Visual Schedule
+STATUS complete
+NOTES Create/edit schedules and items. Kid view with completion toggle. 1 star awarded per completed item. Optimistic updates.
+
+SYSTEM Rewards & Badges
+STATUS complete
+NOTES Total stars, streak counter (from child_progress dates), 7 earnable badges (star thresholds + streak milestones).
+
+SYSTEM Study Curriculum (structure)
+STATUS complete
+NOTES Static seed data: 5 year categories, 8 class levels, 7 subjects, modules, lessons, 126+ activities. Navigation chain: home → subject → module → lesson → activity.
+
+SYSTEM Activity Gameplay
+STATUS partial
+NOTES 3 of 9 activity types implemented (tap_correct, visual_matching, sequencing). Other types (listen_choose, speak_tap_aac, trace, routine_checkoff, parent_guided, printable) fall back to simple "done" card.
+
+SYSTEM Progress Tracking
+STATUS complete
+NOTES child_progress table tracks completion, score, attempts, completed_at. Parent progress dashboard shows per-subject progress + streak + totals. Kid study home shows per-subject progress bars.
+
+SYSTEM Subscription Management
+STATUS partial
+NOTES Tier stored in DB. useSubscription/useIsPremium hooks gate premium content. Manual tier toggle in /parent/subscription. No payment processor integrated.
+
+SYSTEM Stripe / Payment Processing
+STATUS missing
+NOTES Placeholder text in subscription page ("Secure payment processing coming soon"). No Stripe, no webhooks, no billing.
+
+SYSTEM Settings & Accessibility
+STATUS complete
+NOTES calm_mode, big_button_mode, parent_lock_enabled, grid_size, sound_enabled. Persisted to Supabase with offline fallback. Applied globally via NavBar class on <html>.
+
+SYSTEM Onboarding Wizard
+STATUS complete
+NOTES 5-step wizard. Creates profile + learning plan + preferences in one flow.
+
+SYSTEM Weekly Study Planner
+STATUS complete
+NOTES Parent can assign subjects to days of week. Kid study home filters today's subjects by weekly plan.
+
+SYSTEM Offline Mode
+STATUS complete
+NOTES IndexedDB query cache (24h TTL). Mutation queue in IndexedDB. Replay on reconnect. LWW conflict resolution. OfflineBanner in layout.
+
+SYSTEM Analytics
+STATUS complete
+NOTES PostHog integration (production only). Privacy-respecting (no session replay, no AAC content). Opt-out localStorage preference.
+
+SYSTEM Image Upload
+STATUS complete
+NOTES Upload to Supabase Storage bucket 'card-icons'. Extension validation. Path prefixed by userId.
+
+SYSTEM Error Handling
+STATUS complete
+NOTES React ErrorBoundary wraps all main content. Kid-friendly "Something went wrong" UI with Try Again.
+
+SYSTEM Parent Gate
+STATUS complete
+NOTES 3-second hold-to-unlock. 10-minute session. Cross-tab sync via StorageEvent.
+
+
+===============================================================================
+STEP 13 — ARCHITECTURAL RISKS
+===============================================================================
+
+RISK manual_subscription_management
+SEVERITY high
+DESCRIPTION Subscription tier is toggled manually by the user (no payment verification). Any user can self-upgrade to premium for free. No server-side validation of payment status.
+MITIGATION_STATUS none — Stripe integration is listed as missing
+
+RISK no_stripe_integration
+SEVERITY high
+DESCRIPTION Premium pricing displayed (£4.99/month) but no payment processor. Revenue model is non-functional.
+
+RISK last_write_wins_conflict_resolution
+SEVERITY medium
+DESCRIPTION Offline mutations use LWW by comparing timestamps. If two devices edit the same record offline, the later timestamp wins. No merge strategy. Could cause data loss in multi-device scenarios.
+
+RISK partial_activity_gameplay
+SEVERITY medium
+DESCRIPTION 6 of 9 activity types fall back to a simple "done" tap. Users can trivially complete any activity regardless of type. Assessment validity is limited.
+
+RISK no_background_sync_retry
+SEVERITY medium
+DESCRIPTION Sync queue is only replayed on app mount and on window 'online' event. If the app is closed while offline, mutations wait until next open. No service worker background sync.
+
+RISK static_curriculum_data
+SEVERITY low
+DESCRIPTION Curriculum lives in a TypeScript file (studySeedData.ts). Updates require a code deploy. No admin CMS or in-app content editing.
+
+RISK no_multi_parent_support
+SEVERITY low
+DESCRIPTION One Supabase auth.users account owns all profiles. No concept of co-parents or therapist accounts sharing a child's profile.
+
+RISK single_schedule_per_profile
+SEVERITY low
+DESCRIPTION Kid schedule page uses schedules[0] (the first schedule). Multiple schedules exist in the DB but only the first is displayed to kids. No schedule selector in kid UI.
+
+RISK debug_env_page_public
+SEVERITY low
+DESCRIPTION /debug-env page is publicly accessible and reveals whether Supabase env vars are configured. No auth check. Not a secret exposure (only boolean hasAnon) but should be removed in production.
+
+RISK speak_stub_in_lib
+SEVERITY low
+DESCRIPTION src/lib/speak.ts is a console.log stub and is still present in the codebase alongside the real tts.ts. Could cause confusion. speak.ts is not used in the current codebase (talk page uses tts.ts directly).
+
+
+===============================================================================
+STEP 14 — FEATURE GAP ANALYSIS
+===============================================================================
+
+GAP stripe_payment_integration
+PRIORITY critical
+DESCRIPTION Subscription page shows prices but has no Stripe Checkout, webhook, or billing portal. Upgrade button only changes a DB column.
+
+GAP more_activity_types
+PRIORITY high
+DESCRIPTION listen_choose, speak_tap_aac, trace, routine_checkoff, parent_guided, printable activity types all fall back to a simple done card. These are designed types with instructions in seed data but no interactive implementations.
+
+GAP multi_parent_co_access
+PRIORITY medium
+DESCRIPTION Only one account can own a child profile. No invite/share mechanism for co-parents or therapists.
+
+GAP therapist_accounts
+PRIORITY medium
+DESCRIPTION No therapist role, no way to share progress reports externally, no per-child permissions beyond single owner.
+
+GAP schedule_selector_in_kid_ui
+PRIORITY medium
+DESCRIPTION Multiple schedules can be created but kids only see the first one. No way to switch schedules in kid view.
+
+GAP arasaac_symbol_library
+PRIORITY medium
+DESCRIPTION Talk board uses custom uploaded images. No built-in AAC symbol library browsable from the app (only ARASAAC attribution link shown).
+
+GAP push_notifications
+PRIORITY low
+DESCRIPTION No reminder system for daily study or schedule completion.
+
+GAP background_sync
+PRIORITY low
+DESCRIPTION Service worker background sync not implemented. Offline mutations replay only on app open or online event.
+
+GAP content_admin_cms
+PRIORITY low
+DESCRIPTION Curriculum updates require code deploys. No in-app or web admin panel to add/edit year categories, modules, lessons, activities.
+
+GAP printable_activity_support
+PRIORITY low
+DESCRIPTION activity_type "printable" has no PDF generation or print view.
+
+GAP audio_cue_implementation
+PRIORITY low
+DESCRIPTION Activity schema has audio_cue field but no audio playback implementation for it.
+
+GAP class_level_filtering_in_study
+PRIORITY low
+DESCRIPTION child_learning_plan stores class_level_id but the study home page does not filter modules/lessons by class level. All modules for all class levels are shown.
+
+GAP repeat_completed_lessons_enforcement
+PRIORITY low
+DESCRIPTION child_preferences has repeat_completed_lessons field but it is not actively enforced in the study home curriculum filtering logic.
+
+GAP big_button_mode_implementation
+PRIORITY low
+DESCRIPTION settings has big_button_mode field but no UI logic reads it to enlarge buttons.
+
+
+===============================================================================
+STEP 15 — FINAL PROJECT SUMMARY
+===============================================================================
+
+PROJECT RoutineNest
+DESCRIPTION A routine + AAC communication app for children with special educational needs. Designed for kids (simple, large tap targets, calm mode) managed by parents/caregivers (hold-to-unlock gate).
+
+TECH_STACK
+  Frontend: Next.js 16 (React 19), TypeScript, Tailwind CSS v4
+  UI Components: Radix UI primitives (shadcn/ui pattern), clsx, tailwind-merge
+  State: TanStack Query v5 with IndexedDB persistence (@tanstack/react-query-persist-client)
+  Backend: Supabase (PostgreSQL + Auth + Storage + RLS)
+  Analytics: PostHog (production only, privacy-respecting)
+  Native: Capacitor 8 (iOS + Android)
+  PWA: @ducanh2912/next-pwa
+  TTS: @capacitor-community/text-to-speech (native) / SpeechSynthesis (web)
+
+MATURITY medium
+The core product loop is functional: parents configure profiles/cards/schedules/study plans, kids use talk board/schedule/study/rewards/break. Offline-first architecture is well-implemented. The study curriculum has content and navigation but only 3 of 9 activity types are interactive.
+
+PRODUCTION_READINESS partial
+The app is deployable and functional for free-tier users. The premium subscription system has no payment integration, making the revenue model non-functional. The debug-env page should be removed. The speak.ts stub should be cleaned up.
+
+MAJOR_MISSING_FEATURES
+  1. Stripe payment integration (critical — no revenue)
+  2. Interactive implementations for 6 activity types
+  3. Multi-parent / therapist account sharing
+
+MOST_IMPORTANT_NEXT_STEPS
+  1. Integrate Stripe Checkout + webhooks to monetize premium tier
+  2. Implement listen_choose and speak_tap_aac activity types (highest educational value)
+  3. Remove /debug-env page or add auth check before production launch
+  4. Implement background sync via Service Worker Background Sync API
+  5. Add class-level filtering to study curriculum so modules are age-appropriate
+  6. Enforce big_button_mode in UI (field stored, never applied)
+
+===============================================================================
+END OF PROJECT_MASTER_GRAPH.txt
+===============================================================================
