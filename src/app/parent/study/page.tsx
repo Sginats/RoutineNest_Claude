@@ -14,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SubjectBadge } from "@/components/study/SubjectBadge";
+import ParentGate from "@/components/ParentGate";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import {
@@ -260,6 +261,7 @@ export default function ParentStudyPlannerPage() {
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
+    <ParentGate>
     <main className="mx-auto max-w-2xl space-y-6 px-4 py-10">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -511,5 +513,6 @@ export default function ParentStudyPlannerPage() {
         </Link>
       </div>
     </main>
+    </ParentGate>
   );
 }

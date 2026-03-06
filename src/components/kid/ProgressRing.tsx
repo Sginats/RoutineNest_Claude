@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 interface ProgressRingProps {
   /** Progress percentage 0–100 */
   value: number;
@@ -14,7 +16,7 @@ interface ProgressRingProps {
   /** Optional label below the ring */
   label?: string;
   /** Content to render inside the ring (overrides showPercent) */
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 /**

@@ -35,9 +35,13 @@ export default function SchedulePage() {
   // Allow switching between schedules (default to first)
   const [activeScheduleIndex, setActiveScheduleIndex] = useState(0);
 
-  // Reset index if schedules change and index is out of bounds
-  const scheduleId = schedules?.[activeScheduleIndex]?.id ?? schedules?.[0]?.id ?? null;
-  const activeSchedule = schedules?.[activeScheduleIndex] ?? schedules?.[0] ?? null;
+  // Reset index if schedules change and current index is out of bounds
+  const safeIndex =
+    schedules && activeScheduleIndex >= schedules.length
+      ? 0
+      : activeScheduleIndex;
+  const scheduleId = schedules?.[safeIndex]?.id ?? null;
+  const activeSchedule = schedules?.[safeIndex] ?? null;
 
   // Fetch schedule items for the active schedule
   const { data: items, isLoading: itemsLoading } = useQuery({
@@ -195,14 +199,14 @@ export default function SchedulePage() {
               key={sched.id}
               type="button"
               role="tab"
-              aria-selected={idx === activeScheduleIndex}
+              aria-selected={idx === safeIndex}
               onClick={() => setActiveScheduleIndex(idx)}
               className={cn(
                 "shrink-0 rounded-full px-4 py-2 text-sm font-bold",
                 "min-h-[44px] min-w-[44px]",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 calmMode ? "" : "transition-colors",
-                idx === activeScheduleIndex
+                idx === safeIndex
                   ? "bg-primary text-primary-foreground shadow-sm"
                   : "bg-card text-muted-foreground border border-border hover:bg-muted",
               )}

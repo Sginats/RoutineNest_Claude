@@ -14,6 +14,7 @@ import {
 import { ProgressBar } from "@/components/study/ProgressBar";
 import { RewardStars } from "@/components/study/RewardStars";
 import { ParentStatCard } from "@/components/parent/ParentStatCard";
+import ParentGate from "@/components/ParentGate";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { getChildProgress, getChildLearningPlan } from "@/lib/studyDb";
@@ -200,6 +201,7 @@ export default function ParentProgressPage() {
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
+    <ParentGate>
     <main className="mx-auto max-w-2xl space-y-6 px-4 py-10">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -376,6 +378,7 @@ export default function ParentProgressPage() {
         </Link>
       </div>
     </main>
+    </ParentGate>
   );
 }
 
