@@ -831,6 +831,43 @@ export default function ParentPage() {
         <div className="grid gap-6 sm:grid-cols-2">
           <Card>
             <CardHeader>
+              <CardTitle>📖 Study Planner</CardTitle>
+              <CardDescription>
+                Set up your child&apos;s learning plan, weekly schedule, and track progress
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                size="lg"
+                className="w-full"
+                onClick={() => router.push("/parent/study")}
+              >
+                Open Study Planner
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>📊 Progress Dashboard</CardTitle>
+              <CardDescription>
+                Track your child&apos;s learning journey and streaks
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="w-full"
+                onClick={() => router.push("/parent/study/progress")}
+              >
+                View Progress
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Rewards</CardTitle>
               <CardDescription>
                 Set up rewards and track stars

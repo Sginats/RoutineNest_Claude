@@ -6,17 +6,26 @@ import { useRouter } from "next/navigation";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { useSettings } from "@/lib/settingsHooks";
-import { getChildLearningPlan, getChildProgress } from "@/lib/studyDb";
+import { getChildLearningPlan, getChildProgress, getWeeklyPlanEntries } from "@/lib/studyDb";
 import {
   SEED_SUBJECT_AREAS,
   SEED_MODULES,
   SEED_LESSONS,
   SEED_ACTIVITIES,
 } from "@/lib/studySeedData";
+import type { DayOfWeek } from "@/lib/studyTypes";
 import { KidShell } from "@/components/kid/KidShell";
 import { EmptyState } from "@/components/kid/EmptyState";
 import { StudyTile } from "@/components/study/StudyTile";
 import { BreakCard } from "@/components/study/BreakCard";
+
+const DAY_NAMES: DayOfWeek[] = [
+  "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday",
+];
+
+function getTodayDayName(): DayOfWeek {
+  return DAY_NAMES[new Date().getDay()];
+}
 
 export default function StudyHomePage() {
   const { user, loading: authLoading } = useRequireAuth();
@@ -38,18 +47,40 @@ export default function StudyHomePage() {
     enabled: !!profileId && !!user,
   });
 
-  // Determine which subjects to show: from the plan, or fallback to all non-premium
+  const { data: weeklyEntries } = useQuery({
+    queryKey: ["weeklyPlanEntries", learningPlan?.id],
+    queryFn: () => getWeeklyPlanEntries(learningPlan!.id),
+    enabled: !!learningPlan?.id,
+  });
+
+  // Get today's subjects from weekly plan (if configured)
+  const todaySubjectIds = useMemo(() => {
+    if (!weeklyEntries?.length) return null; // null = no weekly plan, show all
+    const today = getTodayDayName();
+    const todayEntries = weeklyEntries.filter((e) => e.day === today);
+    if (todayEntries.length === 0) return null; // no entries for today, show all
+    return todayEntries.map((e) => e.subject_area_id);
+  }, [weeklyEntries]);
+
+  // Determine which subjects to show: today's plan > learning plan > fallback
   const subjects = useMemo(() => {
+    let base = SEED_SUBJECT_AREAS;
+
     if (learningPlan?.subject_area_ids?.length) {
-      return SEED_SUBJECT_AREAS.filter((s) =>
+      base = SEED_SUBJECT_AREAS.filter((s) =>
         learningPlan.subject_area_ids.includes(s.id),
-      ).sort((a, b) => a.order - b.order);
+      );
+    } else {
+      base = SEED_SUBJECT_AREAS.filter((s) => !s.is_premium);
     }
-    // Fallback: all non-premium subjects
-    return SEED_SUBJECT_AREAS.filter((s) => !s.is_premium).sort(
-      (a, b) => a.order - b.order,
-    );
-  }, [learningPlan]);
+
+    // If today's weekly plan has specific subjects, filter further
+    if (todaySubjectIds) {
+      base = base.filter((s) => todaySubjectIds.includes(s.id));
+    }
+
+    return base.sort((a, b) => a.order - b.order);
+  }, [learningPlan, todaySubjectIds]);
 
   // Compute progress percentage per subject
   const subjectProgress = useMemo(() => {

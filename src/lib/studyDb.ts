@@ -17,6 +17,8 @@ import type {
   ChildProgressInsert,
   ChildPreferences,
   ChildPreferencesPatch,
+  WeeklyPlanEntry,
+  WeeklyPlanEntryInsert,
 } from "./studyTypes";
 
 // ---------------------------------------------------------------------------
@@ -241,6 +243,71 @@ export async function upsertChildPreferences(
         updated_at: now,
         ...patch,
       } as ChildPreferences,
+    }),
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Weekly Plan Entries
+// ---------------------------------------------------------------------------
+
+export async function getWeeklyPlanEntries(
+  learningPlanId: string,
+): Promise<WeeklyPlanEntry[]> {
+  const { data, error } = await client()
+    .from("weekly_plan_entries")
+    .select("*")
+    .eq("learning_plan_id", learningPlanId)
+    .order("order", { ascending: true });
+  if (error) throw error;
+  return data as WeeklyPlanEntry[];
+}
+
+export async function replaceWeeklyPlanEntries(
+  learningPlanId: string,
+  entries: Omit<WeeklyPlanEntryInsert, "learning_plan_id">[],
+): Promise<WeeklyPlanEntry[]> {
+  const now = new Date().toISOString();
+  const rows = entries.map((e, i) => ({
+    id: generateUUID(),
+    learning_plan_id: learningPlanId,
+    day: e.day,
+    subject_area_id: e.subject_area_id,
+    order: e.order ?? i,
+  }));
+
+  return withOfflineQueue(
+    async () => {
+      // Delete existing entries for the plan, then insert new ones
+      const { error: deleteError } = await client()
+        .from("weekly_plan_entries")
+        .delete()
+        .eq("learning_plan_id", learningPlanId);
+      if (deleteError) throw deleteError;
+
+      if (rows.length === 0) return [];
+
+      const { data, error: insertError } = await client()
+        .from("weekly_plan_entries")
+        .insert(rows)
+        .select();
+      if (insertError) throw insertError;
+      return data as WeeklyPlanEntry[];
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "weekly_plan_entries",
+        operation: "upsert" as const,
+        payload: { learning_plan_id: learningPlanId, entries: rows } as unknown as Record<string, unknown>,
+        matchColumn: "learning_plan_id",
+        matchValue: learningPlanId,
+      },
+      fallback: rows.map((r) => ({
+        ...r,
+        created_at: now,
+        updated_at: now,
+      })) as WeeklyPlanEntry[],
     }),
   );
 }
