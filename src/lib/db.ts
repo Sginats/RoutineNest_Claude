@@ -20,6 +20,7 @@ import type {
   Reward,
   Settings,
   SettingsPatch,
+  SubscriptionTier,
 } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -84,6 +85,16 @@ export async function getProfiles(): Promise<Profile[]> {
   return data as Profile[];
 }
 
+export async function getProfile(userId: string): Promise<Profile | null> {
+  const { data, error } = await client()
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) throw error;
+  return data as Profile | null;
+}
+
 export async function createProfile(name: string): Promise<Profile> {
   const { data, error } = await client()
     .from("profiles")
@@ -93,6 +104,49 @@ export async function createProfile(name: string): Promise<Profile> {
   if (error) throw error;
   return data as Profile;
 }
+
+/**
+ * Update the subscription tier for the current user's profile.
+ * Offline-aware: if the network is down the mutation is queued and the
+ * updated tier is returned optimistically.
+ */
+export async function updateSubscriptionTier(
+  userId: string,
+  tier: SubscriptionTier,
+): Promise<Profile> {
+  const now = new Date().toISOString();
+
+  return withOfflineQueue(
+    async () => {
+      const { data, error } = await client()
+        .from("profiles")
+        .update({ subscription_tier: tier })
+        .eq("id", userId)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Profile;
+    },
+    () => ({
+      mutation: {
+        timestamp: now,
+        table: "profiles",
+        operation: "update" as const,
+        payload: { subscription_tier: tier },
+        matchColumn: "id",
+        matchValue: userId,
+      },
+      fallback: {
+        id: userId,
+        display_name: "",
+        subscription_tier: tier,
+        created_at: now,
+        updated_at: now,
+      } as Profile,
+    }),
+  );
+}
+
 
 // ---------------------------------------------------------------------------
 // Settings

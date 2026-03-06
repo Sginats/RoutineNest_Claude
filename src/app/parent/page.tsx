@@ -32,6 +32,7 @@ import {
   getActiveProfileId,
   setActiveProfileId,
 } from "@/lib/profileStore";
+import { useSubscription } from "@/lib/subscriptionHooks";
 import type {
   Profile,
   Card as CardType,
@@ -651,6 +652,9 @@ export default function ParentPage() {
     () => getActiveProfileId(),
   );
 
+  // --- subscription tier ---
+  const { data: subscriptionTier } = useSubscription(user?.id);
+
   // --- profiles query ---
   const {
     data: profiles = [],
@@ -722,6 +726,42 @@ export default function ParentPage() {
           <Button variant="outline" onClick={handleLogout}>
             Log Out
           </Button>
+        </div>
+
+        {/* Subscription status banner */}
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xl" role="img" aria-label="Star">⭐</span>
+            <div>
+              <p className="text-sm font-semibold leading-tight">
+                {subscriptionTier === "premium" ? "Premium Plan" : "Free Plan"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {subscriptionTier === "premium"
+                  ? "Full curriculum & analytics unlocked"
+                  : "Upgrade to unlock the full study curriculum"}
+              </p>
+            </div>
+          </div>
+          {subscriptionTier !== "premium" && (
+            <Button
+              size="sm"
+              onClick={() => router.push("/parent/subscription")}
+              className="shrink-0"
+            >
+              Upgrade
+            </Button>
+          )}
+          {subscriptionTier === "premium" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => router.push("/parent/subscription")}
+              className="shrink-0"
+            >
+              Manage
+            </Button>
+          )}
         </div>
 
         {/* Active profile banner */}
@@ -895,6 +935,27 @@ export default function ParentPage() {
                 onClick={() => router.push("/settings")}
               >
                 Open Settings
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>⭐ Subscription</CardTitle>
+              <CardDescription>
+                {subscriptionTier === "premium"
+                  ? "Premium — full curriculum unlocked"
+                  : "Free plan — upgrade to unlock full curriculum"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                size="lg"
+                variant={subscriptionTier === "premium" ? "outline" : "default"}
+                className="w-full"
+                onClick={() => router.push("/parent/subscription")}
+              >
+                {subscriptionTier === "premium" ? "Manage Subscription" : "🔓 Upgrade to Premium"}
               </Button>
             </CardContent>
           </Card>

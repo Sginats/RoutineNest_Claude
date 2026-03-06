@@ -1,9 +1,16 @@
 // RoutineNest — Database row types
 // Mirrors supabase/migrations/20260305000000_initial_schema.sql
 
+/** Subscription tier for the account owner (parent/caregiver).
+ *  - free: basic routines + AAC (always free, never gated)
+ *  - premium: full study curriculum + advanced learning plans + analytics
+ */
+export type SubscriptionTier = "free" | "premium";
+
 export interface Profile {
   id: string;
   display_name: string;
+  subscription_tier: SubscriptionTier;
   created_at: string;
   updated_at: string;
 }
@@ -77,3 +84,6 @@ export type ScheduleItemInsert = Omit<
 export type SettingsPatch = Partial<
   Pick<Settings, "calm_mode" | "big_button_mode" | "parent_lock_enabled" | "grid_size" | "sound_enabled">
 >;
+
+export type ProfilePatch = Partial<Pick<Profile, "display_name" | "subscription_tier">>;
+

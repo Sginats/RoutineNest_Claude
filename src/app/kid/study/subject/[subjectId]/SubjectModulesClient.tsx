@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { useSettings } from "@/lib/settingsHooks";
+import { useSubscription } from "@/lib/subscriptionHooks";
 import { getChildProgress } from "@/lib/studyDb";
 import {
   SEED_SUBJECT_AREAS,
@@ -18,6 +19,7 @@ import { KidShell } from "@/components/kid/KidShell";
 import { EmptyState } from "@/components/kid/EmptyState";
 import { StudyTile } from "@/components/study/StudyTile";
 import { ProgressBar } from "@/components/study/ProgressBar";
+import { UpgradeBanner } from "@/components/UpgradeBanner";
 
 export default function SubjectModulesClient({ subjectId }: { subjectId: string }) {
   const { user, loading: authLoading } = useRequireAuth();
@@ -26,6 +28,9 @@ export default function SubjectModulesClient({ subjectId }: { subjectId: string 
 
   const { data: settings } = useSettings(profileId);
   const calmMode = settings?.calm_mode ?? false;
+
+  const { data: subscriptionTier, isLoading: subscriptionLoading } = useSubscription(user?.id);
+  const isPremium = subscriptionTier === "premium";
 
   const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ["childProgress", profileId],
@@ -108,7 +113,7 @@ export default function SubjectModulesClient({ subjectId }: { subjectId: string 
     );
   }
 
-  if (progressLoading) {
+  if (progressLoading || subscriptionLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <p className="text-lg text-muted-foreground">Loading modules…</p>
@@ -124,6 +129,25 @@ export default function SubjectModulesClient({ subjectId }: { subjectId: string 
         title="Subject not found"
         description="We couldn't find that subject. Try going back to your study plan."
       />
+    );
+  }
+
+  // Gate premium subjects for free users
+  if (subject.is_premium && !isPremium) {
+    return (
+      <KidShell title={subject.title} emoji={subject.icon}>
+        <Link
+          href="/kid/study"
+          className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+        >
+          ← Back to Study Plan
+        </Link>
+        <UpgradeBanner
+          heading={`${subject.title} — Premium`}
+          description="This subject is part of the Premium curriculum. Ask a parent to upgrade to unlock all subjects, modules, and lessons."
+          calm={calmMode}
+        />
+      </KidShell>
     );
   }
 
@@ -164,7 +188,7 @@ export default function SubjectModulesClient({ subjectId }: { subjectId: string 
             icon={mod.icon}
             description={`${moduleLessonCounts.get(mod.id) ?? 0} lessons`}
             progress={moduleProgress.get(mod.id) ?? 0}
-            locked={mod.is_premium}
+            locked={mod.is_premium && !isPremium}
             index={i}
             calm={calmMode}
             onClick={() => router.push(`/kid/study/module/${mod.id}`)}

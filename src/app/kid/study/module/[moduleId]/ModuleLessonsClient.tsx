@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { useSettings } from "@/lib/settingsHooks";
+import { useSubscription } from "@/lib/subscriptionHooks";
 import { getChildProgress } from "@/lib/studyDb";
 import {
   SEED_MODULES,
@@ -18,6 +19,7 @@ import { KidShell } from "@/components/kid/KidShell";
 import { EmptyState } from "@/components/kid/EmptyState";
 import { LessonCard } from "@/components/study/LessonCard";
 import { ProgressBar } from "@/components/study/ProgressBar";
+import { UpgradeBanner } from "@/components/UpgradeBanner";
 
 export default function ModuleLessonsClient({ moduleId }: { moduleId: string }) {
   const { user, loading: authLoading } = useRequireAuth();
@@ -26,6 +28,9 @@ export default function ModuleLessonsClient({ moduleId }: { moduleId: string }) 
 
   const { data: settings } = useSettings(profileId);
   const calmMode = settings?.calm_mode ?? false;
+
+  const { data: subscriptionTier, isLoading: subscriptionLoading } = useSubscription(user?.id);
+  const isPremium = subscriptionTier === "premium";
 
   const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ["childProgress", profileId],
@@ -103,7 +108,7 @@ export default function ModuleLessonsClient({ moduleId }: { moduleId: string }) 
     );
   }
 
-  if (progressLoading) {
+  if (progressLoading || subscriptionLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <p className="text-lg text-muted-foreground">Loading lessons…</p>
@@ -119,6 +124,25 @@ export default function ModuleLessonsClient({ moduleId }: { moduleId: string }) 
         title="Module not found"
         description="We couldn't find that module. Try going back to your subjects."
       />
+    );
+  }
+
+  // Gate premium modules for free users
+  if (mod.is_premium && !isPremium) {
+    return (
+      <KidShell title={mod.title} emoji={mod.icon}>
+        <Link
+          href={subject ? `/kid/study/subject/${subject.id}` : "/kid/study"}
+          className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+        >
+          ← Back to {subject?.title ?? "Subjects"}
+        </Link>
+        <UpgradeBanner
+          heading={`${mod.title} — Premium`}
+          description="This module is part of the Premium curriculum. Ask a parent to upgrade to unlock it."
+          calm={calmMode}
+        />
+      </KidShell>
     );
   }
 
@@ -154,7 +178,7 @@ export default function ModuleLessonsClient({ moduleId }: { moduleId: string }) 
             duration_minutes={lesson.duration_minutes}
             reward_points={lesson.reward_points}
             completed={lessonCompletion.get(lesson.id) ?? false}
-            locked={lesson.is_premium}
+            locked={lesson.is_premium && !isPremium}
             calm={calmMode}
             onClick={() => router.push(`/kid/study/lesson/${lesson.id}`)}
           />
