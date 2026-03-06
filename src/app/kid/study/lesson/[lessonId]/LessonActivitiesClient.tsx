@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRequireAuth } from "@/hooks/useAuth";
 import { getActiveProfileId } from "@/lib/profileStore";
 import { useSettings } from "@/lib/settingsHooks";
+import { useSubscription } from "@/lib/subscriptionHooks";
 import { getChildProgress, upsertChildProgress } from "@/lib/studyDb";
 import { addRewardIfNew } from "@/lib/db";
 import {
@@ -19,6 +20,7 @@ import { ProgressBar } from "@/components/study/ProgressBar";
 import { RewardStars } from "@/components/study/RewardStars";
 import { SubjectBadge } from "@/components/study/SubjectBadge";
 import { BreakCard } from "@/components/study/BreakCard";
+import { UpgradeBanner } from "@/components/UpgradeBanner";
 import { cn } from "@/lib/utils";
 
 export default function LessonActivitiesClient({ lessonId }: { lessonId: string }) {
@@ -28,6 +30,9 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
 
   const { data: settings } = useSettings(profileId);
   const calmMode = settings?.calm_mode ?? false;
+
+  const { data: subscriptionTier, isLoading: subscriptionLoading } = useSubscription(user?.id);
+  const isPremium = subscriptionTier === "premium";
 
   const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ["childProgress", profileId],
@@ -182,7 +187,7 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
     );
   }
 
-  if (progressLoading) {
+  if (progressLoading || subscriptionLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <p className="text-lg text-muted-foreground">Loading lesson…</p>
@@ -198,6 +203,25 @@ export default function LessonActivitiesClient({ lessonId }: { lessonId: string 
         title="Lesson not found"
         description="We couldn't find that lesson. Try going back to your module."
       />
+    );
+  }
+
+  // Gate premium lessons for free users
+  if (lesson.is_premium && !isPremium) {
+    return (
+      <KidShell title={lesson.title} emoji={lesson.icon}>
+        <Link
+          href={mod ? `/kid/study/module/${mod.id}` : "/kid/study"}
+          className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+        >
+          ← Back to Module
+        </Link>
+        <UpgradeBanner
+          heading={`${lesson.title} — Premium`}
+          description="This lesson is part of the Premium curriculum. Ask a parent to upgrade to unlock it."
+          calm={calmMode}
+        />
+      </KidShell>
     );
   }
 
