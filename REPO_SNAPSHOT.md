@@ -200,3 +200,83 @@ Ready. Run `npm run cap:build`, then open in Android Studio / Xcode. Signing con
 - [ ] Additional activity gameplay types (listen_choose, trace)
 - [ ] Weekly planner UI for parents
 - [ ] A/B testing with PostHog feature flags
+
+---
+
+## System Ownership
+
+Maps each major system to its primary implementation files. Edit the listed files when modifying a system.
+
+| System | Primary File(s) |
+| --- | --- |
+| Auth | `src/hooks/useAuth.ts` |
+| Onboarding | `src/app/onboarding/page.tsx` |
+| Kid Home | `src/app/page.tsx` |
+| AAC Board | `src/app/kid/talk/page.tsx` |
+| Schedule | `src/app/kid/schedule/page.tsx` |
+| Study System | `src/app/kid/study/` |
+| Activity Gameplay | `src/components/activities/`, `src/lib/activityGameplayData.ts` |
+| Rewards | `src/app/kid/rewards/page.tsx` |
+| Subscriptions | `src/lib/subscriptionHooks.ts`, `src/lib/db.ts` |
+| Offline Sync | `src/lib/syncQueue.ts` |
+| Parent Dashboard | `src/app/parent/page.tsx` |
+| Settings | `src/app/settings/page.tsx` |
+| Theme | `src/components/ThemeProvider.tsx` |
+
+---
+
+## Data Ownership
+
+Maps database tables to their owning systems. All tables use **Supabase Row Level Security (RLS)** — users can only read and write their own rows.
+
+| Table | System | Description |
+| --- | --- | --- |
+| `profiles` | Auth / Subscriptions | Child profiles, subscription tier (`free` \| `premium`) |
+| `communication_cards` | AAC Board | AAC phrase cards with icon, label, TTS text, position |
+| `schedule_items` | Schedule | Visual routine schedule entries |
+| `child_progress` | Study / Rewards | Activity completion records; used for streak calculation |
+| `weekly_plan_entries` | Study System | Parent-configured weekly study plan |
+| `study_subjects` | Study System | Subject areas (seeded from `studySeedData.ts`) |
+| `study_modules` | Study System | Curriculum modules per subject |
+| `study_lessons` | Study System | Lessons within a module |
+| `study_activities` | Study System | Individual activities within a lesson |
+
+> All mutations that fail offline are queued in IndexedDB (`syncQueue.ts`) and replayed when connectivity is restored.
+
+---
+
+## Runtime Constraints
+
+These rules govern how the app is built and deployed. **Do not violate them.**
+
+- **Static export only** — `next.config.ts` sets `output: "export"`. No server-side rendering.
+- **No API routes** — there is no `app/api/` directory. All data operations go through Supabase directly.
+- **No SSR** — all data fetching happens client-side via React Query + Supabase JS SDK.
+- **Supabase is the only backend** — auth, database, storage, and realtime all use Supabase.
+- **Supabase client may be null** — `supabaseClient.ts` returns `null` when env vars are absent (e.g., during CI builds). Every consumer must null-check before use.
+- **Build command** — `npm run build` (passes `--webpack` for PWA plugin compatibility).
+
+---
+
+## Performance Goals
+
+Design and implementation decisions must respect these targets:
+
+- **Touch targets ≥ 48 px** — all interactive elements meet minimum tap size for kids.
+- **Low animation / sensory safety** — avoid rapid motion; respect `calm` theme setting.
+- **Fast initial load** — static export enables CDN-level caching; keep bundle size lean.
+- **Offline-first** — schedule, AAC board, and study content load from IndexedDB cache; mutations queue and replay via `syncQueue.ts`.
+- **Accessible** — focus order, screen-reader labels, and high-contrast are required in all new UI.
+
+---
+
+## AI Context
+
+Before implementing any change, AI agents **must** read these files in order:
+
+1. `AI_CONTEXT.md` — persistent AI memory, conventions, and constraints
+2. `PROJECT_SUMMARY.md` — project goals, audience, and feature overview
+3. `ARCHITECTURE_MAP.md` — system architecture and data-flow diagrams
+4. `REPO_SNAPSHOT.md` — current repo state, ownership maps, and runtime rules (this file)
+
+Skipping these files risks violating runtime constraints or duplicating existing systems.
